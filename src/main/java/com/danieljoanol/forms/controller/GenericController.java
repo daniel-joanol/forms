@@ -1,6 +1,7 @@
 package com.danieljoanol.forms.controller;
 
 import com.danieljoanol.forms.assembler.GenericAssembler;
+import com.danieljoanol.forms.constants.UserRole;
 import com.danieljoanol.forms.dto.GenericDTO;
 import com.danieljoanol.forms.entity.GenericEntity;
 import com.danieljoanol.forms.repository.GenericRepository;
@@ -10,6 +11,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +25,7 @@ import io.swagger.annotations.ApiResponse;
 
 import jakarta.validation.Valid;
 
+@PreAuthorize(UserRole.USER)
 public abstract class GenericController<T extends GenericEntity<T>, U extends GenericDTO> {
     
     private final GenericServiceImpl<T> service;

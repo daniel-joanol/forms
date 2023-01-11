@@ -2,6 +2,7 @@ package com.danieljoanol.forms.security;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -15,7 +16,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 @Service
-public class JwtUtil {
+public class JwtService {
 
     private static final String SECRET_KEY = 
         "4A614E645267556B58703272357538782F413F4428472B4B6250655368566D5971337436763979244226452" +
@@ -31,6 +32,10 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
+    public String generateToken(UserDetails userDetails) {
+        return generateToken(new HashMap<>(), userDetails);
+    }
+
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts
             .builder()
@@ -40,6 +45,20 @@ public class JwtUtil {
             .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
             .signWith(getSignInKey(), SignatureAlgorithm.HS256)
             .compact();
+    }
+
+    public boolean isTokenValid(String jwt, UserDetails userDetails) {
+        final String username = getUsername(jwt);
+        return (username.equals(userDetails.getUsername())) &&
+                !isTokenExpired(jwt);
+    }
+
+    private boolean isTokenExpired(String jwt) {
+        return getExpiration(jwt).before(new Date());
+    }
+
+    private Date getExpiration(String jwt) {
+        return getClaim(jwt, Claims::getExpiration);
     }
 
     private Claims getAllClaims(String jwt) {
