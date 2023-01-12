@@ -40,7 +40,6 @@ public class Form implements GenericEntity<Form> {
     private Boolean openOrder = true;
     private String comments;
     private String pdfUrl;
-    
     private Set<String> visibleDamages = new HashSet<>();
 
 }
