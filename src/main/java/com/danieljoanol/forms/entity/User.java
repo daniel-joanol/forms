@@ -43,7 +43,7 @@ public class User implements GenericEntity<User>, UserDetails {
     private String email;
     private String password;
 
-    private boolean isEnabled = true;
+    private boolean isEnabled;
     private LocalDate nextPayment;
 
     @ManyToOne
