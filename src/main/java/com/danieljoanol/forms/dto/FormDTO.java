@@ -5,6 +5,8 @@ import java.util.Set;
 
 import com.danieljoanol.forms.entity.Form;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,18 +19,30 @@ import lombok.Setter;
 public class FormDTO extends GenericDTO<Form> {
     
     private Long id;
-    private String plate;
+
+    @NotBlank(message = "plate can't be null")
+    private String plate;    
     private Integer fuel;
     private Integer kilometers;
+
+    @NotBlank(message = "model can't be null")
     private String model;
+
+    @NotBlank(message = "brand can't be null")
     private String brand;
     private String frame;
+
+    @NotBlank(message = "chassis can't be null")
     private String chassis;
     private String code;
     private String agent;
+
+    @NotNull(message = "date can't be null")
     private LocalDateTime date;
     private Boolean openOrder;
     private String comments;
+
+    @NotBlank()
     private String pdfUrl;
     private Set<String> visibleDamages;
 

@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import com.danieljoanol.forms.entity.Client;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,15 +17,28 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ClientDTO extends GenericDTO<Client> {
-    
-    private Long id;
+        private Long id;
+
+    @NotBlank(message = "address can't be null")
     private String address;
+
+    @NotNull(message = "postalCode can't be null")
     private Integer postalCode;
+
+    @NotBlank(message = "city can't be null")
     private String city;
+
+    @NotBlank(message = "province can't be null")
     private String province;
+
+    @NotBlank(message = "phone1 can't be null")
     private String phone1;
+
     private String phone2;
+
+    @NotBlank(message = "document can't be null")
     private String document;
+
     private List<FormDTO> forms;
 
     public ClientDTO(Client entity) {

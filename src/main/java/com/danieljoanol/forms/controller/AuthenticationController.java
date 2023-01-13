@@ -14,6 +14,7 @@ import com.danieljoanol.forms.controller.response.AuthenticationResponse;
 import com.danieljoanol.forms.service.AuthenticationService;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,8 +24,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(Url.API_V1_AUTH)
+@RequestMapping(Url.AUTH)
 @RequiredArgsConstructor
+@Api(value = "Authentication Controller", description = "Controller to manage authentication")
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
