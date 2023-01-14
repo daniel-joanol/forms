@@ -22,6 +22,7 @@ public class FormDTO extends GenericDTO<Form> {
 
     @NotBlank(message = "plate can't be null")
     private String plate;    
+    
     private Integer fuel;
     private Integer kilometers;
 
@@ -30,20 +31,23 @@ public class FormDTO extends GenericDTO<Form> {
 
     @NotBlank(message = "brand can't be null")
     private String brand;
+    
     private String frame;
 
     @NotBlank(message = "chassis can't be null")
+    
     private String chassis;
-    private String code;
     private String agent;
 
     @NotNull(message = "date can't be null")
     private LocalDateTime date;
+    
     private Boolean openOrder;
     private String comments;
 
     @NotBlank()
     private String pdfUrl;
+
     private Set<String> visibleDamages;
 
     public FormDTO(Form entity) {
@@ -55,7 +59,6 @@ public class FormDTO extends GenericDTO<Form> {
         this.brand = entity.getBrand();
         this.frame = entity.getFrame();
         this.chassis = entity.getChassis();
-        this.code = entity.getCode();
         this.agent = entity.getAgent();
         this.date = entity.getDate();
         this.openOrder = entity.getOpenOrder();
@@ -75,7 +78,6 @@ public class FormDTO extends GenericDTO<Form> {
         entity.setBrand(this.brand);
         entity.setFrame(this.frame);
         entity.setChassis(this.chassis);
-        entity.setCode(this.code);
         entity.setAgent(this.agent);
         entity.setDate(this.date);
         entity.setOpenOrder(this.openOrder);

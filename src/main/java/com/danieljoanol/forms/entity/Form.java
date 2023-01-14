@@ -34,7 +34,6 @@ public class Form implements GenericEntity<Form> {
     private String brand;
     private String frame;
     private String chassis;
-    private String code;
     private String agent;
     private LocalDateTime date;
     private Boolean openOrder = true;
