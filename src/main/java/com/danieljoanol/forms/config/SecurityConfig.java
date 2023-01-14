@@ -29,7 +29,7 @@ public class SecurityConfig {
             .disable()
             .authorizeHttpRequests()
             //TODO: include swagger url
-            .requestMatchers(Url.API_V1_AUTH + "/**")
+            .requestMatchers(Url.AUTH + "/**")
             .permitAll()
             .anyRequest()
             .authenticated()
