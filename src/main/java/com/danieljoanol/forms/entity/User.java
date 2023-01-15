@@ -31,7 +31,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name = "user")
+@Table(name = "_user")
 public class User implements GenericEntity<User>, UserDetails {
 
     @Id
