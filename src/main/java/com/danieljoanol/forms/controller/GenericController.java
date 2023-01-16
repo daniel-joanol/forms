@@ -9,6 +9,8 @@ import com.danieljoanol.forms.service.GenericServiceImpl;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,8 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ApiResponse;
-
-import jakarta.validation.Valid;
 
 @PreAuthorize(UserRole.USER)
 public abstract class GenericController<T extends GenericEntity<T>, U extends GenericDTO> {

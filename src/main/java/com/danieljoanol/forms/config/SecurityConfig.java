@@ -29,10 +29,11 @@ public class SecurityConfig {
             .disable()
             .authorizeHttpRequests()
             //TODO: include swagger url
-            .requestMatchers(Url.AUTH + "/**")
+            .antMatchers("/swagger-ui/**", "/api-docs")
             .permitAll()
             .anyRequest()
-            .authenticated()
+            //.authenticated()
+            .permitAll()
             .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
