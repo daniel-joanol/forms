@@ -3,14 +3,14 @@ package com.danieljoanol.forms.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.danieljoanol.forms.entity.GenericEntity;
 import com.danieljoanol.forms.repository.GenericRepository;
-
-import jakarta.persistence.EntityNotFoundException;
 
 public abstract class GenericServiceImpl<T extends GenericEntity<T>> {
     

@@ -29,10 +29,9 @@ public class SecurityConfig {
             .disable()
             .authorizeHttpRequests()
             //TODO: include swagger url
-            .requestMatchers(Url.AUTH + "/**")
+                .antMatchers("/swagger-ui/**", "/api-docs").permitAll()
+            .anyRequest()//.authenticated()
             .permitAll()
-            .anyRequest()
-            .authenticated()
             .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
