@@ -1,5 +1,6 @@
-package com.danieljoanol.forms.controller;
+package com.danieljoanol.forms.exception;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.dao.DuplicateKeyException;
@@ -17,8 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 @ControllerAdvice
 @ResponseBody
 public class ExceptionHandlerController {
-    
-    @ExceptionHandler(value = { UsernameNotFoundException.class, DuplicateKeyException.class })
+
+    @ExceptionHandler(value = { EntityNotFoundException.class, UsernameNotFoundException.class,
+            DuplicateKeyException.class })
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleUsernameNotFound(HttpServletRequest request, Exception ex) {

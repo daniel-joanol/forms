@@ -2,9 +2,9 @@ package com.danieljoanol.forms.dto;
 
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.danieljoanol.forms.entity.User;
-import com.danieljoanol.forms.entity.enums.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class UserDTO extends GenericDTO<User> {
-    
+
     private Long id;
     private String firstName;
     private String lastName;
@@ -25,7 +25,7 @@ public class UserDTO extends GenericDTO<User> {
     private boolean isEnabled;
     private LocalDate nextPayment;
     private ShopDTO shop;
-    private Set<Role> roles;
+    private Set<RoleDTO> roles;
 
     public UserDTO(User entity) {
         this.id = entity.getId();
@@ -36,7 +36,7 @@ public class UserDTO extends GenericDTO<User> {
         this.isEnabled = entity.isEnabled();
         this.nextPayment = entity.getNextPayment();
         this.shop = new ShopDTO(entity.getShop());
-        this.roles = entity.getRoles();
+        this.roles = entity.getRoles().stream().map(r -> new RoleDTO(r)).collect(Collectors.toSet());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class UserDTO extends GenericDTO<User> {
         entity.setEnabled(this.isEnabled);
         entity.setNextPayment(this.nextPayment);
         entity.setShop(this.shop.toEntity());
-        entity.setRoles(this.roles);
+        entity.setRoles(this.roles.stream().map(RoleDTO::toEntity).collect(Collectors.toSet()));
         return entity;
     }
 
