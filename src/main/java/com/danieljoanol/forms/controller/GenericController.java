@@ -1,7 +1,6 @@
 package com.danieljoanol.forms.controller;
 
 import com.danieljoanol.forms.assembler.GenericAssembler;
-import com.danieljoanol.forms.constants.UserRole;
 import com.danieljoanol.forms.dto.GenericDTO;
 import com.danieljoanol.forms.entity.GenericEntity;
 import com.danieljoanol.forms.repository.GenericRepository;
@@ -25,7 +24,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ApiResponse;
 
-@PreAuthorize(UserRole.USER)
+@PreAuthorize("hasRole('USER')")
 public abstract class GenericController<T extends GenericEntity<T>, U extends GenericDTO> {
     
     private final GenericServiceImpl<T> service;
