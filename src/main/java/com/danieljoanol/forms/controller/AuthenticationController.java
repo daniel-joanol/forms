@@ -20,18 +20,17 @@ import com.danieljoanol.forms.controller.response.AuthenticationResponse;
 import com.danieljoanol.forms.service.AuthenticationService;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import org.springframework.web.bind.annotation.RequestBody;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping(Url.AUTH)
 @RequiredArgsConstructor
-@Api(value = "Authentication Controller", description = "Controller to manage authentication")
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;

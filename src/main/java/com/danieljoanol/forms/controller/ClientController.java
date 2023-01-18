@@ -11,11 +11,11 @@ import com.danieljoanol.forms.entity.Client;
 import com.danieljoanol.forms.repository.ClientRepository;
 import com.danieljoanol.forms.service.ClientService;
 
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping(Url.CLIENT)
-@Api(value = "Client Controller", description = "Controller to manage clients")
+@SecurityRequirement(name = "Bearer Authentication")
 public class ClientController extends GenericController<Client, ClientDTO> {
     
     @Autowired

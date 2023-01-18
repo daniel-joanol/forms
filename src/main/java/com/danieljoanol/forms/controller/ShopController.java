@@ -10,11 +10,8 @@ import com.danieljoanol.forms.dto.ShopDTO;
 import com.danieljoanol.forms.entity.Shop;
 import com.danieljoanol.forms.service.ShopService;
 
-import io.swagger.annotations.Api;
-
 @RestController
 @RequestMapping(Url.SHOP)
-@Api(value = "Shop Controller", description = "Controller to manage shops")
 public class ShopController extends GenericController<Shop, ShopDTO> {
     
     @Autowired
