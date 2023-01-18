@@ -1,6 +1,6 @@
 package com.danieljoanol.forms.entity.enums;
 
-public enum Role {
+public enum ERole {
     USER,
     ADMIN
 }

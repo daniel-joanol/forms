@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 
 import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.constants.Url;
@@ -44,12 +46,22 @@ public class AuthenticationController {
         // TODO: implement email
     }
 
-    @Operation(summary = "Authenticate", description = "Method to authenticate a user")
+    @Operation(summary = "Log In", description = "Method to authenticate a user")
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthenticationResponse.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
-    @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody @Valid AuthenticationRequest request) {
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+    @PostMapping("/login")
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid AuthenticationRequest request) {
+        AuthenticationResponse response = authenticationService.login(request);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, response.getToken()).body(response);
+    }
+
+    @Operation(summary = "Log Out", description = "Method to disconnect a user")
+    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthenticationResponse.class)))
+    @ApiResponse(responseCode = "500", description = "System error")
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        ResponseCookie cookie = authenticationService.logout();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(Message.LOG_OUT);
     }
 }
