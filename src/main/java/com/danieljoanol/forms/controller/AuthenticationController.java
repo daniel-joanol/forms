@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.naming.AuthenticationException;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpHeaders;
@@ -51,7 +52,8 @@ public class AuthenticationController {
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid AuthenticationRequest request) {
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid AuthenticationRequest request)
+            throws AuthenticationException {
         AuthenticationResponse response = authenticationService.login(request);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, response.getToken()).body(response);
     }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponses;
@@ -26,13 +27,14 @@ import io.swagger.annotations.ApiResponse;
 
 @PreAuthorize("hasRole('USER')")
 public abstract class GenericController<T extends GenericEntity<T>, U extends GenericDTO> {
-    
+
     private final GenericServiceImpl<T> service;
     private final GenericAssembler<T, U> assembler;
 
     public GenericController(
             GenericRepository<T> repository, GenericAssembler<T, U> assembler) {
-        this.service = new GenericServiceImpl<T>(repository){};
+        this.service = new GenericServiceImpl<T>(repository) {
+        };
         this.assembler = assembler;
     }
 
@@ -40,7 +42,8 @@ public abstract class GenericController<T extends GenericEntity<T>, U extends Ge
     @ApiResponses(value = { //
             @ApiResponse(code = 200, message = "SUCCESS"), @ApiResponse(code = 500, message = "System error") })
     @GetMapping("/")
-    public ResponseEntity<Page<U>> getAll(Integer pageNumber, Integer pageSize) {
+    public ResponseEntity<Page<U>> getAll(@RequestParam(required = true) Integer pageNumber,
+            @RequestParam(required = true) Integer pageSize) {
         Page<T> entities = service.getAll(pageNumber, pageSize);
         Page<U> vos = this.assembler.convertToDTO(entities);
         return ResponseEntity.ok(vos);

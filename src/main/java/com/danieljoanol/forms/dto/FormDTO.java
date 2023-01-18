@@ -21,32 +21,31 @@ public class FormDTO extends GenericDTO<Form> {
     
     private Long id;
 
-    @NotBlank(message = "plate can't be null")
+    @NotBlank(message = "plate es obligatorio")
     private String plate;    
     
     private Integer fuel;
     private Integer kilometers;
 
-    @NotBlank(message = "model can't be null")
+    @NotBlank(message = "model es obligatorio")
     private String model;
 
-    @NotBlank(message = "brand can't be null")
+    @NotBlank(message = "brand es obligatorio")
     private String brand;
     
     private String frame;
 
-    @NotBlank(message = "chassis can't be null")
-    
+    @NotBlank(message = "chassis es obligatorio")
     private String chassis;
     private String agent;
 
-    @NotNull(message = "date can't be null")
+    @NotNull(message = "date es obligatorio")
     private LocalDateTime date;
     
     private Boolean openOrder;
     private String comments;
 
-    @NotBlank()
+    @NotBlank(message = "pdfUrl es obligatorio")
     private String pdfUrl;
 
     private Set<String> visibleDamages;

@@ -20,7 +20,7 @@ public class RoleServiceImpl extends GenericServiceImpl<Role> implements RoleSer
 
     @Override
     public Role findByName(ERole name) {
-        return roleRepository.findByName(name).orElseThrow(() -> new EntityNotFoundException("Entity not found"));
+        return roleRepository.findByName(name).orElseThrow(() -> new EntityNotFoundException("Entidad no encontrada"));
     }
 
 }
