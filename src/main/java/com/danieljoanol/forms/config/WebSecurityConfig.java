@@ -57,10 +57,6 @@ public class WebSecurityConfig {
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(entryPoint).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
-                //.authorizeRequests().antMatchers("/api/v1/auth/**").permitAll()
-                //        .antMatchers("/swagger-ui/**").permitAll()
-                //.anyRequest()//.authenticated();
-                //.permitAll();
 
         http.headers().frameOptions().sameOrigin();
         http.authenticationProvider(authenticationProvider());
