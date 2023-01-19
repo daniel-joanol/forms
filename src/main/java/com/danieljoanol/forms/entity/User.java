@@ -1,10 +1,8 @@
 package com.danieljoanol.forms.entity;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,10 +15,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,7 +29,7 @@ import lombok.Setter;
 @Entity
 @Builder
 @Table(name = "_user")
-public class User implements GenericEntity<User>, UserDetails {
+public class User implements GenericEntity<User> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +39,7 @@ public class User implements GenericEntity<User>, UserDetails {
     private String lastName;
 
     @Column(unique = true)
-    private String email;
+    private String username;
     private String password;
 
     private boolean isEnabled;
@@ -57,31 +51,5 @@ public class User implements GenericEntity<User>, UserDetails {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return isEnabled;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return isEnabled;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return isEnabled;
-    }
 
 }

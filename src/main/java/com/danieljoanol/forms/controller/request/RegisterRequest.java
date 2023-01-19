@@ -20,8 +20,8 @@ public class RegisterRequest {
     @NotBlank(message = "lastName es obligatorio")
     private String lastName;
 
-    @NotBlank(message = "email es obligatorio")
-    private String email;
+    @NotBlank(message = "username es obligatorio")
+    private String username;
 
     @NotEmpty(message = "password es obligatorio")
     private String password;

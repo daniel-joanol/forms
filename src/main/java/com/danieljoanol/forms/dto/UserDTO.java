@@ -20,7 +20,7 @@ public class UserDTO extends GenericDTO<User> {
     private Long id;
     private String firstName;
     private String lastName;
-    private String email;
+    private String username;
     private String password;
     private boolean isEnabled;
     private LocalDate nextPayment;
@@ -31,7 +31,7 @@ public class UserDTO extends GenericDTO<User> {
         this.id = entity.getId();
         this.firstName = entity.getFirstName();
         this.lastName = entity.getLastName();
-        this.email = entity.getEmail();
+        this.username = entity.getUsername();
         this.password = entity.getPassword();
         this.isEnabled = entity.isEnabled();
         this.nextPayment = entity.getNextPayment();
@@ -45,7 +45,7 @@ public class UserDTO extends GenericDTO<User> {
         entity.setId(this.id);
         entity.setFirstName(this.firstName);
         entity.setLastName(this.lastName);
-        entity.setEmail(this.email);
+        entity.setUsername(this.username);
         entity.setPassword(this.password);
         entity.setEnabled(this.isEnabled);
         entity.setNextPayment(this.nextPayment);

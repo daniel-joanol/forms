@@ -1,7 +1,6 @@
 package com.danieljoanol.forms.dto;
 
 import com.danieljoanol.forms.entity.Role;
-import com.danieljoanol.forms.entity.enums.ERole;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +14,7 @@ import lombok.Setter;
 public class RoleDTO extends GenericDTO<Role> {
     
     private long id;
-    private ERole name;
+    private String name;
 
     public RoleDTO(Role entity) {
         this.id = entity.getId();
