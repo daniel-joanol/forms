@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.naming.AuthenticationException;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpHeaders;
@@ -19,18 +20,17 @@ import com.danieljoanol.forms.controller.response.AuthenticationResponse;
 import com.danieljoanol.forms.service.AuthenticationService;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import org.springframework.web.bind.annotation.RequestBody;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping(Url.AUTH)
 @RequiredArgsConstructor
-@Api(value = "Authentication Controller", description = "Controller to manage authentication")
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
@@ -42,7 +42,7 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody @Valid RegisterRequest request) {
         authenticationService.register(request);
-        return ResponseEntity.ok(Message.MESSAGE_CHECK_EMAIL);
+        return ResponseEntity.ok().header("Content-Type", "application/text").body(Message.MESSAGE_CHECK_EMAIL);
         // TODO: implement email
     }
 
@@ -51,7 +51,8 @@ public class AuthenticationController {
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid AuthenticationRequest request) {
+    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid AuthenticationRequest request)
+            throws AuthenticationException {
         AuthenticationResponse response = authenticationService.login(request);
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, response.getToken()).body(response);
     }

@@ -3,6 +3,8 @@ package com.danieljoanol.forms.service;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.naming.AuthenticationException;
+
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,13 +35,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authManager;
 
     @Override
-    public AuthenticationResponse login(AuthenticationRequest request) {
+    public AuthenticationResponse login(AuthenticationRequest request) throws AuthenticationException {
 
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         User user = (User) authentication.getPrincipal();
+
+        if (!user.isEnabled()) {
+            throw new AuthenticationException(
+                    "El usuario " + user.getUsername() + " está bloqueado. Consulte el administrador");
+        }
+
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(user);
         Set<String> roles = user.getAuthorities().stream().map(i -> i.getAuthority()).collect(Collectors.toSet());
 
@@ -51,7 +59,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public void register(RegisterRequest request) {
 
         if (userService.existsByEmail(request.getEmail())) {
-            throw new DuplicateKeyException("Username already in use");
+            throw new DuplicateKeyException("Username ya existe");
         }
 
         Role userRole = roleService.findByName(ERole.USER);

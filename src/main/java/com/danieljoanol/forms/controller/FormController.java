@@ -11,11 +11,8 @@ import com.danieljoanol.forms.entity.Form;
 import com.danieljoanol.forms.repository.FormRepository;
 import com.danieljoanol.forms.service.FormService;
 
-import io.swagger.annotations.Api;
-
 @RestController
 @RequestMapping(Url.FORM)
-@Api(value = "Form Controller", description = "Controller to manage forms")
 public class FormController extends GenericController<Form, FormDTO> {
     
     @Autowired

@@ -20,24 +20,24 @@ import lombok.Setter;
 public class ClientDTO extends GenericDTO<Client> {
         private Long id;
 
-    @NotBlank(message = "address can't be null")
+    @NotBlank(message = "address es obligatorio")
     private String address;
 
-    @NotNull(message = "postalCode can't be null")
+    @NotNull(message = "postalCode es obligatorio")
     private Integer postalCode;
 
-    @NotBlank(message = "city can't be null")
+    @NotBlank(message = "city es obligatorio")
     private String city;
 
-    @NotBlank(message = "province can't be null")
+    @NotBlank(message = "province es obligatorio")
     private String province;
 
-    @NotBlank(message = "phone1 can't be null")
+    @NotBlank(message = "phone1 es obligatorio")
     private String phone1;
 
     private String phone2;
 
-    @NotBlank(message = "document can't be null")
+    @NotBlank(message = "document es obligatorio")
     private String document;
 
     private List<FormDTO> forms;

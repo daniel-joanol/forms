@@ -3,6 +3,9 @@ package com.danieljoanol.forms.dto;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import com.danieljoanol.forms.entity.Shop;
 
 import lombok.AllArgsConstructor;
@@ -17,15 +20,31 @@ import lombok.Setter;
 public class ShopDTO extends GenericDTO<Shop> {
     
     private Long id;
+
+    @NotBlank(message = "shopName es obligatorio")
     private String shopName;
+
+    @NotBlank(message = "ownerName es obligatorio")
     private String ownerName;
+
+    @NotBlank(message = "address es obligatorio")
     private String address;
+
+    @NotNull(message = "postalCode es obligatorio")
     private Integer postalCode;
+
+    @NotBlank(message = "city es obligatorio")
     private String city;
+
+    @NotBlank(message = "province es obligatorio")
     private String province;
+
+    @NotBlank(message = "phone1 es obligatorio")
     private String phone1;
     private String phone2;
     private String fax;
+
+    @NotBlank(message = "document es obligatorio")
     private String document;
     private String logo;
     private Set<ClientDTO> clients;
