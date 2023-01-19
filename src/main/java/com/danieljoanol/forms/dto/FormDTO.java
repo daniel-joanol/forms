@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.danieljoanol.forms.entity.Form;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,13 +18,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FormDTO extends GenericDTO<Form> {
-    
+
     private Long id;
 
     @NotBlank(message = "plate es obligatorio")
-    private String plate;    
-    
+    private String plate;
+
     private Integer fuel;
     private Integer kilometers;
 
@@ -32,7 +34,7 @@ public class FormDTO extends GenericDTO<Form> {
 
     @NotBlank(message = "brand es obligatorio")
     private String brand;
-    
+
     private String frame;
 
     @NotBlank(message = "chassis es obligatorio")
@@ -41,7 +43,7 @@ public class FormDTO extends GenericDTO<Form> {
 
     @NotNull(message = "date es obligatorio")
     private LocalDateTime date;
-    
+
     private Boolean openOrder;
     private String comments;
 
@@ -51,20 +53,22 @@ public class FormDTO extends GenericDTO<Form> {
     private Set<String> visibleDamages;
 
     public FormDTO(Form entity) {
-        this.id = entity.getId();
-        this.plate = entity.getPlate();
-        this.fuel = entity.getFuel();
-        this.kilometers = entity.getKilometers();
-        this.model = entity.getModel();
-        this.brand = entity.getBrand();
-        this.frame = entity.getFrame();
-        this.chassis = entity.getChassis();
-        this.agent = entity.getAgent();
-        this.date = entity.getDate();
-        this.openOrder = entity.getOpenOrder();
-        this.comments = entity.getComments();
-        this.pdfUrl = entity.getPdfUrl();
-        this.visibleDamages = entity.getVisibleDamages();
+        if (entity != null) {
+            this.id = entity.getId();
+            this.plate = entity.getPlate();
+            this.fuel = entity.getFuel();
+            this.kilometers = entity.getKilometers();
+            this.model = entity.getModel();
+            this.brand = entity.getBrand();
+            this.frame = entity.getFrame();
+            this.chassis = entity.getChassis();
+            this.agent = entity.getAgent();
+            this.date = entity.getDate();
+            this.openOrder = entity.getOpenOrder();
+            this.comments = entity.getComments();
+            this.pdfUrl = entity.getPdfUrl();
+            this.visibleDamages = entity.getVisibleDamages();
+        }
     }
 
     @Override
@@ -87,5 +91,4 @@ public class FormDTO extends GenericDTO<Form> {
         return entity;
     }
 
-    
 }

@@ -15,7 +15,7 @@ import lombok.Setter;
 public class AuthenticationRequest {
     
     @NotBlank(message = "email es obligatorio")
-    private String email;
+    private String username;
 
     @NotEmpty(message = "password es obligatorio")
     private String password;

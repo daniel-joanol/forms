@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.danieljoanol.forms.entity.User;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,12 +16,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO extends GenericDTO<User> {
 
     private Long id;
     private String firstName;
     private String lastName;
-    private String email;
+    private String username;
     private String password;
     private boolean isEnabled;
     private LocalDate nextPayment;
@@ -28,15 +30,17 @@ public class UserDTO extends GenericDTO<User> {
     private Set<RoleDTO> roles;
 
     public UserDTO(User entity) {
-        this.id = entity.getId();
-        this.firstName = entity.getFirstName();
-        this.lastName = entity.getLastName();
-        this.email = entity.getEmail();
-        this.password = entity.getPassword();
-        this.isEnabled = entity.isEnabled();
-        this.nextPayment = entity.getNextPayment();
-        this.shop = new ShopDTO(entity.getShop());
-        this.roles = entity.getRoles().stream().map(r -> new RoleDTO(r)).collect(Collectors.toSet());
+        if (entity != null) {
+            this.id = entity.getId();
+            this.firstName = entity.getFirstName();
+            this.lastName = entity.getLastName();
+            this.username = entity.getUsername();
+            this.password = entity.getPassword();
+            this.isEnabled = entity.isEnabled();
+            this.nextPayment = entity.getNextPayment();
+            this.shop = new ShopDTO(entity.getShop());
+            this.roles = entity.getRoles().stream().map(r -> new RoleDTO(r)).collect(Collectors.toSet());
+        }
     }
 
     @Override
@@ -45,7 +49,7 @@ public class UserDTO extends GenericDTO<User> {
         entity.setId(this.id);
         entity.setFirstName(this.firstName);
         entity.setLastName(this.lastName);
-        entity.setEmail(this.email);
+        entity.setUsername(this.username);
         entity.setPassword(this.password);
         entity.setEnabled(this.isEnabled);
         entity.setNextPayment(this.nextPayment);

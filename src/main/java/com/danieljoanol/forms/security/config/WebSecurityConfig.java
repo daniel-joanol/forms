@@ -1,4 +1,4 @@
-package com.danieljoanol.forms.config;
+package com.danieljoanol.forms.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,9 +13,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.danieljoanol.forms.security.AuthEntryPointJwt;
-import com.danieljoanol.forms.security.AuthTokenFilter;
-import com.danieljoanol.forms.security.UserDetailsServiceImpl;
+import com.danieljoanol.forms.security.jwt.JwtAuthEntryPoint;
+import com.danieljoanol.forms.security.jwt.JwtRequestFilter;
+import com.danieljoanol.forms.security.service.UserDetailsServiceImpl;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,13 +23,13 @@ import lombok.RequiredArgsConstructor;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-    
+
     private final UserDetailsServiceImpl userDetailsService;
-    private final AuthEntryPointJwt entryPoint;
+    private final JwtAuthEntryPoint entryPoint;
 
     @Bean
-    public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter();
+    public JwtRequestFilter authenticationJwtTokenFilter() {
+        return new JwtRequestFilter();
     }
 
     @Bean
@@ -56,7 +56,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(entryPoint).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and();
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.headers().frameOptions().sameOrigin();
         http.authenticationProvider(authenticationProvider());

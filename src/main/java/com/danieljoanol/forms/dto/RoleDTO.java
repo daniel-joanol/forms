@@ -1,7 +1,7 @@
 package com.danieljoanol.forms.dto;
 
 import com.danieljoanol.forms.entity.Role;
-import com.danieljoanol.forms.entity.enums.ERole;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,14 +12,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoleDTO extends GenericDTO<Role> {
-    
+
     private long id;
-    private ERole name;
+    private String name;
 
     public RoleDTO(Role entity) {
-        this.id = entity.getId();
-        this.name = entity.getName();
+        if (entity != null) {
+            this.id = entity.getId();
+            this.name = entity.getName();
+        }
     }
 
     @Override
@@ -29,5 +32,5 @@ public class RoleDTO extends GenericDTO<Role> {
         entity.setName(this.name);
         return entity;
     }
-    
+
 }

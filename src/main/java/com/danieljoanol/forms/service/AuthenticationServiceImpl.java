@@ -19,8 +19,7 @@ import com.danieljoanol.forms.controller.request.RegisterRequest;
 import com.danieljoanol.forms.controller.response.AuthenticationResponse;
 import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.entity.User;
-import com.danieljoanol.forms.entity.enums.ERole;
-import com.danieljoanol.forms.security.JwtUtils;
+import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,43 +30,45 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserService userService;
     private final RoleService roleService;
     private final PasswordEncoder encoder;
-    private final JwtUtils jwtUtils;
+    private final JwtTokenUtil jwtTokenUtils;
     private final AuthenticationManager authManager;
 
     @Override
     public AuthenticationResponse login(AuthenticationRequest request) throws AuthenticationException {
 
-        Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        User user = (User) authentication.getPrincipal();
-
+        User user = userService.findByUsername(request.getUsername());
         if (!user.isEnabled()) {
             throw new AuthenticationException(
                     "El usuario " + user.getUsername() + " está bloqueado. Consulte el administrador");
         }
 
-        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(user);
-        Set<String> roles = user.getAuthorities().stream().map(i -> i.getAuthority()).collect(Collectors.toSet());
-
-        return AuthenticationResponse.builder().email(user.getEmail()).firstName(user.getFirstName())
-                .lastName(user.getLastName()).roles(roles).token(jwtCookie.toString()).build();
+        Authentication authentication = authManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtTokenUtils.generateJwtToken(authentication);
+        
+        return AuthenticationResponse.builder()
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .roles(user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()))
+                .token(jwt)
+                .build();
     }
 
     @Override
     public void register(RegisterRequest request) {
 
-        if (userService.existsByEmail(request.getEmail())) {
+        if (userService.existsByUsername(request.getUsername())) {
             throw new DuplicateKeyException("Username ya existe");
         }
 
-        Role userRole = roleService.findByName(ERole.USER);
+        Role userRole = roleService.findByName("USER");
 
         User user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
-                .email(request.getEmail())
+                .username(request.getUsername())
                 .password(encoder.encode(request.getPassword()))
                 .roles(Set.of(userRole))
                 .isEnabled(false)
@@ -78,7 +79,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public ResponseCookie logout() {
-        return jwtUtils.getCleanJwtCookie();
+        //TODO: logout
+        return null;
     }
 
 }

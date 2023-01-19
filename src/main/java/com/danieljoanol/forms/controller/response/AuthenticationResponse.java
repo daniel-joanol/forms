@@ -15,7 +15,7 @@ import lombok.Setter;
 @Builder
 public class AuthenticationResponse {
     
-    private String email;
+    private String username;
     private String firstName;
     private String lastName;
     private Set<String> roles;

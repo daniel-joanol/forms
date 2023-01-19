@@ -6,7 +6,7 @@ import com.danieljoanol.forms.entity.User;
 
 public interface UserRepository extends GenericRepository<User> {
     
-    Optional<User> findByEmail(String email);
-    Boolean existsByEmail(String email);
+    Optional<User> findByUsername(String username);
+    Boolean existsByUsername(String username);
 
 }

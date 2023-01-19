@@ -8,6 +8,7 @@ import com.danieljoanol.forms.assembler.ShopAssembler;
 import com.danieljoanol.forms.constants.Url;
 import com.danieljoanol.forms.dto.ShopDTO;
 import com.danieljoanol.forms.entity.Shop;
+import com.danieljoanol.forms.repository.ShopRepository;
 import com.danieljoanol.forms.service.ShopService;
 
 @RestController
@@ -17,8 +18,8 @@ public class ShopController extends GenericController<Shop, ShopDTO> {
     @Autowired
     private ShopService shopService;
 
-    public ShopController(ShopService shopService, ShopAssembler shopAssembler) {
-        super(null, shopAssembler);
+    public ShopController(ShopRepository shopRepository, ShopAssembler shopAssembler) {
+        super(shopRepository, shopAssembler);
     }
 
 }

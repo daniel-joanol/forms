@@ -4,6 +4,6 @@ import com.danieljoanol.forms.entity.User;
 
 public interface UserService extends GenericService<User> {
     
-    User findByEmail(String email);
-    Boolean existsByEmail(String email);
+    User findByUsername(String username);
+    Boolean existsByUsername(String username);
 }
