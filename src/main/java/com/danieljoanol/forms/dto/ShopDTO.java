@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.danieljoanol.forms.entity.Shop;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,8 +18,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShopDTO extends GenericDTO<Shop> {
-    
+
     private Long id;
 
     @NotBlank(message = "shopName es obligatorio")
@@ -50,19 +52,21 @@ public class ShopDTO extends GenericDTO<Shop> {
     private Set<ClientDTO> clients;
 
     public ShopDTO(Shop entity) {
-        this.id = entity.getId();
-        this.shopName = entity.getShopName();
-        this.ownerName = entity.getOwnerName();
-        this.address = entity.getAddress();
-        this.postalCode = entity.getPostalCode();
-        this.city = entity.getCity();
-        this.province = entity.getProvince();
-        this.phone1 = entity.getPhone1();
-        this.phone2 = entity.getPhone2();
-        this.fax = entity.getFax();
-        this.document = entity.getDocument();
-        this.logo = entity.getLogo();
-        this.clients = entity.getClients().stream().map(c -> new ClientDTO(c)).collect(Collectors.toSet());
+        if (entity != null) {
+            this.id = entity.getId();
+            this.shopName = entity.getShopName();
+            this.ownerName = entity.getOwnerName();
+            this.address = entity.getAddress();
+            this.postalCode = entity.getPostalCode();
+            this.city = entity.getCity();
+            this.province = entity.getProvince();
+            this.phone1 = entity.getPhone1();
+            this.phone2 = entity.getPhone2();
+            this.fax = entity.getFax();
+            this.document = entity.getDocument();
+            this.logo = entity.getLogo();
+            this.clients = entity.getClients().stream().map(c -> new ClientDTO(c)).collect(Collectors.toSet());
+        }
     }
 
     @Override

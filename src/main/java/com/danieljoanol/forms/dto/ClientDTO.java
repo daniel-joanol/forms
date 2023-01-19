@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import com.danieljoanol.forms.entity.Client;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,8 +18,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientDTO extends GenericDTO<Client> {
-        private Long id;
+    private Long id;
 
     @NotBlank(message = "address es obligatorio")
     private String address;
@@ -43,15 +45,17 @@ public class ClientDTO extends GenericDTO<Client> {
     private List<FormDTO> forms;
 
     public ClientDTO(Client entity) {
-        this.id = entity.getId();
-        this.address = entity.getAddress();
-        this.postalCode = entity.getPostalCode();
-        this.city = entity.getCity();
-        this.province = entity.getProvince();
-        this.phone1 = entity.getPhone1();
-        this.phone2 = entity.getPhone2();
-        this.document = entity.getDocument();
-        this.forms = entity.getForms().stream().map(f -> new FormDTO(f)).collect(Collectors.toList());
+        if (entity != null) {
+            this.id = entity.getId();
+            this.address = entity.getAddress();
+            this.postalCode = entity.getPostalCode();
+            this.city = entity.getCity();
+            this.province = entity.getProvince();
+            this.phone1 = entity.getPhone1();
+            this.phone2 = entity.getPhone2();
+            this.document = entity.getDocument();
+            this.forms = entity.getForms().stream().map(f -> new FormDTO(f)).collect(Collectors.toList());
+        }
     }
 
     @Override

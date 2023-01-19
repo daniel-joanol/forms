@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.danieljoanol.forms.entity.User;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO extends GenericDTO<User> {
 
     private Long id;
@@ -28,15 +30,17 @@ public class UserDTO extends GenericDTO<User> {
     private Set<RoleDTO> roles;
 
     public UserDTO(User entity) {
-        this.id = entity.getId();
-        this.firstName = entity.getFirstName();
-        this.lastName = entity.getLastName();
-        this.username = entity.getUsername();
-        this.password = entity.getPassword();
-        this.isEnabled = entity.isEnabled();
-        this.nextPayment = entity.getNextPayment();
-        this.shop = new ShopDTO(entity.getShop());
-        this.roles = entity.getRoles().stream().map(r -> new RoleDTO(r)).collect(Collectors.toSet());
+        if (entity != null) {
+            this.id = entity.getId();
+            this.firstName = entity.getFirstName();
+            this.lastName = entity.getLastName();
+            this.username = entity.getUsername();
+            this.password = entity.getPassword();
+            this.isEnabled = entity.isEnabled();
+            this.nextPayment = entity.getNextPayment();
+            this.shop = new ShopDTO(entity.getShop());
+            this.roles = entity.getRoles().stream().map(r -> new RoleDTO(r)).collect(Collectors.toSet());
+        }
     }
 
     @Override
