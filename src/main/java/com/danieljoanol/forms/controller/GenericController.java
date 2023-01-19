@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasRole('ROLE_USER')")
 @SecurityRequirement(name = "Bearer Authentication")
 public abstract class GenericController<T extends GenericEntity<T>, U extends GenericDTO> {
 
