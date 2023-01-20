@@ -21,33 +21,34 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FormDTO extends GenericDTO<Form> {
 
+    @NotNull(message = "#{Message.notNull('id')}")
     private Long id;
 
-    @NotBlank(message = "plate es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('plate')}")
     private String plate;
 
     private Integer fuel;
     private Integer kilometers;
 
-    @NotBlank(message = "model es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('model')}")
     private String model;
 
-    @NotBlank(message = "brand es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('brand')}")
     private String brand;
 
     private String frame;
 
-    @NotBlank(message = "chassis es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('chassis')}")
     private String chassis;
     private String agent;
 
-    @NotNull(message = "date es obligatorio")
+    @NotNull(message = "#{Message.notNull('date')}")
     private LocalDateTime date;
 
     private Boolean openOrder;
     private String comments;
 
-    @NotBlank(message = "pdfUrl es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('pdfUrl')}")
     private String pdfUrl;
 
     private Set<String> visibleDamages;

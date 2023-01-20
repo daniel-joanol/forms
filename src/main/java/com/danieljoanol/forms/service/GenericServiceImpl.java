@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.entity.GenericEntity;
 import com.danieljoanol.forms.repository.GenericRepository;
 
@@ -26,7 +27,7 @@ public abstract class GenericServiceImpl<T extends GenericEntity<T>> {
 
     public T get(Long id) {
         return repository.findByIdAndIsEnabled(id, true)
-            .orElseThrow(() -> new EntityNotFoundException("Id " + id + " no encontrado"));
+            .orElseThrow(() -> new EntityNotFoundException(Message.idNotFound(id)));
     }
 
     public T update(T update) {

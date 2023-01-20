@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.controller.request.AuthenticationRequest;
 import com.danieljoanol.forms.controller.request.RegisterRequest;
 import com.danieljoanol.forms.controller.response.AuthenticationResponse;
@@ -38,8 +39,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         User user = userService.findByUsername(request.getUsername());
         if (!user.isEnabled()) {
-            throw new AuthenticationException(
-                    "El usuario " + user.getUsername() + " está bloqueado. Consulte el administrador");
+            throw new AuthenticationException(Message.userBlocked(request.getUsername()));
         }
 
         Authentication authentication = authManager.authenticate(
@@ -60,7 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public void register(RegisterRequest request) {
 
         if (userService.existsByUsername(request.getUsername())) {
-            throw new DuplicateKeyException("Username ya existe");
+            throw new DuplicateKeyException(Message.duplicateUsername());
         }
 
         Role userRole = roleService.findByName("USER");

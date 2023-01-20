@@ -20,26 +20,28 @@ import lombok.Setter;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientDTO extends GenericDTO<Client> {
+    
+    @NotNull(message = "#{Message.notNull('id')}")
     private Long id;
 
-    @NotBlank(message = "address es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('address')}")
     private String address;
 
-    @NotNull(message = "postalCode es obligatorio")
+    @NotNull(message = "#{Message.notNull('postalCode')}")
     private Integer postalCode;
 
-    @NotBlank(message = "city es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('city')}")
     private String city;
 
-    @NotBlank(message = "province es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('province')}")
     private String province;
 
-    @NotBlank(message = "phone1 es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('phone1')}")
     private String phone1;
 
     private String phone2;
 
-    @NotBlank(message = "document es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('document')}")
     private String document;
 
     private List<FormDTO> forms;

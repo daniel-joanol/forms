@@ -21,32 +21,33 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShopDTO extends GenericDTO<Shop> {
 
+    @NotNull(message = "#{Message.notNull('id')}")
     private Long id;
 
-    @NotBlank(message = "shopName es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('shopName')}")
     private String shopName;
 
-    @NotBlank(message = "ownerName es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('ownerName')}")
     private String ownerName;
 
-    @NotBlank(message = "address es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('address')}")
     private String address;
 
-    @NotNull(message = "postalCode es obligatorio")
+    @NotNull(message = "#{Message.notNull('postalCode')}")
     private Integer postalCode;
 
-    @NotBlank(message = "city es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('city')}")
     private String city;
 
-    @NotBlank(message = "province es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('province')}")
     private String province;
 
-    @NotBlank(message = "phone1 es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('phone1')}")
     private String phone1;
     private String phone2;
     private String fax;
 
-    @NotBlank(message = "document es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('document')}")
     private String document;
     private String logo;
     private Set<ClientDTO> clients;

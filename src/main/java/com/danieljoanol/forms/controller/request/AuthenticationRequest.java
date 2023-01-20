@@ -19,5 +19,4 @@ public class AuthenticationRequest {
     @NotBlank(message = "#{Message.notBlank('password')}")
     private String password;
     
-    //TODO: add Message to DTOs
 }

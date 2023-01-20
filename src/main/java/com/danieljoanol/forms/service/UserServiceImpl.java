@@ -3,6 +3,7 @@ package com.danieljoanol.forms.service;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.controller.request.user.NamesUpdateRequest;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.repository.UserRepository;
@@ -25,7 +26,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     @Override
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Username no encontrado"));
+                .orElseThrow(() -> new UsernameNotFoundException(Message.usernameNotFound()));
     }
 
     @Override

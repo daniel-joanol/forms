@@ -1,7 +1,6 @@
 package com.danieljoanol.forms.controller.request;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,16 +13,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class RegisterRequest {
     
-    @NotBlank(message = "firstName es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('firstName')}")
     private String firstName;
 
-    @NotBlank(message = "lastName es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('lastName')}")
     private String lastName;
 
-    @NotBlank(message = "username es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('username')}")
     private String username;
 
-    @NotEmpty(message = "password es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('password')}")
     private String password;
 
 }

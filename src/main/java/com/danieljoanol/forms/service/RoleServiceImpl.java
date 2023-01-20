@@ -4,6 +4,7 @@ import javax.persistence.EntityNotFoundException;
 
 import org.springframework.stereotype.Service;
 
+import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.repository.RoleRepository;
 
@@ -17,7 +18,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role findByName(String name) {
-        return roleRepository.findByName(name).orElseThrow(() -> new EntityNotFoundException("Entidad no encontrada"));
+        return roleRepository.findByName(name)
+                .orElseThrow(() -> new EntityNotFoundException(Message.entityNotFound()));
     }
 
 }
