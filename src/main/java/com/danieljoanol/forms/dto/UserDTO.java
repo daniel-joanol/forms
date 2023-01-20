@@ -1,6 +1,7 @@
 package com.danieljoanol.forms.dto;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ public class UserDTO extends GenericDTO<User> {
     private LocalDate nextPayment;
     private ShopDTO shop;
     private Set<RoleDTO> roles;
+    private Date disabledDate;
 
     public UserDTO(User entity) {
         if (entity != null) {
@@ -40,6 +42,7 @@ public class UserDTO extends GenericDTO<User> {
             this.nextPayment = entity.getNextPayment();
             this.shop = new ShopDTO(entity.getShop());
             this.roles = entity.getRoles().stream().map(r -> new RoleDTO(r)).collect(Collectors.toSet());
+            this.disabledDate = entity.getDisabledDate();
         }
     }
 
@@ -55,6 +58,7 @@ public class UserDTO extends GenericDTO<User> {
         entity.setNextPayment(this.nextPayment);
         entity.setShop(this.shop.toEntity());
         entity.setRoles(this.roles.stream().map(RoleDTO::toEntity).collect(Collectors.toSet()));
+        entity.setDisabledDate(this.disabledDate);
         return entity;
     }
 

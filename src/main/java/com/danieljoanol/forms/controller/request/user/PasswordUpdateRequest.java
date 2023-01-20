@@ -1,4 +1,4 @@
-package com.danieljoanol.forms.controller.request;
+package com.danieljoanol.forms.controller.request.user;
 
 import javax.validation.constraints.NotBlank;
 
@@ -7,17 +7,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationRequest {
+@NoArgsConstructor
+@Setter
+@Getter
+public class PasswordUpdateRequest {
     
     @NotBlank(message = "#{Message.notBlank('email')}")
-    private String username;
+    private String email;
 
     @NotBlank(message = "#{Message.notBlank('password')}")
     private String password;
-    
-    //TODO: add Message to DTOs
+
 }
