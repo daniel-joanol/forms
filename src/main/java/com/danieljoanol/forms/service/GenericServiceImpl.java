@@ -27,7 +27,7 @@ public abstract class GenericServiceImpl<T extends GenericEntity<T>> {
 
     public T get(Long id) {
         return repository.findByIdAndIsEnabled(id, true)
-            .orElseThrow(() -> new EntityNotFoundException(Message.idNotFound(id)));
+            .orElseThrow(() -> new EntityNotFoundException(Message.ID_NOT_FOUND));
     }
 
     public T update(T update) {

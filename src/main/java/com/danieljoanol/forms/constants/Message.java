@@ -4,6 +4,12 @@ public class Message {
 
     public static final String MESSAGE_CHECK_EMAIL = "Revisa tu bandeja de entrada del correo electrónico";
     public static final String LOG_OUT = "Has sido desconectado";
+    
+    public static final String USERNAME_NOT_FOUND = "Username not found";
+    public static final String ENTITY_NOT_FOUND = "Entity not found";
+    public static final String DUPLICATE_USERNAME = "Username already being used";
+    public static final String ID_NOT_FOUND = "Id not found";
+    public static final String NOT_AUTHORIZED = "Not authorized!";
 
     private Message() {
     }
@@ -16,27 +22,8 @@ public class Message {
         return param + " can't be null";
     }
 
-    public static String usernameNotFound() {
-        return "Username not found";
-    }
-
-    public static String entityNotFound() {
-        return "Entity not found";
-    }
-
-    public static String idNotFound(Long id) {
-        return "Id " + id + " not found";
-    }
-
-    public static String duplicateUsername() {
-        return "Username already being used";
-    }
-
     public static String userBlocked(String username) {
         return  "El usuario " + username + " está bloqueado. Consulte el administrador";
     }
 
-    public static String notAuthorized() {
-        return "Not authorized!";
-    }
 }

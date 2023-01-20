@@ -26,7 +26,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     @Override
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(Message.usernameNotFound()));
+                .orElseThrow(() -> new UsernameNotFoundException(Message.USERNAME_NOT_FOUND));
     }
 
     @Override

@@ -60,7 +60,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public void register(RegisterRequest request) {
 
         if (userService.existsByUsername(request.getUsername())) {
-            throw new DuplicateKeyException(Message.duplicateUsername());
+            throw new DuplicateKeyException(Message.DUPLICATE_USERNAME);
         }
 
         Role userRole = roleService.findByName("USER");
