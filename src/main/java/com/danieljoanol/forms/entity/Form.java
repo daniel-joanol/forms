@@ -1,6 +1,7 @@
 package com.danieljoanol.forms.entity;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,4 +46,5 @@ public class Form implements GenericEntity<Form> {
     private Set<String> visibleDamages = new HashSet<>();
 
     private boolean isEnabled;
+    private Date disabledDate;
 }

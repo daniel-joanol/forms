@@ -14,4 +14,6 @@ public interface GenericService<T> {
 
     public void delete(Long id);
 
+    public T enable(Long id);
+
 }
