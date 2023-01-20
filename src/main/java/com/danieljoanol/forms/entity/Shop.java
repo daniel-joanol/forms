@@ -42,4 +42,5 @@ public class Shop implements GenericEntity<Shop> {
     @OneToMany
     private Set<Client> clients = new HashSet<>();
 
+    private boolean isEnabled;
 }

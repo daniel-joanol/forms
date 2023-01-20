@@ -7,15 +7,13 @@ import org.springframework.stereotype.Service;
 import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.repository.RoleRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
-public class RoleServiceImpl extends GenericServiceImpl<Role> implements RoleService {
+@RequiredArgsConstructor
+public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
-
-    public RoleServiceImpl(RoleRepository roleRepository) {
-        super(roleRepository);
-        this.roleRepository = roleRepository;
-    }
 
     @Override
     public Role findByName(String name) {

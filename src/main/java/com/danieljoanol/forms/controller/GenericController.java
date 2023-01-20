@@ -8,8 +8,6 @@ import com.danieljoanol.forms.service.GenericServiceImpl;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
-import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -68,13 +66,6 @@ public abstract class GenericController<T extends GenericEntity<T>, U extends Ge
         T entity = this.assembler.convertFromDTO(created);
         U vo = this.assembler.convertToDTO(service.create(entity));
         return ResponseEntity.ok(vo);
-    }
-
-    @PostMapping("/list")
-    public ResponseEntity<List<U>> createWithList(@RequestBody @Valid List<U> tList) {
-        List<T> entities = this.assembler.convertFromDTO(tList);
-        List<U> vos = this.assembler.convertToDTO(service.create(entities));
-        return ResponseEntity.ok(vos);
     }
 
     @DeleteMapping("/{id}")

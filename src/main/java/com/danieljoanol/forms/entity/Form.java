@@ -44,4 +44,5 @@ public class Form implements GenericEntity<Form> {
     @ElementCollection
     private Set<String> visibleDamages = new HashSet<>();
 
+    private boolean isEnabled;
 }

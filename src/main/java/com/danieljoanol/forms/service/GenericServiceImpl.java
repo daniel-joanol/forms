@@ -1,8 +1,5 @@
 package com.danieljoanol.forms.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.data.domain.Page;
@@ -22,11 +19,11 @@ public abstract class GenericServiceImpl<T extends GenericEntity<T>> {
 
     public Page<T> getAll(Integer pageNumber, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return repository.findAll(pageable);
+        return repository.findByIsEnabled(pageable, true);
     }
 
     public T get(Long id) {
-        return repository.findById(id)
+        return repository.findByIdAndIsEnabled(id, true)
             .orElseThrow(() -> new EntityNotFoundException("Id " + id + " no encontrado"));
     }
 
@@ -35,21 +32,14 @@ public abstract class GenericServiceImpl<T extends GenericEntity<T>> {
     }
 
     public T create(T create) {
+        create.setId(null);
         return repository.save(create);
     }
 
-    public List<T> create(List<T> tList) {
-        List<T> response = new ArrayList<>();
-        for (T t : tList) {
-            response.add(create(t));
-        }
-        return response;
-    }
-
     public void delete(Long id) {
-        // Check if the entity exists
-        get(id);
-        repository.deleteById(id);
+        T entity = get(id);
+        entity.setEnabled(false);
+        update(entity);
     }
 
 }

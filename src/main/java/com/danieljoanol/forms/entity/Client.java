@@ -37,5 +37,7 @@ public class Client implements GenericEntity<Client> {
 
     @OneToMany
     private List<Form> forms = new ArrayList<>();
+
+    private boolean isEnabled;
     
 }
