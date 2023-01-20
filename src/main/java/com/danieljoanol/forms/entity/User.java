@@ -43,7 +43,8 @@ public class User implements GenericEntity<User> {
     private String username;
     private String password;
 
-    private LocalDate nextPayment;
+    private LocalDate lastPayment;
+    private String comments;
 
     @ManyToOne
     private Shop shop;

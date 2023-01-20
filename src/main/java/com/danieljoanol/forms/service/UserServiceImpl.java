@@ -1,5 +1,7 @@
 package com.danieljoanol.forms.service;
 
+import java.time.LocalDate;
+
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,20 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         User entity = get(request.getId());
         entity.setFirstName(request.getFirstName());
         entity.setLastName(request.getLastName());
+        return update(entity);
+    }
+
+    @Override
+    public User updateComments(Long id, String comments) {
+        User entity = get(id);
+        entity.setComments(comments);
+        return update(entity);
+    }
+
+    @Override
+    public User updateLastPayment(Long id, LocalDate date) {
+        User entity = get(id);
+        entity.setLastPayment(date);
         return update(entity);
     }
 

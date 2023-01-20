@@ -26,10 +26,11 @@ public class UserDTO extends GenericDTO<User> {
     private String username;
     private String password;
     private boolean isEnabled;
-    private LocalDate nextPayment;
+    private LocalDate lastPayment;
     private ShopDTO shop;
     private Set<RoleDTO> roles;
     private Date disabledDate;
+    private String comments;
 
     public UserDTO(User entity) {
         if (entity != null) {
@@ -39,10 +40,11 @@ public class UserDTO extends GenericDTO<User> {
             this.username = entity.getUsername();
             this.password = entity.getPassword();
             this.isEnabled = entity.isEnabled();
-            this.nextPayment = entity.getNextPayment();
+            this.lastPayment = entity.getLastPayment();
             this.shop = new ShopDTO(entity.getShop());
             this.roles = entity.getRoles().stream().map(r -> new RoleDTO(r)).collect(Collectors.toSet());
             this.disabledDate = entity.getDisabledDate();
+            this.comments = entity.getComments();
         }
     }
 
@@ -55,10 +57,11 @@ public class UserDTO extends GenericDTO<User> {
         entity.setUsername(this.username);
         entity.setPassword(this.password);
         entity.setEnabled(this.isEnabled);
-        entity.setNextPayment(this.nextPayment);
+        entity.setLastPayment(this.lastPayment);
         entity.setShop(this.shop.toEntity());
         entity.setRoles(this.roles.stream().map(RoleDTO::toEntity).collect(Collectors.toSet()));
         entity.setDisabledDate(this.disabledDate);
+        entity.setComments(this.comments);
         return entity;
     }
 

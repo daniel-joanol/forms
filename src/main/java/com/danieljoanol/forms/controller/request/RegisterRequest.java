@@ -25,4 +25,6 @@ public class RegisterRequest {
     @NotBlank(message = "#{Message.notBlank('password')}")
     private String password;
 
+    // To be used when anyone can register, not just the admin
+
 }
