@@ -42,7 +42,7 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody @Valid RegisterRequest request) {
         authenticationService.register(request);
-        return ResponseEntity.ok().header("Content-Type", "application/text").body(Message.MESSAGE_CHECK_EMAIL);
+        return ResponseEntity.ok().header("Content-Type", "application/text").body(Message.CHECK_EMAIL);
         // TODO: implement email
     }
 

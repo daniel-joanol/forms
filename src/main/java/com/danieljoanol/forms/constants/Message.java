@@ -2,9 +2,10 @@ package com.danieljoanol.forms.constants;
 
 public class Message {
 
-    public static final String MESSAGE_CHECK_EMAIL = "Revisa tu bandeja de entrada del correo electrónico";
+    public static final String CHECK_EMAIL = "Revisa tu bandeja de entrada del correo electrónico";
+    public static final String SPARK_POST_ERROR = "Estamos teniendo problemas con el envío de emails. Por favor, intenta nuevamente más tarde";
     public static final String LOG_OUT = "Has sido desconectado";
-    
+
     public static final String USERNAME_NOT_FOUND = "Username not found";
     public static final String ENTITY_NOT_FOUND = "Entity not found";
     public static final String DUPLICATE_USERNAME = "Username already being used";
@@ -23,7 +24,7 @@ public class Message {
     }
 
     public static String userBlocked(String username) {
-        return  "El usuario " + username + " está bloqueado. Consulte el administrador";
+        return "El usuario " + username + " está bloqueado. Consulte el administrador";
     }
 
 }
