@@ -13,10 +13,10 @@ import lombok.Setter;
 @Getter
 public class CodeConfirmationRequest {
     
-    @NotNull(message = "#{Message.notNull('id')}")
+    @NotNull(message = "id {err.null}")
     private Long id;
 
-    @NotNull(message = "#{Message.notNull('code')}")
+    @NotNull(message = "code {err.null}")
     private int code;
 
 }

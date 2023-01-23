@@ -34,6 +34,7 @@ public class Client implements GenericEntity<Client> {
     private String province;
     private String phone1;
     private String phone2;
+    private String email;
     private String document;
 
     @OneToMany

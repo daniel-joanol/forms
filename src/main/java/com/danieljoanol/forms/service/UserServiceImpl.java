@@ -75,7 +75,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     @Override
     public String generatePasswordCode(PasswordUpdateRequest request) throws SparkPostException {
         User user = findByUsername(request.getEmail());
-        user.setNewPassword(request.getNewPassword());
+        user.setNewPassword(encoder.encode(request.getNewPassword()));
         user.setPasswordCode(generateCode());
         user.setPasswordTimeLimit(LocalDateTime.now().plusMinutes(timeLimit));
 
@@ -124,7 +124,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
             throw new CodeException(Message.CODE_EXPIRED);
         }
 
-        user.setPassword(encoder.encode(user.getNewPassword()));
+        user.setPassword(user.getNewPassword());
         user = update(user);
 
         return Message.UPDATED_PASSWORD;

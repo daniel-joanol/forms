@@ -1,5 +1,6 @@
 package com.danieljoanol.forms.controller.request;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
@@ -13,13 +14,14 @@ import lombok.Setter;
 @AllArgsConstructor
 public class RegisterRequest {
     
-    @NotBlank(message = "#{Message.notBlank('firstName')}")
+    @NotBlank(message = "firstName {err.blank}")
     private String firstName;
 
-    @NotBlank(message = "#{Message.notBlank('lastName')}")
+    @NotBlank(message = "firstName {err.blank}")
     private String lastName;
 
-    @NotBlank(message = "#{Message.notBlank('username')}")
+    @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
+            message = "{err.email}")
     private String username;
 
     @NotBlank(message = "#{Message.notBlank('password')}")
