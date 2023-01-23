@@ -1,6 +1,5 @@
 package com.danieljoanol.forms.controller;
 
-
 import javax.validation.Valid;
 
 import org.springframework.http.MediaType;
@@ -33,7 +32,6 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping(Url.USER)
 @SecurityRequirement(name = "Bearer Authentication")
-@PreAuthorize("hasRole('ROLE_USER')")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -42,6 +40,7 @@ public class UserController {
     @Operation(summary = "Get", description = "Method to get user")
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PublicUserResponse.class)))
     @ApiResponse(responseCode = "500", description = "System error")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<PublicUserResponse> get(@PathVariable Long id) {
         PublicUserResponse response = new PublicUserResponse(userService.get(id));
@@ -52,6 +51,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PublicUserResponse.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/names")
     public ResponseEntity<PublicUserResponse> updateNames(@RequestBody(required = true) @Valid NamesUpdateRequest request) {
         PublicUserResponse response = new PublicUserResponse(userService.updateNames(request));
@@ -73,6 +73,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = String.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/new/username")
     public ResponseEntity<String> newUsername(@RequestBody(required = true) @Valid UsernameUpdateRequest request)
             throws SparkPostException {
@@ -95,6 +96,7 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PublicUserResponse.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/confirm/username")
     public ResponseEntity<PublicUserResponse> confirmUsername(@RequestBody(required = true) @Valid CodeConfirmationRequest request)
             throws CodeException {
