@@ -58,23 +58,6 @@ public class UserDTO extends GenericDTO<User> {
         }
     }
 
-    public static UserDTO getPublicUserDTO(User entity) {
-        UserDTO publicDto = new UserDTO();
-
-        if (entity != null) {
-            publicDto.setId(entity.getId());
-            publicDto.setUsername(entity.getUsername());
-            publicDto.setFirstName(entity.getFirstName());
-            publicDto.setLastName(entity.getLastName());
-            publicDto.setLastPayment(entity.getLastPayment());
-            if (entity.getShop() != null) {
-                publicDto.setShop(new ShopDTO(entity.getShop()));
-            }
-        }
-
-        return publicDto;
-    }
-
     @Override
     public User toEntity() {
         User entity = new User();

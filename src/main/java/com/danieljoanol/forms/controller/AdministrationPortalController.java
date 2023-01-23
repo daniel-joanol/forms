@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -68,7 +69,7 @@ public class AdministrationPortalController {
     @ApiResponse(responseCode = "204", description = "No content")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
-    @PutMapping("/disable/{id}")
+    @DeleteMapping("/disable/{id}")
     public ResponseEntity<?> disable(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
