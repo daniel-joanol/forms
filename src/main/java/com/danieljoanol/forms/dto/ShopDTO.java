@@ -21,33 +21,33 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShopDTO extends GenericDTO<Shop> {
 
-    @NotNull(message = "#{Message.notNull('id')}")
+    @NotNull(message = "id {err.null}")
     private Long id;
 
-    @NotBlank(message = "#{Message.notBlank('shopName')}")
+    @NotBlank(message = "shopName {err.blank}")
     private String shopName;
 
-    @NotBlank(message = "#{Message.notBlank('ownerName')}")
+    @NotBlank(message = "ownerName {err.blank}")
     private String ownerName;
 
-    @NotBlank(message = "#{Message.notBlank('address')}")
+    @NotBlank(message = "address {err.blank}")
     private String address;
 
-    @NotNull(message = "#{Message.notNull('postalCode')}")
+    @NotNull(message = "postalCode {err.null}")
     private Integer postalCode;
 
-    @NotBlank(message = "#{Message.notBlank('city')}")
+    @NotBlank(message = "city {err.blank}")
     private String city;
 
-    @NotBlank(message = "#{Message.notBlank('province')}")
+    @NotBlank(message = "province {err.blank}")
     private String province;
 
-    @NotBlank(message = "#{Message.notBlank('phone1')}")
+    @NotBlank(message = "message {err.blank}")
     private String phone1;
     private String phone2;
     private String fax;
 
-    @NotBlank(message = "#{Message.notBlank('document')}")
+    @NotBlank(message = "document {err.blank}")
     private String document;
     private String logo;
     private Set<ClientDTO> clients;

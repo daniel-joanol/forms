@@ -16,13 +16,13 @@ import lombok.Setter;
 @Getter
 public class NamesUpdateRequest {
     
-    @NotNull(message = "#{Message.notNull('id')}")
+    @NotNull(message = "id {err.null}")
     private Long id;
 
-    @NotBlank(message = "#{Message.notBlank('firstName')}")
+    @NotBlank(message = "firstName {err.blank}")
     private String firstName;
 
-    @NotBlank(message = "#{Message.notBlank('lastName')}")
+    @NotBlank(message = "lastName {err.blank}")
     private String lastName;
 
 }

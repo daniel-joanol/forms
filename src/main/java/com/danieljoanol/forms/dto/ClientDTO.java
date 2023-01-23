@@ -3,6 +3,7 @@ package com.danieljoanol.forms.dto;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -21,27 +22,31 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientDTO extends GenericDTO<Client> {
     
-    @NotNull(message = "#{Message.notNull('id')}")
+    @NotNull(message = "id {err.null}")
     private Long id;
 
-    @NotBlank(message = "#{Message.notBlank('address')}")
+    @NotBlank(message = "address {err.blank}")
     private String address;
 
-    @NotNull(message = "#{Message.notNull('postalCode')}")
+    @NotNull(message = "postalCode {err.null}")
     private Integer postalCode;
 
-    @NotBlank(message = "#{Message.notBlank('city')}")
+    @NotBlank(message = "city {err.blank}")
     private String city;
 
-    @NotBlank(message = "#{Message.notBlank('province')}")
+    @NotBlank(message = "province {err.blank}")
     private String province;
 
-    @NotBlank(message = "#{Message.notBlank('phone1')}")
+    @NotBlank(message = "phone1 {err.blank}")
     private String phone1;
 
     private String phone2;
 
-    @NotBlank(message = "#{Message.notBlank('document')}")
+    @Email(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
+            message = "{err.email}")
+    private String email;
+
+    @NotBlank(message = "document {err.blank}")
     private String document;
 
     private List<FormDTO> forms;
@@ -57,6 +62,7 @@ public class ClientDTO extends GenericDTO<Client> {
             this.phone2 = entity.getPhone2();
             this.document = entity.getDocument();
             this.forms = entity.getForms().stream().map(f -> new FormDTO(f)).collect(Collectors.toList());
+            this.email = entity.getEmail();
         }
     }
 
@@ -71,6 +77,7 @@ public class ClientDTO extends GenericDTO<Client> {
         entity.setPhone1(this.phone1);
         entity.setPhone2(this.phone2);
         entity.setDocument(this.document);
+        entity.setEmail(this.email);
         entity.setForms(this.forms.stream().map(FormDTO::toEntity).collect(Collectors.toList()));
         return entity;
     }

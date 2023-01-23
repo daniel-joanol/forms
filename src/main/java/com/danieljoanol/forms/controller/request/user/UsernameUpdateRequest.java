@@ -14,10 +14,10 @@ import lombok.Setter;
 @Getter
 public class UsernameUpdateRequest {
     
-    @NotNull(message = "#{Message.notNull('id')}")
+    @NotNull(message = "id {err.null}")
     private Long id;
 
-    @NotBlank(message = "#{Message.notBlank('newUsername')}")
+    @NotBlank(message = "newUsername {err.blank}")
     private String newUsername;
     
 }
