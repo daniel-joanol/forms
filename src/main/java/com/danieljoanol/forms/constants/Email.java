@@ -1,11 +1,6 @@
 package com.danieljoanol.forms.constants;
 
-import org.springframework.beans.factory.annotation.Value;
-
 public class Email {
-
-    @Value("${forms.app.code.limit}")
-    private static Integer TIME_LIMIT;
     
     //TODO: change company name
     public static final String SIGNATURE = "Best regards, \nWorkshop Forms team";
@@ -13,10 +8,10 @@ public class Email {
     
     private Email() {}
 
-    public static String codeMessage(String firstName, int code) {
+    public static String codeMessage(String firstName, int code, int timeLimit) {
         return "Hola " + firstName + ", \n\nEl código de confirmación és " + code + ". \n" + 
                 "Inserte el código en la pantalla de confirmación para confirmar la operación." +
-                "\nEl código es válido por " + TIME_LIMIT + " minutos." +
+                "\nEl código es válido por " + timeLimit+ " minutos." +
                 "\n\n" + SIGNATURE;
     }
 }

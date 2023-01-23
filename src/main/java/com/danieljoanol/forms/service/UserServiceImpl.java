@@ -74,7 +74,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public String generatePasswordCode(PasswordUpdateRequest request) throws SparkPostException {
-        User user = findByUsername(request.getEmail());
+        User user = findByUsername(request.getUsername());
         user.setNewPassword(encoder.encode(request.getNewPassword()));
         user.setPasswordCode(generateCode());
         user.setPasswordTimeLimit(LocalDateTime.now().plusMinutes(timeLimit));
@@ -85,13 +85,13 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public String generateUsernameCode(UsernameUpdateRequest request) throws SparkPostException {
-        User user = get(request.getId());
+        User user = findByUsername(request.getActualUsername());
         user.setNewUsername(request.getNewUsername());
         user.setUsernameCode(generateCode());
         user.setUsernameTimeLimit(LocalDateTime.now().plusMinutes(timeLimit));
 
         user = update(user);
-        return sendEmail(user.getUsername(), user.getFirstName(), user.getUsernameCode());
+        return sendEmail(user.getNewUsername(), user.getFirstName(), user.getUsernameCode());
     }
 
     private int generateCode() {
@@ -103,7 +103,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         Boolean isEmailSent = sparkPostService.sendMesage(
                 username,
                 Email.CODE_TITLE,
-                Email.codeMessage(firstName, code));
+                Email.codeMessage(firstName, code, timeLimit));
 
         if (isEmailSent) {
             return Message.CHECK_EMAIL;
@@ -114,9 +114,9 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public String confirmNewPassword(CodeConfirmationRequest request) throws CodeException {
-        User user = get(request.getId());
+        User user = findByUsername(request.getUsername());
 
-        if (user.getPasswordCode() != request.getCode()) {
+        if (user.getPasswordCode() == null || user.getPasswordCode() != request.getCode()) {
             throw new CodeException(Message.INVALID_CODE);
         }
 
@@ -132,9 +132,9 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public User confirmNewUsername(CodeConfirmationRequest request) throws CodeException {
-        User user = get(request.getId());
+        User user = findByUsername(request.getUsername());
 
-        if (user.getUsernameCode() != request.getCode()) {
+        if (user.getUsernameCode() == null || user.getUsernameCode() != request.getCode()) {
             throw new CodeException(Message.INVALID_CODE);
         }
 
