@@ -1,6 +1,8 @@
 package com.danieljoanol.forms.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,8 +44,8 @@ public class User implements GenericEntity<User> {
     private String username;
     private String password;
 
-    private boolean isEnabled;
-    private LocalDate nextPayment;
+    private LocalDate lastPayment;
+    private String comments;
 
     @ManyToOne
     private Shop shop;
@@ -51,5 +53,15 @@ public class User implements GenericEntity<User> {
     @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    private boolean isEnabled;
+    private Date disabledDate;
+
+    private Integer passwordCode;
+    private Integer usernameCode;
+    private LocalDateTime passwordTimeLimit;
+    private LocalDateTime usernameTimeLimit;
+    private String newPassword;
+    private String newUsername;
 
 }

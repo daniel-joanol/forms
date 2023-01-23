@@ -1,6 +1,5 @@
 package com.danieljoanol.forms.security.service;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -10,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.repository.UserRepository;
 
@@ -24,7 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Username no encontrado"));
+                .orElseThrow(() -> new UsernameNotFoundException(Message.USERNAME_NOT_FOUND));
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(), user.getPassword(), getAuthorities(user));

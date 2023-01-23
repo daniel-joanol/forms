@@ -1,6 +1,7 @@
 package com.danieljoanol.forms.entity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -37,5 +38,8 @@ public class Client implements GenericEntity<Client> {
 
     @OneToMany
     private List<Form> forms = new ArrayList<>();
+
+    private boolean isEnabled;
+    private Date disabledDate;
     
 }

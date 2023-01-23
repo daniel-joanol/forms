@@ -10,6 +10,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+import com.danieljoanol.forms.constants.Message;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -21,7 +23,7 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {@Override
             AuthenticationException ex) throws IOException, ServletException {
         
         log.error("Unauthorized error: {}", ex.getMessage());
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "No autorizado!");
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, Message.NOT_AUTHORIZED);
         
     }
 

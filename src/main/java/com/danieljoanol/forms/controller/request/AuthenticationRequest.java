@@ -1,7 +1,6 @@
 package com.danieljoanol.forms.controller.request;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,10 +13,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AuthenticationRequest {
     
-    @NotBlank(message = "email es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('email')}")
     private String username;
 
-    @NotEmpty(message = "password es obligatorio")
+    @NotBlank(message = "#{Message.notBlank('password')}")
     private String password;
     
 }

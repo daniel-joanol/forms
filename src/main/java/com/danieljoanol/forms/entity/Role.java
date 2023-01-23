@@ -1,8 +1,6 @@
 package com.danieljoanol.forms.entity;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,7 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "role")
-public class Role implements GenericEntity<Role> {
+public class Role {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

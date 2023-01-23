@@ -1,5 +1,6 @@
 package com.danieljoanol.forms.entity;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,4 +43,6 @@ public class Shop implements GenericEntity<Shop> {
     @OneToMany
     private Set<Client> clients = new HashSet<>();
 
+    private boolean isEnabled;
+    private Date disabledDate;
 }

@@ -1,7 +1,5 @@
 package com.danieljoanol.forms.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 
 public interface GenericService<T> {
@@ -14,8 +12,8 @@ public interface GenericService<T> {
 
     public T create(T create);
 
-    public List<T> create(List<T> tList);
-
     public void delete(Long id);
+
+    public T enable(Long id);
 
 }

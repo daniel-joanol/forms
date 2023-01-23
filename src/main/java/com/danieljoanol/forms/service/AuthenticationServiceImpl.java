@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.controller.request.AuthenticationRequest;
 import com.danieljoanol.forms.controller.request.RegisterRequest;
 import com.danieljoanol.forms.controller.response.AuthenticationResponse;
@@ -38,8 +39,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         User user = userService.findByUsername(request.getUsername());
         if (!user.isEnabled()) {
-            throw new AuthenticationException(
-                    "El usuario " + user.getUsername() + " está bloqueado. Consulte el administrador");
+            throw new AuthenticationException(Message.userBlocked(request.getUsername()));
         }
 
         Authentication authentication = authManager.authenticate(
@@ -47,20 +47,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtTokenUtils.generateJwtToken(authentication);
         
-        return AuthenticationResponse.builder()
-                .username(user.getUsername())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .roles(user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()))
-                .token(jwt)
-                .build();
+        return new AuthenticationResponse(user, jwt);
     }
 
     @Override
     public void register(RegisterRequest request) {
 
         if (userService.existsByUsername(request.getUsername())) {
-            throw new DuplicateKeyException("Username ya existe");
+            throw new DuplicateKeyException(Message.DUPLICATE_USERNAME);
         }
 
         Role userRole = roleService.findByName("USER");
