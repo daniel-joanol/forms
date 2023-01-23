@@ -47,13 +47,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtTokenUtils.generateJwtToken(authentication);
         
-        return AuthenticationResponse.builder()
-                .username(user.getUsername())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .roles(user.getRoles().stream().map(Role::getName).collect(Collectors.toSet()))
-                .token(jwt)
-                .build();
+        return new AuthenticationResponse(user, jwt);
     }
 
     @Override

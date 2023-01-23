@@ -1,6 +1,7 @@
 package com.danieljoanol.forms.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,5 +56,12 @@ public class User implements GenericEntity<User> {
 
     private boolean isEnabled;
     private Date disabledDate;
+
+    private Integer passwordCode;
+    private Integer usernameCode;
+    private LocalDateTime passwordTimeLimit;
+    private LocalDateTime usernameTimeLimit;
+    private String newPassword;
+    private String newUsername;
 
 }

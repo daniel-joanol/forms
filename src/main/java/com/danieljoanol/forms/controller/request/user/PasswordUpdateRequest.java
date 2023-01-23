@@ -16,7 +16,7 @@ public class PasswordUpdateRequest {
     @NotBlank(message = "#{Message.notBlank('email')}")
     private String email;
 
-    @NotBlank(message = "#{Message.notBlank('password')}")
-    private String password;
+    @NotBlank(message = "#{Message.notBlank('newPassword')}")
+    private String newPassword;
 
 }
