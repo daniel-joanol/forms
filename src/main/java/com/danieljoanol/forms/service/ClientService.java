@@ -5,5 +5,5 @@ import com.danieljoanol.forms.exception.NoParentException;
 
 public interface ClientService extends GenericService<Client> {
     
-    public Client create(Client client) throws NoParentException;
+    public Client create(Client client, Long shopId) throws NoParentException;
 }

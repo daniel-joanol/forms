@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,11 +30,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @RequestMapping(Url.CLIENT)
 @SecurityRequirement(name = "Bearer Authentication")
 public class ClientController extends GenericController<Client, ClientDTO> {
-    
+
     private final ClientService clientService;
     private final ClientAssembler clientAssembler;
 
-    public ClientController(ClientRepository clientRepository, ClientAssembler clientAssembler, ClientService clientService) {
+    public ClientController(ClientRepository clientRepository, ClientAssembler clientAssembler,
+            ClientService clientService) {
         super(clientRepository, clientAssembler);
         this.clientService = clientService;
         this.clientAssembler = clientAssembler;
@@ -43,10 +45,11 @@ public class ClientController extends GenericController<Client, ClientDTO> {
     @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDTO.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
-    @PostMapping("/")
-    public ResponseEntity<ClientDTO> create(@RequestBody @Valid ClientDTO request) throws NoParentException {
+    @PostMapping("/{shopId}")
+    public ResponseEntity<ClientDTO> create(@RequestBody @Valid ClientDTO request, @PathVariable Long shopId)
+            throws NoParentException {
         Client entity = clientAssembler.convertFromDTO(request);
-        ClientDTO response = clientAssembler.convertToDTO(clientService.create(entity));
+        ClientDTO response = clientAssembler.convertToDTO(clientService.create(entity, shopId));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

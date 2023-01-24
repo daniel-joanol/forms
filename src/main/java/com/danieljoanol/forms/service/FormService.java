@@ -5,5 +5,5 @@ import com.danieljoanol.forms.exception.NoParentException;
 
 public interface FormService extends GenericService<Form> {
     
-    public Form create(Form form, Long clientId) throws NoParentException;
+    public Form create(Form form, Long shopId, Long clientId) throws NoParentException;
 }

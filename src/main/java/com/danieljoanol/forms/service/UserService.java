@@ -12,15 +12,24 @@ import com.sparkpost.exception.SparkPostException;
 
 public interface UserService extends GenericService<User> {
     
-    User create(User user);
-    User findByUsername(String username);
-    Boolean existsByUsername(String username);
-    User updateNames(NamesUpdateRequest request);
-    User updateLastPayment(Long id, LocalDate date);
-    User updateComments(Long id, String comments);
-    String generatePasswordCode(PasswordUpdateRequest request) throws SparkPostException;
-    String generateUsernameCode(UsernameUpdateRequest request) throws SparkPostException;
-    String confirmNewPassword(CodeConfirmationRequest request) throws CodeException;
-    User confirmNewUsername(CodeConfirmationRequest request) throws CodeException;
+    public User create(User user);
+
+    public User findByUsername(String username);
+
+    public Boolean existsByUsername(String username);
+
+    public User updateNames(NamesUpdateRequest request);
+
+    public User updateLastPayment(Long id, LocalDate date);
+
+    public User updateComments(Long id, String comments);
+
+    public String generatePasswordCode(PasswordUpdateRequest request) throws SparkPostException;
+
+    public String generateUsernameCode(UsernameUpdateRequest request) throws SparkPostException;
+
+    public String confirmNewPassword(CodeConfirmationRequest request) throws CodeException;
+
+    public User confirmNewUsername(CodeConfirmationRequest request) throws CodeException;
 
 }

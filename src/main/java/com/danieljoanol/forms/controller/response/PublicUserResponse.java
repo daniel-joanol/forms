@@ -22,7 +22,6 @@ public class PublicUserResponse {
     private String lastName;
     private String username;
     private LocalDate lastPayment;
-    private Long shopId;
 
     public PublicUserResponse(User entity) {
         if (entity != null) {
@@ -31,9 +30,6 @@ public class PublicUserResponse {
             this.firstName = entity.getFirstName();
             this.lastName = entity.getLastName();
             this.lastPayment = entity.getLastPayment();
-            if (entity.getShop() != null) {
-                shopId = entity.getShop().getId();
-            }
         }
     }
 }

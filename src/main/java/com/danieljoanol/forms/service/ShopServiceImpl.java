@@ -25,7 +25,7 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
         User user = userService.findByUsername(username);
         shop.setEnabled(true);
         shop = shopRepository.save(shop);
-        user.setShop(shop);
+        user.getShops().add(shop);
         user = userService.update(user);
         return shop;
     }

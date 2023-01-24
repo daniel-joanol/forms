@@ -1,5 +1,7 @@
 package com.danieljoanol.forms.service;
 
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
 
 import com.danieljoanol.forms.constants.Message;
@@ -25,18 +27,19 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
     }
 
     @Override
-    public Client create(Client client) throws NoParentException {
+    public Client create(Client client, Long shopId) throws NoParentException {
         User user = JwtTokenUtil.getUserFromContext(userService);
-        Shop shop = user.getShop();
+        Shop actualShop = shopService.get(shopId);
+        Set<Shop> shops = user.getShops();
         
-        if (shop == null) {
-            throw new NoParentException(Message.nullPointerEx("shop", "user"));
+        if (shops == null || !shops.contains(actualShop)) {
+            throw new NoParentException(Message.noParentEx("shop", "user"));
         }
         
         client.setEnabled(true);
         client = clientRepository.save(client);
-        shop.getClients().add(client);
-        shop = shopService.update(shop);
+        actualShop.getClients().add(client);
+        actualShop = shopService.update(actualShop);
         return client;
     }
 

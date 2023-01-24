@@ -41,10 +41,10 @@ public class FormController extends GenericController<Form, FormDTO> {
     @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FormDTO.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
-    @PostMapping("/{clientId}")
-    public ResponseEntity<FormDTO> create(@RequestBody @Valid FormDTO request, @PathVariable Long clientId) throws NoParentException {
+    @PostMapping("/{shopId}/{clientId}")
+    public ResponseEntity<FormDTO> create(@RequestBody @Valid FormDTO request, @PathVariable Long shopId, @PathVariable Long clientId) throws NoParentException {
         Form entity = formAssembler.convertFromDTO(request);
-        FormDTO response = formAssembler.convertToDTO(formService.create(entity, clientId));
+        FormDTO response = formAssembler.convertToDTO(formService.create(entity, shopId, clientId));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

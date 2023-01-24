@@ -28,17 +28,29 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
     }
 
     @Override
-    public Form create(Form form, Long clientId) throws NoParentException {
+    public Form create(Form form, Long shopId, Long clientId) throws NoParentException {
         User user = JwtTokenUtil.getUserFromContext(userService);
         Client actualClient = clientService.get(clientId);
         
-        Shop shop = user.getShop();
-        if (shop == null) {
-            throw new NoParentException(Message.nullPointerEx("shop", "user"));
+        Set<Shop> shops = user.getShops();
+        if (shops == null) {
+            throw new NoParentException(Message.noParentEx("shop", "user"));
+        }
+
+        Shop actualShop = null;
+        Set<Client> clients = null;
+        for (Shop shop : shops) {
+            if (shop.getId() == shopId) {
+                for (Client client : shop.getClients()) {
+                    if (client.getId() == clientId) {
+                        actualShop = shop;
+                        clients = shop.getClients();
+                    }
+                }
+            }
         }
         
-        Set<Client> clients = shop.getClients();
-        if (!clients.contains(actualClient)) {
+        if (clients == null || actualShop == null) {
             throw new NoParentException(Message.doesNotContain("client", "shop"));
         }
 

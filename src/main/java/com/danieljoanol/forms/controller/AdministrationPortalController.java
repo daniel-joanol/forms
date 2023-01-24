@@ -104,4 +104,5 @@ public class AdministrationPortalController {
         UserDTO response = userAssembler.convertToDTO(userService.updateComments(id, comments));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
 }
