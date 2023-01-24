@@ -1,12 +1,10 @@
 package com.danieljoanol.forms.service;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.naming.AuthenticationException;
 
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,6 +28,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserService userService;
     private final RoleService roleService;
+    private final TokenBlacklistService blacklistService;
     private final PasswordEncoder encoder;
     private final JwtTokenUtil jwtTokenUtils;
     private final AuthenticationManager authManager;
@@ -46,7 +45,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtTokenUtils.generateJwtToken(authentication);
-        
+
         return new AuthenticationResponse(user, jwt);
     }
 
@@ -72,9 +71,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public ResponseCookie logout() {
-        //TODO: logout
-        return null;
+    public String logout(String token) {
+        SecurityContextHolder.getContext().setAuthentication(null);
+        blacklistService.save(token.substring(7));
+        return Message.LOG_OUT;
     }
 
 }

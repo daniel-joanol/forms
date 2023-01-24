@@ -17,11 +17,13 @@ import com.danieljoanol.forms.controller.response.AuthenticationResponse;
 import com.danieljoanol.forms.service.AuthenticationService;
 
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,15 +42,17 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid AuthenticationRequest request)
             throws AuthenticationException {
         AuthenticationResponse response = authenticationService.login(request);
+        // Todo: research cookies
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, response.getToken()).body(response);
     }
 
-    /*@Operation(summary = "Log Out", description = "Method to disconnect a user")
+    @Operation(summary = "Log Out", description = "Method to disconnect a user")
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthenticationResponse.class)))
     @ApiResponse(responseCode = "500", description = "System error")
+    @SecurityRequirement(name = "Bearer Authentication")
     @PostMapping("/logout")
-    public ResponseEntity<String> logout() {
-        ResponseCookie cookie = authenticationService.logout();
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(Message.LOG_OUT);
-    }*/
+    public ResponseEntity<String> logout(@RequestHeader(value="Authorization") String token) {
+        String response = authenticationService.logout(token);
+        return ResponseEntity.ok().header("Content-Type", "application/text").body(response);
+    }
 }

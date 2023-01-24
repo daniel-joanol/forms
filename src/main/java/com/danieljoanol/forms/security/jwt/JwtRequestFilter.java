@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.danieljoanol.forms.security.service.UserDetailsServiceImpl;
+import com.danieljoanol.forms.service.TokenBlacklistService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,6 +30,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    private TokenBlacklistService blacklistService;
     
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -38,6 +42,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         try {
             String jwt = parseJwt(request);
             if (jwt != null && jwtTokenUtil.validateJwtToken(jwt)) {
+
+                if (blacklistService.existsByToken(jwt)) {
+                    throw new Exception("Token is blacklisted");
+                }
+
                 String username = jwtTokenUtil.getUsernameFromJwtToken(jwt);
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
