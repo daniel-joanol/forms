@@ -40,6 +40,12 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     }
 
     @Override
+    public User create(User user) {
+        user.setId(null);
+        return userRepository.save(user);
+    }
+
+    @Override
     public Boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }

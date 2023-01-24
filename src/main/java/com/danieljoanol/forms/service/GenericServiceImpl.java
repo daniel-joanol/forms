@@ -34,11 +34,6 @@ public abstract class GenericServiceImpl<T extends GenericEntity<T>> {
         return repository.save(update);
     }
 
-    public T create(T create) {
-        create.setId(null);
-        return repository.save(create);
-    }
-
     public void delete(Long id) {
         T entity = get(id);
         entity.setEnabled(false);

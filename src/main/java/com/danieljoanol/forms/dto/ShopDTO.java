@@ -50,7 +50,6 @@ public class ShopDTO extends GenericDTO<Shop> {
     @NotBlank(message = "document {err.blank}")
     private String document;
     private String logo;
-    private Set<ClientDTO> clients;
 
     public ShopDTO(Shop entity) {
         if (entity != null) {
@@ -66,7 +65,6 @@ public class ShopDTO extends GenericDTO<Shop> {
             this.fax = entity.getFax();
             this.document = entity.getDocument();
             this.logo = entity.getLogo();
-            this.clients = entity.getClients().stream().map(c -> new ClientDTO(c)).collect(Collectors.toSet());
         }
     }
 
@@ -85,7 +83,6 @@ public class ShopDTO extends GenericDTO<Shop> {
         entity.setFax(this.fax);
         entity.setDocument(this.document);
         entity.setLogo(this.logo);
-        entity.setClients(this.clients.stream().map(ClientDTO::toEntity).collect(Collectors.toSet()));
         return entity;
     }
 }

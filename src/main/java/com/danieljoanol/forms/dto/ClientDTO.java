@@ -49,8 +49,6 @@ public class ClientDTO extends GenericDTO<Client> {
     @NotBlank(message = "document {err.blank}")
     private String document;
 
-    private List<FormDTO> forms;
-
     public ClientDTO(Client entity) {
         if (entity != null) {
             this.id = entity.getId();
@@ -61,7 +59,6 @@ public class ClientDTO extends GenericDTO<Client> {
             this.phone1 = entity.getPhone1();
             this.phone2 = entity.getPhone2();
             this.document = entity.getDocument();
-            this.forms = entity.getForms().stream().map(f -> new FormDTO(f)).collect(Collectors.toList());
             this.email = entity.getEmail();
         }
     }
@@ -78,7 +75,6 @@ public class ClientDTO extends GenericDTO<Client> {
         entity.setPhone2(this.phone2);
         entity.setDocument(this.document);
         entity.setEmail(this.email);
-        entity.setForms(this.forms.stream().map(FormDTO::toEntity).collect(Collectors.toList()));
         return entity;
     }
 }

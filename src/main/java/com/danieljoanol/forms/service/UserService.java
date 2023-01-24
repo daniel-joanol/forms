@@ -12,6 +12,7 @@ import com.sparkpost.exception.SparkPostException;
 
 public interface UserService extends GenericService<User> {
     
+    User create(User user);
     User findByUsername(String username);
     Boolean existsByUsername(String username);
     User updateNames(NamesUpdateRequest request);

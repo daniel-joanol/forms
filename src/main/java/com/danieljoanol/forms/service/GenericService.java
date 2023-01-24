@@ -10,8 +10,6 @@ public interface GenericService<T> {
 
     public T update(T update);
 
-    public T create(T create);
-
     public void delete(Long id);
 
     public T enable(Long id);
