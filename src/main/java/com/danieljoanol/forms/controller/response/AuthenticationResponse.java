@@ -28,6 +28,7 @@ public class AuthenticationResponse {
     private String token;
 
     public AuthenticationResponse(User entity, String token) {
+        this.id = entity.getId();
         this.username = entity.getUsername();
         this.firstName = entity.getFirstName();
         this.lastName = entity.getLastName();
