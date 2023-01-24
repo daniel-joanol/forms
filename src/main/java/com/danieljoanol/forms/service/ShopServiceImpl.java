@@ -23,6 +23,7 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
     public Shop create(Shop shop) {
         String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         User user = userService.findByUsername(username);
+        shop.setEnabled(true);
         shop = shopRepository.save(shop);
         user.setShop(shop);
         user = userService.update(user);

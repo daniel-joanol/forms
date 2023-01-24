@@ -5,13 +5,18 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
+import com.danieljoanol.forms.entity.User;
+import com.danieljoanol.forms.service.UserService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -95,5 +100,10 @@ public class JwtTokenUtil {
                         .collect(Collectors.toList());
 
         return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
-    } 
+    }
+
+    public static User getUserFromContext(UserService userService) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        return userService.findByUsername(username);
+    }
 }
