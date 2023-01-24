@@ -6,8 +6,8 @@ import com.danieljoanol.forms.entity.TokenBlacklist;
 
 public interface TokenBlacklistService {
     
-    boolean existsByToken(String token);
+    Boolean existsByToken(String token);
     TokenBlacklist save(String token);
-    void deleteByDate(LocalDateTime date);
+    Long deleteByDate(LocalDateTime date);
 
 }

@@ -8,7 +8,7 @@ import com.danieljoanol.forms.entity.TokenBlacklist;
 
 public interface TokenBlacklistRepository extends JpaRepository<TokenBlacklist, Long> {
     
-    boolean existsByToken(String token);
-    void deleteByDateBefore(LocalDateTime date);
+    Boolean existsByToken(String token);
+    Long deleteByDateBefore(LocalDateTime date);
     
 }

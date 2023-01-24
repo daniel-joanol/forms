@@ -2,6 +2,8 @@ package com.danieljoanol.forms.service;
 
 import java.time.LocalDateTime;
 
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import com.danieljoanol.forms.entity.TokenBlacklist;
@@ -24,13 +26,14 @@ public class TokenBlacklistServiceImpl implements TokenBlacklistService {
     }
     
     @Override
-    public void deleteByDate(LocalDateTime date) {
-        blacklistRepository.deleteByDateBefore(date);
+    @Transactional
+    public Long deleteByDate(LocalDateTime date) {
+        return blacklistRepository.deleteByDateBefore(date);
         
     }
 
     @Override
-    public boolean existsByToken(String token) {
+    public Boolean existsByToken(String token) {
         return blacklistRepository.existsByToken(token);
     }
 
