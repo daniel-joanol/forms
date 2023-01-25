@@ -50,7 +50,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void register(RegisterRequest request) {
+    public User register(RegisterRequest request) {
 
         if (userService.existsByUsername(request.getUsername())) {
             throw new DuplicateKeyException(Message.DUPLICATE_USERNAME);
@@ -64,10 +64,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .username(request.getUsername())
                 .password(encoder.encode(request.getPassword()))
                 .roles(Set.of(userRole))
-                .isEnabled(false)
+                .isEnabled(true)
                 .build();
 
-        userService.create(user);
+        return userService.create(user);
     }
 
     @Override
