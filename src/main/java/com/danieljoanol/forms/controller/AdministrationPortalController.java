@@ -62,8 +62,8 @@ public class AdministrationPortalController {
     @ApiResponse(responseCode = "500", description = "System error")
     @PostMapping("/newUser")
     public ResponseEntity<UserDTO> registerNewUser(@RequestBody @Valid RegisterRequest request) {
-        // TODO: review user creation and group_role
-        UserDTO response = userAssembler.convertToDTO(authService.register(request));
+        //TODO: test mainUser false
+        UserDTO response = userAssembler.convertToDTO(authService.register(request, true));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

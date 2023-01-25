@@ -30,8 +30,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final RoleService roleService;
     private final TokenBlacklistService blacklistService;
     private final PasswordEncoder encoder;
-    private final JwtTokenUtil jwtTokenUtils;
     private final AuthenticationManager authManager;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Override
     public AuthenticationResponse login(AuthenticationRequest request) throws AuthenticationException {
@@ -44,30 +44,38 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtTokenUtils.generateJwtToken(authentication);
+        String jwt = jwtTokenUtil.generateJwtToken(authentication);
 
         return new AuthenticationResponse(user, jwt);
     }
 
     @Override
-    public User register(RegisterRequest request) {
+    public User register(RegisterRequest request, boolean mainUser) {
 
         if (userService.existsByUsername(request.getUsername())) {
             throw new DuplicateKeyException(Message.DUPLICATE_USERNAME);
         }
 
-        Role userRole = roleService.findByName("USER");
+        Role groupRole;
+        if (mainUser) {
+            groupRole = roleService.createGroupRole();
+        } else {
+            groupRole = roleService.findByName(jwtTokenUtil.getGroupRole());
+        }
+
+        Role userRole = roleService.findByName("ROLE_USER");
 
         User user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .username(request.getUsername())
                 .password(encoder.encode(request.getPassword()))
-                .roles(Set.of(userRole))
+                .roles(Set.of(userRole, groupRole))
                 .isEnabled(true)
                 .build();
 
         return userService.create(user);
+        //FIXME: duplicate key value violates unique constraint (until we pass the ids created in import.sql)
     }
 
     @Override

@@ -21,6 +21,7 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
 
     @Override
     public Shop create(Shop shop) {
+        //TODO: add the shop to all users in the group
         String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
         User user = userService.findByUsername(username);
         shop.setEnabled(true);

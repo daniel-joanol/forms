@@ -42,7 +42,6 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     @Override
     public User create(User user) {
         user.setId(null);
-        user.setEnabled(true);
         return userRepository.save(user);
     }
 
