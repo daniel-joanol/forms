@@ -1,14 +1,15 @@
 package com.danieljoanol.forms.entity;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,9 +34,13 @@ public class Client implements GenericEntity<Client> {
     private String province;
     private String phone1;
     private String phone2;
+    private String email;
     private String document;
 
     @OneToMany
     private List<Form> forms = new ArrayList<>();
+
+    private boolean isEnabled;
+    private Date disabledDate;
     
 }

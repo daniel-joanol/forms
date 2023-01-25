@@ -1,24 +1,22 @@
 package com.danieljoanol.forms.entity;
 
 import java.time.LocalDate;
-import java.util.Collection;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
-import com.danieljoanol.forms.entity.enums.Role;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,8 +29,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Builder
-@Table(name = "user")
-public class User implements GenericEntity<User>, UserDetails {
+@Table(name = "_user")
+public class User implements GenericEntity<User> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,41 +38,30 @@ public class User implements GenericEntity<User>, UserDetails {
 
     private String firstName;
     private String lastName;
-    private String email;
+
+    @Column(unique = true)
+    private String username;
     private String password;
 
-    private boolean isEnabled = true;
-    private LocalDate nextPayment;
+    private LocalDate lastPayment;
+    private String comments;
 
-    @ManyToOne
-    private Shop shop;
+    @ManyToMany(fetch=FetchType.EAGER)
+    @JoinTable(name = "user_shops", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "shop_id"))
+    private Set<Shop> shops = new HashSet<>();
 
-    @Enumerated(EnumType.STRING)
-    private Set<Role> roles;
+    @ManyToMany(fetch=FetchType.EAGER)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream().map(r -> new SimpleGrantedAuthority(r.name())).collect(Collectors.toList());
-    }
+    private boolean isEnabled;
+    private Date disabledDate;
 
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+    private Integer passwordCode;
+    private Integer usernameCode;
+    private LocalDateTime passwordTimeLimit;
+    private LocalDateTime usernameTimeLimit;
+    private String newPassword;
+    private String newUsername;
 
 }

@@ -1,14 +1,16 @@
 package com.danieljoanol.forms.entity;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,13 +36,15 @@ public class Form implements GenericEntity<Form> {
     private String brand;
     private String frame;
     private String chassis;
-    private String code;
     private String agent;
     private LocalDateTime date;
     private Boolean openOrder = true;
     private String comments;
     private String pdfUrl;
-    
+
+    @ElementCollection
     private Set<String> visibleDamages = new HashSet<>();
 
+    private boolean isEnabled;
+    private Date disabledDate;
 }
