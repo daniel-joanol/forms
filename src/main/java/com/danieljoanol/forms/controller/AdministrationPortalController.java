@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,8 +62,7 @@ public class AdministrationPortalController {
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
     @PostMapping("/newUser")
-    public ResponseEntity<UserDTO> registerNewUser(@RequestBody @Valid RegisterRequest request) {
-        //TODO: test mainUser false
+    public ResponseEntity<UserDTO> registerNewUser(@RequestBody @Valid RegisterRequest request) throws AccessDeniedException, Exception {
         UserDTO response = userAssembler.convertToDTO(authService.register(request, true));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

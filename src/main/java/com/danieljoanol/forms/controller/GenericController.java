@@ -72,4 +72,9 @@ public abstract class GenericController<T extends GenericEntity<T>, U extends Ge
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    //TODO: review get methods
+    //TODO: review get all methods
+    //TODO: delete methods
+    //TODO: review update methods
 }

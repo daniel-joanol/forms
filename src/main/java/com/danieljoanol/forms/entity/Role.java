@@ -27,4 +27,7 @@ public class Role {
     @Column(unique = true)
     private String name;
 
+    private Integer maxUsers;
+    private Integer totalUsers;
+
 }

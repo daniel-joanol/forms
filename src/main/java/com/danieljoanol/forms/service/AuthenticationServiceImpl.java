@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.naming.AuthenticationException;
 
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -50,7 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public User register(RegisterRequest request, boolean mainUser) {
+    public User register(RegisterRequest request, boolean mainUser) throws Exception {
 
         if (userService.existsByUsername(request.getUsername())) {
             throw new DuplicateKeyException(Message.DUPLICATE_USERNAME);
@@ -58,9 +59,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Role groupRole;
         if (mainUser) {
-            groupRole = roleService.createGroupRole();
+            if (request.getMaxGroup() == null) request.setMaxGroup(1);
+            groupRole = roleService.createGroupRole(request.getMaxGroup());
         } else {
             groupRole = roleService.findByName(jwtTokenUtil.getGroupRole());
+            if (groupRole.getMaxUsers() == groupRole.getTotalUsers()) {
+                throw new AccessDeniedException(Message.MAX_USERS_ERROR);
+            } else {
+                groupRole.setTotalUsers(groupRole.getTotalUsers() + 1);
+            }
         }
 
         Role userRole = roleService.findByName("ROLE_USER");
