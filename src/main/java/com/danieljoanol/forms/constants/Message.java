@@ -9,6 +9,8 @@ public class Message {
     public static final String CODE_EXPIRED = "Código caducado. Es necesario generar otro código";
     public static final String UPDATED_USERNAME = "Usuário alterado con éxito";
     public static final String UPDATED_PASSWORD = "Contraseña alterada con éxito";
+    public static final String MAX_USERS_ERROR = "Número máximo de usuarios alcanzado";
+    public static final String GENERIC_ERROR = "Error generico: Consulte el administrador";
 
     public static final String USERNAME_NOT_FOUND = "Username not found";
     public static final String ENTITY_NOT_FOUND = "Entity not found";
@@ -21,6 +23,14 @@ public class Message {
 
     public static String userBlocked(String username) {
         return "El usuario " + username + " está bloqueado. Consulte el administrador";
+    }
+
+    public static String noParentEx(String child, String father) {
+        return "The " + father + " has no " + child + " associated. Create a " + child + " first";
+    }
+
+    public static String doesNotContain(String child, String father) {
+        return "The " + father + " does not have access to " + child + ". Create a " + child + " first";
     }
 
 }

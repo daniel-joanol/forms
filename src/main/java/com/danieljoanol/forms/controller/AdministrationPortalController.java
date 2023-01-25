@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.danieljoanol.forms.assembler.UserAssembler;
 import com.danieljoanol.forms.constants.Url;
+import com.danieljoanol.forms.controller.request.RegisterRequest;
 import com.danieljoanol.forms.dto.UserDTO;
-import com.danieljoanol.forms.entity.User;
+import com.danieljoanol.forms.service.AuthenticationService;
 import com.danieljoanol.forms.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,6 +44,7 @@ public class AdministrationPortalController {
     
     private final UserService userService;
     private final UserAssembler userAssembler;
+    private final AuthenticationService authService;
 
     @Operation(summary = "Get All", description = "Method to get all users")
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO[].class)))
@@ -59,9 +62,8 @@ public class AdministrationPortalController {
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
     @PostMapping("/newUser")
-    public ResponseEntity<UserDTO> registerNewUser(@RequestBody @Valid UserDTO request) {
-        User entity = userAssembler.convertFromDTO(request);
-        UserDTO response = userAssembler.convertToDTO(userService.create(entity));
+    public ResponseEntity<UserDTO> registerNewUser(@RequestBody @Valid RegisterRequest request) throws AccessDeniedException, Exception {
+        UserDTO response = userAssembler.convertToDTO(authService.register(request, true));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -104,4 +106,5 @@ public class AdministrationPortalController {
         UserDTO response = userAssembler.convertToDTO(userService.updateComments(id, comments));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
 }

@@ -4,5 +4,10 @@ import com.danieljoanol.forms.entity.Role;
 
 public interface RoleService {
     
-    Role findByName(String name);
+    public Role createGroupRole(Integer max) throws Exception;
+    
+    public Role findByName(String name);
+    
+    public Role update(Role role);
+
 }

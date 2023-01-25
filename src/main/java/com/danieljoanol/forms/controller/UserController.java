@@ -2,23 +2,28 @@ package com.danieljoanol.forms.controller;
 
 import javax.validation.Valid;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.danieljoanol.forms.constants.Url;
+import com.danieljoanol.forms.controller.request.RegisterRequest;
 import com.danieljoanol.forms.controller.request.user.CodeConfirmationRequest;
 import com.danieljoanol.forms.controller.request.user.NamesUpdateRequest;
 import com.danieljoanol.forms.controller.request.user.PasswordUpdateRequest;
 import com.danieljoanol.forms.controller.request.user.UsernameUpdateRequest;
 import com.danieljoanol.forms.controller.response.PublicUserResponse;
 import com.danieljoanol.forms.exception.CodeException;
+import com.danieljoanol.forms.service.AuthenticationService;
 import com.danieljoanol.forms.service.UserService;
 import com.sparkpost.exception.SparkPostException;
 
@@ -36,6 +41,18 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final UserService userService;
+    private final AuthenticationService authService;
+
+    @Operation(summary = "Create", description = "Method to create a new user. Gets the group from the token")
+    @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PublicUserResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Bad request")
+    @ApiResponse(responseCode = "500", description = "System error")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @PostMapping("/")
+    public ResponseEntity<PublicUserResponse> create(@RequestBody @Valid RegisterRequest request) throws AccessDeniedException, Exception {
+        PublicUserResponse response = new PublicUserResponse(authService.register(request, false));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 
     @Operation(summary = "Get", description = "Method to get user")
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PublicUserResponse.class)))

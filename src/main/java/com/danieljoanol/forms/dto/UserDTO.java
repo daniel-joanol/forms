@@ -27,7 +27,6 @@ public class UserDTO extends GenericDTO<User> {
     private String username;
     private boolean isEnabled;
     private LocalDate lastPayment;
-    private ShopDTO shop;
     private Set<RoleDTO> roles;
     private Date disabledDate;
     private String comments;
@@ -51,10 +50,6 @@ public class UserDTO extends GenericDTO<User> {
             this.usernameCode = entity.getUsernameCode();
             this.passwordTimeLimit = entity.getPasswordTimeLimit();
             this.usernameTimeLimit = entity.getUsernameTimeLimit();
-
-            if (entity.getShop() != null) {
-                this.shop = new ShopDTO(entity.getShop());
-            }
         }
     }
 
@@ -67,14 +62,17 @@ public class UserDTO extends GenericDTO<User> {
         entity.setUsername(this.username);
         entity.setEnabled(this.isEnabled);
         entity.setLastPayment(this.lastPayment);
-        entity.setShop(this.shop.toEntity());
-        entity.setRoles(this.roles.stream().map(RoleDTO::toEntity).collect(Collectors.toSet()));
         entity.setDisabledDate(this.disabledDate);
         entity.setComments(this.comments);
         entity.setPasswordCode(this.passwordCode);
         entity.setUsernameCode(this.usernameCode);
         entity.setPasswordTimeLimit(this.passwordTimeLimit);
         entity.setUsernameTimeLimit(this.usernameTimeLimit);
+
+        if (roles != null) {
+            entity.setRoles(this.roles.stream().map(RoleDTO::toEntity).collect(Collectors.toSet()));
+        }
+        
         return entity;
     }
 

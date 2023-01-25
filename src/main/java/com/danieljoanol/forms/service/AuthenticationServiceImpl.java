@@ -5,6 +5,7 @@ import java.util.Set;
 import javax.naming.AuthenticationException;
 
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,8 +31,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final RoleService roleService;
     private final TokenBlacklistService blacklistService;
     private final PasswordEncoder encoder;
-    private final JwtTokenUtil jwtTokenUtils;
     private final AuthenticationManager authManager;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Override
     public AuthenticationResponse login(AuthenticationRequest request) throws AuthenticationException {
@@ -44,30 +45,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Authentication authentication = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtTokenUtils.generateJwtToken(authentication);
+        String jwt = jwtTokenUtil.generateJwtToken(authentication);
 
         return new AuthenticationResponse(user, jwt);
     }
 
     @Override
-    public void register(RegisterRequest request) {
+    public User register(RegisterRequest request, boolean mainUser) throws Exception {
 
         if (userService.existsByUsername(request.getUsername())) {
             throw new DuplicateKeyException(Message.DUPLICATE_USERNAME);
         }
 
-        Role userRole = roleService.findByName("USER");
+        Role groupRole;
+        if (mainUser) {
+            if (request.getMaxGroup() == null) request.setMaxGroup(1);
+            groupRole = roleService.createGroupRole(request.getMaxGroup());
+        } else {
+            groupRole = roleService.findByName(jwtTokenUtil.getGroupRole());
+            if (groupRole.getMaxUsers() == groupRole.getTotalUsers()) {
+                throw new AccessDeniedException(Message.MAX_USERS_ERROR);
+            } else {
+                groupRole.setTotalUsers(groupRole.getTotalUsers() + 1);
+            }
+        }
+
+        Role userRole = roleService.findByName("ROLE_USER");
 
         User user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .username(request.getUsername())
                 .password(encoder.encode(request.getPassword()))
-                .roles(Set.of(userRole))
-                .isEnabled(false)
+                .roles(Set.of(userRole, groupRole))
+                .isEnabled(true)
                 .build();
 
-        userService.create(user);
+        return userService.create(user);
+        //FIXME: duplicate key value violates unique constraint (until we pass the ids created in import.sql)
     }
 
     @Override

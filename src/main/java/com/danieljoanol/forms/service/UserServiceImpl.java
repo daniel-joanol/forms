@@ -2,7 +2,7 @@ package com.danieljoanol.forms.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Random;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,9 +16,11 @@ import com.danieljoanol.forms.controller.request.user.NamesUpdateRequest;
 import com.danieljoanol.forms.controller.request.user.PasswordUpdateRequest;
 import com.danieljoanol.forms.controller.request.user.UsernameUpdateRequest;
 import com.danieljoanol.forms.email.SparkPostService;
+import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.exception.CodeException;
 import com.danieljoanol.forms.repository.UserRepository;
+import com.danieljoanol.forms.util.CodeGeneration;
 import com.sparkpost.exception.SparkPostException;
 
 @Service
@@ -37,6 +39,12 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         this.userRepository = userRepository;
         this.sparkPostService = sparkPostService;
         this.encoder = encoder;
+    }
+
+    @Override
+    public User create(User user) {
+        user.setId(null);
+        return userRepository.save(user);
     }
 
     @Override
@@ -76,7 +84,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     public String generatePasswordCode(PasswordUpdateRequest request) throws SparkPostException {
         User user = findByUsername(request.getUsername());
         user.setNewPassword(encoder.encode(request.getNewPassword()));
-        user.setPasswordCode(generateCode());
+        user.setPasswordCode(CodeGeneration.newCode());
         user.setPasswordTimeLimit(LocalDateTime.now().plusMinutes(timeLimit));
 
         user = update(user);
@@ -87,16 +95,11 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     public String generateUsernameCode(UsernameUpdateRequest request) throws SparkPostException {
         User user = findByUsername(request.getActualUsername());
         user.setNewUsername(request.getNewUsername());
-        user.setUsernameCode(generateCode());
+        user.setUsernameCode(CodeGeneration.newCode());
         user.setUsernameTimeLimit(LocalDateTime.now().plusMinutes(timeLimit));
 
         user = update(user);
         return sendEmail(user.getNewUsername(), user.getFirstName(), user.getUsernameCode());
-    }
-
-    private int generateCode() {
-        Random random = new Random();
-        return 100000 + random.nextInt(899999);
     }
 
     private String sendEmail(String username, String firstName, Integer code) throws SparkPostException {
@@ -146,6 +149,11 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         user = update(user);
 
         return user;
+    }
+
+    @Override
+    public List<User> getUsersByRole(List<Role> roles) {
+        return userRepository.findByRolesIn(roles);
     }
     
 }
