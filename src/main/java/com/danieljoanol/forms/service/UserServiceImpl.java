@@ -2,6 +2,7 @@ package com.danieljoanol.forms.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,6 +16,7 @@ import com.danieljoanol.forms.controller.request.user.NamesUpdateRequest;
 import com.danieljoanol.forms.controller.request.user.PasswordUpdateRequest;
 import com.danieljoanol.forms.controller.request.user.UsernameUpdateRequest;
 import com.danieljoanol.forms.email.SparkPostService;
+import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.exception.CodeException;
 import com.danieljoanol.forms.repository.UserRepository;
@@ -147,6 +149,11 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         user = update(user);
 
         return user;
+    }
+
+    @Override
+    public List<User> getUsersByRole(Role role) {
+        return userRepository.findByRolesIn(role);
     }
     
 }
