@@ -37,11 +37,11 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
                 break;
             }
         }
-        
+
         shop.setEnabled(true);
         shop = shopRepository.save(shop);
 
-        List<User> usersFromGroup = userService.getUsersByRole(groupRole);
+        List<User> usersFromGroup = userService.getUsersByRole(List.of(groupRole));
         for (User currentUser : usersFromGroup) {
             currentUser.getShops().add(shop);
             currentUser = userService.update(user);

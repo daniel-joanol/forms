@@ -152,8 +152,8 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     }
 
     @Override
-    public List<User> getUsersByRole(Role role) {
-        return userRepository.findByRolesIn(role);
+    public List<User> getUsersByRole(List<Role> roles) {
+        return userRepository.findByRolesIn(roles);
     }
     
 }

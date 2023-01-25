@@ -12,6 +12,6 @@ public interface UserRepository extends GenericRepository<User> {
     
     Boolean existsByUsername(String username);
 
-    List<User> findByRolesIn(Role role);
+    List<User> findByRolesIn(List<Role> roles);
 
 }

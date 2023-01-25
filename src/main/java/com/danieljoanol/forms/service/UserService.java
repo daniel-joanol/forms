@@ -34,6 +34,6 @@ public interface UserService extends GenericService<User> {
 
     public User confirmNewUsername(CodeConfirmationRequest request) throws CodeException;
 
-    public List<User> getUsersByRole(Role role);
+    public List<User> getUsersByRole(List<Role> roles);
 
 }
