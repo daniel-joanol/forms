@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.service.UserService;
 
@@ -41,9 +42,6 @@ public class JwtTokenUtil {
 
     @Value("${forms.app.authorities.key}")
     public String AUTHORITIES_KEY;
-
-    @Value("${forms.app.group}")
-    public String GROUP_ROLE;
 
     public String generateJwtToken(Authentication authentication) {
 
@@ -115,12 +113,27 @@ public class JwtTokenUtil {
                 .map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
     }
 
-    public String getGroupRole() {
+    public static String getGroupRole(String group_prefix) {
         Set<String> roles = getRoles();
         for (String role : roles) {
-            if (role.startsWith(GROUP_ROLE)) return role;
+            if (role.startsWith(group_prefix)) return role;
         }
         return null;
+    }
+
+    public static boolean isAdmin() {
+        Set<String> roles = getRoles();
+        for (String role : roles) {
+            if (role.equals("ROLE_ADMIN")) return true;
+        }
+        return false;
+    }
+
+    public static boolean isAdmin(User user) {
+        for (Role role : user.getRoles()) {
+            if (role.getName().equals("ROLE_ADMIN")) return true;
+        }
+        return false;
     }
 
 }

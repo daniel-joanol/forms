@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.naming.AuthenticationException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,6 +35,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authManager;
     private final JwtTokenUtil jwtTokenUtil;
 
+    @Value("${forms.app.group}")
+    public String GROUP_PREFIX;
+
     @Override
     public AuthenticationResponse login(AuthenticationRequest request) throws AuthenticationException {
 
@@ -62,7 +66,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             if (request.getMaxGroup() == null) request.setMaxGroup(1);
             groupRole = roleService.createGroupRole(request.getMaxGroup());
         } else {
-            groupRole = roleService.findByName(jwtTokenUtil.getGroupRole());
+            groupRole = roleService.findByName(JwtTokenUtil.getGroupRole(GROUP_PREFIX));
             if (groupRole.getMaxUsers() == groupRole.getTotalUsers()) {
                 throw new AccessDeniedException(Message.MAX_USERS_ERROR);
             } else {

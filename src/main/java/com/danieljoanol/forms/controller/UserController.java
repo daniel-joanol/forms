@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.constants.Url;
 import com.danieljoanol.forms.controller.request.RegisterRequest;
 import com.danieljoanol.forms.controller.request.user.CodeConfirmationRequest;
@@ -22,7 +23,9 @@ import com.danieljoanol.forms.controller.request.user.NamesUpdateRequest;
 import com.danieljoanol.forms.controller.request.user.PasswordUpdateRequest;
 import com.danieljoanol.forms.controller.request.user.UsernameUpdateRequest;
 import com.danieljoanol.forms.controller.response.PublicUserResponse;
+import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.exception.CodeException;
+import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
 import com.danieljoanol.forms.service.AuthenticationService;
 import com.danieljoanol.forms.service.UserService;
 import com.sparkpost.exception.SparkPostException;
@@ -60,6 +63,16 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{id}")
     public ResponseEntity<PublicUserResponse> get(@PathVariable Long id) {
+        
+        User user = JwtTokenUtil.getUserFromContext(userService);
+        if (user.getId() == id) {
+            return ResponseEntity.ok(new PublicUserResponse(user));
+        }
+
+        if (!JwtTokenUtil.isAdmin(user)) {
+            throw new AccessDeniedException(Message.NOT_AUTHORIZED);
+        }
+
         PublicUserResponse response = new PublicUserResponse(userService.get(id));
         return ResponseEntity.ok(response);
     }
@@ -71,6 +84,9 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/names")
     public ResponseEntity<PublicUserResponse> updateNames(@RequestBody(required = true) @Valid NamesUpdateRequest request) {
+
+        validatesPermision(request.getId());
+
         PublicUserResponse response = new PublicUserResponse(userService.updateNames(request));
         return ResponseEntity.ok(response);
     }
@@ -94,6 +110,9 @@ public class UserController {
     @PutMapping("/new/username")
     public ResponseEntity<String> newUsername(@RequestBody(required = true) @Valid UsernameUpdateRequest request)
             throws SparkPostException {
+
+        validatesPermision(request.getActualUsername());
+        
         String response = userService.generateUsernameCode(request);
         return ResponseEntity.ok().header("Content-Type", "application/text").body(response);
     }
@@ -105,6 +124,7 @@ public class UserController {
     @PutMapping("/confirm/password")
     public ResponseEntity<String> confirmPassword(@RequestBody(required = true) @Valid CodeConfirmationRequest request)
             throws CodeException {
+
         String response = userService.confirmNewPassword(request);
         return ResponseEntity.ok().header("Content-Type", "application/text").body(response);
     }
@@ -117,7 +137,24 @@ public class UserController {
     @PutMapping("/confirm/username")
     public ResponseEntity<PublicUserResponse> confirmUsername(@RequestBody(required = true) @Valid CodeConfirmationRequest request)
             throws CodeException {
+
+        validatesPermision(request.getUsername());
+        
         PublicUserResponse response = new PublicUserResponse(userService.confirmNewUsername(request));
         return ResponseEntity.ok(response);
+    }
+
+    private void validatesPermision(Long id) {
+        User user = JwtTokenUtil.getUserFromContext(userService);
+        if (user.getId() != id) {
+            throw new AccessDeniedException(Message.NOT_AUTHORIZED);
+        }
+    }
+
+    private void validatesPermision(String username) {
+        User user = JwtTokenUtil.getUserFromContext(userService);
+        if (user.getUsername() != username) {
+            throw new AccessDeniedException(Message.NOT_AUTHORIZED);
+        }
     }
 }
