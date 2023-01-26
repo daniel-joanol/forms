@@ -50,4 +50,22 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
         return shop;
     }
 
+    @Override
+    public Shop updateIfEnabled(Shop shop) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void disable(Long id) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public Shop enable(Long id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

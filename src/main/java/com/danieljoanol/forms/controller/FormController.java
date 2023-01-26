@@ -16,26 +16,21 @@ import com.danieljoanol.forms.constants.Url;
 import com.danieljoanol.forms.dto.FormDTO;
 import com.danieljoanol.forms.entity.Form;
 import com.danieljoanol.forms.exception.NoParentException;
-import com.danieljoanol.forms.repository.FormRepository;
 import com.danieljoanol.forms.service.FormService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.RequiredArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
 @RequestMapping(Url.FORM)
-public class FormController extends GenericController<Form, FormDTO> {
+@RequiredArgsConstructor
+public class FormController {
     
     private final FormService formService;
     private final FormAssembler formAssembler;
-
-    public FormController(FormRepository formRepository, FormAssembler formAssembler, FormService formService) {
-        super(formRepository, formAssembler);
-        this.formAssembler = formAssembler;
-        this.formService = formService;
-    }
 
     @Operation(summary = "Create", description = "Method to create a new form")
     @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FormDTO.class)))

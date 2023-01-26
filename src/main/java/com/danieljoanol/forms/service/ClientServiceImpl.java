@@ -43,4 +43,22 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
         return client;
     }
 
+    @Override
+    public Client updateIfEnabled(Client client) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void disable(Long id) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public Client enable(Long id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

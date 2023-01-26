@@ -16,11 +16,10 @@ import com.danieljoanol.forms.constants.Url;
 import com.danieljoanol.forms.dto.ClientDTO;
 import com.danieljoanol.forms.entity.Client;
 import com.danieljoanol.forms.exception.NoParentException;
-import com.danieljoanol.forms.repository.ClientRepository;
 import com.danieljoanol.forms.service.ClientService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-
+import lombok.RequiredArgsConstructor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -29,17 +28,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @RestController
 @RequestMapping(Url.CLIENT)
 @SecurityRequirement(name = "Bearer Authentication")
-public class ClientController extends GenericController<Client, ClientDTO> {
+@RequiredArgsConstructor
+public class ClientController {
 
     private final ClientService clientService;
     private final ClientAssembler clientAssembler;
-
-    public ClientController(ClientRepository clientRepository, ClientAssembler clientAssembler,
-            ClientService clientService) {
-        super(clientRepository, clientAssembler);
-        this.clientService = clientService;
-        this.clientAssembler = clientAssembler;
-    }
 
     @Operation(summary = "Create", description = "Method to create a new client")
     @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDTO.class)))

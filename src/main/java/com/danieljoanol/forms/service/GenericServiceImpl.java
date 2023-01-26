@@ -46,16 +46,7 @@ public abstract class GenericServiceImpl<T extends GenericEntity<T>> {
 
     public void delete(Long id) {
         T entity = get(id);
-        entity.setEnabled(false);
-        entity.setDisabledDate(new Date());
-        update(entity);
-    }
-
-    public T enable(Long id) {
-        T entity = get(id);
-        entity.setEnabled(true);
-        entity.setDisabledDate(null);
-        return update(entity);
+        repository.delete(entity);
     }
 
 }

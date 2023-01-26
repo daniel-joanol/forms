@@ -155,5 +155,17 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     public List<User> getUsersByRole(List<Role> roles) {
         return userRepository.findByRolesIn(roles);
     }
+
+    @Override
+    public User enable(Long id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void disable(Long id) {
+        // TODO Auto-generated method stub
+        
+    }
     
 }

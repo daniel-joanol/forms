@@ -61,4 +61,22 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
         return form;
     }
 
+    @Override
+    public Form updateIfEnabled(Form form) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void disable(Long id) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public Form enable(Long id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
