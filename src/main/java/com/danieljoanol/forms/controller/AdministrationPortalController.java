@@ -46,7 +46,7 @@ public class AdministrationPortalController {
     private final UserAssembler userAssembler;
     private final AuthenticationService authService;
 
-    @Operation(summary = "Get All", description = "Method to get all users")
+    @Operation(summary = "Get All Users", description = "Method to get all users")
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO[].class)))
     @ApiResponse(responseCode = "500", description = "System error")
     @GetMapping("/")
@@ -54,6 +54,15 @@ public class AdministrationPortalController {
             @RequestParam(required = true) Integer pageNumber,
             @RequestParam(required = true) Integer pageSize) {
         Page<UserDTO> response = userAssembler.convertToDTO(userService.getAll(pageNumber, pageSize));
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Get User", description = "Method to get user")
+    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class)))
+    @ApiResponse(responseCode = "500", description = "System error")
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDTO> get(@PathVariable Long id) {
+        UserDTO response = userAssembler.convertToDTO(userService.get(id));
         return ResponseEntity.ok(response);
     }
     
@@ -65,16 +74,6 @@ public class AdministrationPortalController {
     public ResponseEntity<UserDTO> registerNewUser(@RequestBody @Valid RegisterRequest request) throws AccessDeniedException, Exception {
         UserDTO response = userAssembler.convertToDTO(authService.register(request, true));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @Operation(summary = "Disable an user", description = "Method to disable user")
-    @ApiResponse(responseCode = "204", description = "No content")
-    @ApiResponse(responseCode = "400", description = "Bad request")
-    @ApiResponse(responseCode = "500", description = "System error")
-    @DeleteMapping("/disable/{id}")
-    public ResponseEntity<?> disable(@PathVariable Long id) {
-        userService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Enable an user", description = "Method to enable a user")

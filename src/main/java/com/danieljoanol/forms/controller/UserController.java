@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,16 +65,9 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<PublicUserResponse> get(@PathVariable Long id) {
         
-        User user = JwtTokenUtil.getUserFromContext(userService);
-        if (user.getId() == id) {
-            return ResponseEntity.ok(new PublicUserResponse(user));
-        }
+        isUserOwnerOrAdmin(id);
 
-        if (!JwtTokenUtil.isAdmin(user)) {
-            throw new AccessDeniedException(Message.NOT_AUTHORIZED);
-        }
-
-        PublicUserResponse response = new PublicUserResponse(userService.get(id));
+        PublicUserResponse response = new PublicUserResponse(userService.getIfEnabled(id));
         return ResponseEntity.ok(response);
     }
 
@@ -85,7 +79,7 @@ public class UserController {
     @PutMapping("/names")
     public ResponseEntity<PublicUserResponse> updateNames(@RequestBody(required = true) @Valid NamesUpdateRequest request) {
 
-        validatesPermision(request.getId());
+        isUserOwner(request.getId());
 
         PublicUserResponse response = new PublicUserResponse(userService.updateNames(request));
         return ResponseEntity.ok(response);
@@ -111,7 +105,7 @@ public class UserController {
     public ResponseEntity<String> newUsername(@RequestBody(required = true) @Valid UsernameUpdateRequest request)
             throws SparkPostException {
 
-        validatesPermision(request.getActualUsername());
+        isUserOwner(request.getActualUsername());
         
         String response = userService.generateUsernameCode(request);
         return ResponseEntity.ok().header("Content-Type", "application/text").body(response);
@@ -138,23 +132,49 @@ public class UserController {
     public ResponseEntity<PublicUserResponse> confirmUsername(@RequestBody(required = true) @Valid CodeConfirmationRequest request)
             throws CodeException {
 
-        validatesPermision(request.getUsername());
-        
+        isUserOwner(request.getUsername());
+
         PublicUserResponse response = new PublicUserResponse(userService.confirmNewUsername(request));
         return ResponseEntity.ok(response);
     }
 
-    private void validatesPermision(Long id) {
+    @Operation(summary = "Delete", description = "Method to delete user")
+    @ApiResponse(responseCode = "204", description = "No content")
+    @ApiResponse(responseCode = "500", description = "System error")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        
+        isUserOwnerOrAdmin(id);
+
+        //TODO: remove from role and decrease the totalUsers 
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    private User isUserOwner(Long id) {
         User user = JwtTokenUtil.getUserFromContext(userService);
         if (user.getId() != id) {
             throw new AccessDeniedException(Message.NOT_AUTHORIZED);
         }
+
+        return user;
     }
 
-    private void validatesPermision(String username) {
+    private User isUserOwner(String username) {
         User user = JwtTokenUtil.getUserFromContext(userService);
         if (user.getUsername() != username) {
             throw new AccessDeniedException(Message.NOT_AUTHORIZED);
         }
+
+        return user;
     }
+
+    private void isUserOwnerOrAdmin(Long id) {
+        User user = JwtTokenUtil.getUserFromContext(userService);
+        if (user.getId() != id && !JwtTokenUtil.isAdmin(user)) {
+            throw new AccessDeniedException(Message.NOT_AUTHORIZED);
+        }
+    }
+
 }

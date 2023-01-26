@@ -14,4 +14,5 @@ public interface GenericRepository <T extends GenericEntity<T>> extends JpaRepos
     
     Page<T> findByIsEnabled(Pageable page, boolean enabled);
     Optional<T> findByIdAndIsEnabled(Long id, boolean enabled);
+
 }
