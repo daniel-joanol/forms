@@ -1,7 +1,5 @@
 package com.danieljoanol.forms.service;
 
-import java.util.Date;
-
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.data.domain.Page;

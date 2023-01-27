@@ -10,6 +10,7 @@ public class Message {
     public static final String UPDATED_USERNAME = "Usuário alterado con éxito";
     public static final String UPDATED_PASSWORD = "Contraseña alterada con éxito";
     public static final String MAX_USERS_ERROR = "Número máximo de usuarios alcanzado";
+    public static final String MAX_USERS_ERROR_ON_UPDATE = "El número máximo de usuários és más grande que el número actual de usuários";
     public static final String GENERIC_ERROR = "Error generico: Consulte el administrador";
 
     public static final String USERNAME_NOT_FOUND = "Username not found";

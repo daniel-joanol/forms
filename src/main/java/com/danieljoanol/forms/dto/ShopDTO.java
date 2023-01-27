@@ -67,19 +67,19 @@ public class ShopDTO extends GenericDTO<Shop> {
 
     @Override
     public Shop toEntity() {
-        Shop entity = new Shop();
-        entity.setId(this.id);
-        entity.setShopName(this.shopName);
-        entity.setOwnerName(this.ownerName);
-        entity.setAddress(this.address);
-        entity.setPostalCode(this.postalCode);
-        entity.setCity(this.city);
-        entity.setProvince(this.province);
-        entity.setPhone1(this.phone1);
-        entity.setPhone2(this.phone2);
-        entity.setFax(this.fax);
-        entity.setDocument(this.document);
-        entity.setLogo(this.logo);
-        return entity;
+        return Shop.builder()
+                .id(id)
+                .shopName(shopName)
+                .ownerName(ownerName)
+                .address(address)
+                .postalCode(postalCode)
+                .city(city)
+                .province(province)
+                .phone1(phone1)
+                .phone2(phone2)
+                .fax(fax)
+                .document(document)
+                .logo(logo)
+                .build();
     }
 }

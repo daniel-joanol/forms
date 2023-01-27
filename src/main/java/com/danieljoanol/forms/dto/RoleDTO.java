@@ -24,7 +24,8 @@ public class RoleDTO extends GenericDTO<Role> {
         if (entity != null) {
             this.id = entity.getId();
             this.name = entity.getName();
-            this.maxUsers = entity.getTotalUsers();
+            this.maxUsers = entity.getMaxUsers();
+            this.totalUsers = entity.getTotalUsers();
         }
     }
 

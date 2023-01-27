@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.entity.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -55,25 +56,27 @@ public class UserDTO extends GenericDTO<User> {
 
     @Override
     public User toEntity() {
-        User entity = new User();
-        entity.setId(this.id);
-        entity.setFirstName(this.firstName);
-        entity.setLastName(this.lastName);
-        entity.setUsername(this.username);
-        entity.setEnabled(this.isEnabled);
-        entity.setLastPayment(this.lastPayment);
-        entity.setDisabledDate(this.disabledDate);
-        entity.setComments(this.comments);
-        entity.setPasswordCode(this.passwordCode);
-        entity.setUsernameCode(this.usernameCode);
-        entity.setPasswordTimeLimit(this.passwordTimeLimit);
-        entity.setUsernameTimeLimit(this.usernameTimeLimit);
 
+        Set<Role> roleEntities = null;
         if (roles != null) {
-            entity.setRoles(this.roles.stream().map(RoleDTO::toEntity).collect(Collectors.toSet()));
+            roleEntities = this.roles.stream().map(RoleDTO::toEntity).collect(Collectors.toSet());
         }
-        
-        return entity;
+
+        return User.builder()
+                .id(id)
+                .firstName(firstName)
+                .lastName(lastName)
+                .username(username)
+                .isEnabled(isEnabled)
+                .lastPayment(lastPayment)
+                .disabledDate(disabledDate)
+                .comments(comments)
+                .passwordCode(passwordCode)
+                .usernameCode(usernameCode)
+                .passwordTimeLimit(passwordTimeLimit)
+                .usernameTimeLimit(usernameTimeLimit)
+                .roles(roleEntities)
+                .build();
     }
 
 }

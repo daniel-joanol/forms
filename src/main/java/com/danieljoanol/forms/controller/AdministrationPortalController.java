@@ -19,11 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.danieljoanol.forms.assembler.RoleAssembler;
 import com.danieljoanol.forms.assembler.UserAssembler;
 import com.danieljoanol.forms.constants.Url;
 import com.danieljoanol.forms.controller.request.RegisterRequest;
+import com.danieljoanol.forms.dto.RoleDTO;
 import com.danieljoanol.forms.dto.UserDTO;
 import com.danieljoanol.forms.exception.UsersLimitException;
+import com.danieljoanol.forms.service.RoleService;
 import com.danieljoanol.forms.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,15 +43,17 @@ import lombok.RequiredArgsConstructor;
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequiredArgsConstructor
 public class AdministrationPortalController {
-    
+
     private final UserService userService;
     private final UserAssembler userAssembler;
+    private final RoleService roleService;
+    private final RoleAssembler roleAssembler;
 
     @Operation(summary = "Get All Users", description = "Method to get all users")
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO[].class)))
     @ApiResponse(responseCode = "500", description = "System error")
-    @GetMapping("/")
-    public ResponseEntity<Page<UserDTO>> getAll(
+    @GetMapping("/user/")
+    public ResponseEntity<Page<UserDTO>> getUsers(
             @RequestParam(required = true) Integer pageNumber,
             @RequestParam(required = true) Integer pageSize) {
         Page<UserDTO> response = userAssembler.convertToDTO(userService.getAll(pageNumber, pageSize));
@@ -58,28 +63,29 @@ public class AdministrationPortalController {
     @Operation(summary = "Get User", description = "Method to get user")
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class)))
     @ApiResponse(responseCode = "500", description = "System error")
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> get(@PathVariable Long id) {
+    @GetMapping("/user/{id}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
         UserDTO response = userAssembler.convertToDTO(userService.get(id));
         return ResponseEntity.ok(response);
     }
-    
+
     @Operation(summary = "Register", description = "Method to register a new user")
     @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
-    @PostMapping("/newUser")
-    public ResponseEntity<UserDTO> registerNewUser(@RequestBody @Valid RegisterRequest request) throws AccessDeniedException, Exception {
+    @PostMapping("/user/new")
+    public ResponseEntity<UserDTO> createUser(@RequestBody @Valid RegisterRequest request)
+            throws AccessDeniedException, Exception {
         UserDTO response = userAssembler.convertToDTO(userService.create(request, true));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @Operation(summary = "Enable an user", description = "Method to enable a user")
+    @Operation(summary = "Enable user", description = "Method to enable a user")
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
-    @PutMapping("/enable/{id}")
-    public ResponseEntity<UserDTO> enable(@PathVariable Long id) throws UsersLimitException {
+    @PutMapping("/user/enable/{id}")
+    public ResponseEntity<UserDTO> enableUser(@PathVariable Long id) throws UsersLimitException {
         UserDTO response = userAssembler.convertToDTO(userService.enable(id));
         return ResponseEntity.ok(response);
     }
@@ -88,8 +94,8 @@ public class AdministrationPortalController {
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
-    @PutMapping("/payment/{id}")
-    public ResponseEntity<UserDTO> payment(@PathVariable Long id, @RequestParam(required = true) LocalDate date) {
+    @PutMapping("/user/payment/{id}")
+    public ResponseEntity<UserDTO> updatePayment(@PathVariable Long id, @RequestParam(required = true) LocalDate date) {
         UserDTO response = userAssembler.convertToDTO(userService.updateLastPayment(id, date));
         return ResponseEntity.ok(response);
     }
@@ -98,9 +104,40 @@ public class AdministrationPortalController {
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
-    @PutMapping("/comments/{id}")
-    public ResponseEntity<UserDTO> comments(@PathVariable Long id, @RequestBody String comments) {
+    @PutMapping("/user/comments/{id}")
+    public ResponseEntity<UserDTO> updateComments(@PathVariable Long id, @RequestBody String comments) {
         UserDTO response = userAssembler.convertToDTO(userService.updateComments(id, comments));
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Get All Roles", description = "Method to get all roles")
+    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = RoleDTO[].class)))
+    @ApiResponse(responseCode = "500", description = "System error")
+    @GetMapping("/role/")
+    public ResponseEntity<Page<RoleDTO>> getRoles(
+            @RequestParam(required = true) Integer pageNumber,
+            @RequestParam(required = true) Integer pageSize) {
+        Page<RoleDTO> response = roleAssembler.convertToDTO(roleService.getAll(pageNumber, pageSize));
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Get Role", description = "Method to get role")
+    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = RoleDTO.class)))
+    @ApiResponse(responseCode = "500", description = "System error")
+    @GetMapping("/role/{id}")
+    public ResponseEntity<RoleDTO> getRoleById(@PathVariable Long id) {
+        RoleDTO response = roleAssembler.convertToDTO(roleService.get(id));
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Update user", description = "Method to update a role")
+    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = RoleDTO.class)))
+    @ApiResponse(responseCode = "400", description = "Bad request")
+    @ApiResponse(responseCode = "500", description = "System error")
+    @PutMapping("/role/maxUsers/{id}")
+    public ResponseEntity<RoleDTO> updateRole(@PathVariable Long id, @RequestParam(required = true) Integer maxUsers)
+            throws UsersLimitException {
+        RoleDTO response = roleAssembler.convertToDTO(roleService.updateMaxUsers(id, maxUsers));
         return ResponseEntity.ok(response);
     }
 
