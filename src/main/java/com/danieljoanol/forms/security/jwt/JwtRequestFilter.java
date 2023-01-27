@@ -44,12 +44,17 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             if (jwt != null && jwtTokenUtil.validateJwtToken(jwt)) {
 
                 if (blacklistService.existsByToken(jwt)) {
-                    throw new Exception("Token is blacklisted");
+                    throw new Exception();
                 }
 
                 String username = jwtTokenUtil.getUsernameFromJwtToken(jwt);
-
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                if (!userDetails.isEnabled()) {
+                    blacklistService.save(jwt);
+                    throw new Exception();
+                }
+
                 UsernamePasswordAuthenticationToken authentication = 
                     new UsernamePasswordAuthenticationToken(
                         username, null, userDetails.getAuthorities());
