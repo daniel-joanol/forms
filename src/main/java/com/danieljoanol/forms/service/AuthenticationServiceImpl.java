@@ -29,9 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserService userService;
-    private final RoleService roleService;
     private final TokenBlacklistService blacklistService;
-    private final PasswordEncoder encoder;
     private final AuthenticationManager authManager;
     private final JwtTokenUtil jwtTokenUtil;
 
@@ -52,41 +50,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String jwt = jwtTokenUtil.generateJwtToken(authentication);
 
         return new AuthenticationResponse(user, jwt);
-    }
-
-    @Override
-    public User register(RegisterRequest request, boolean mainUser) throws Exception {
-
-        if (userService.existsByUsername(request.getUsername())) {
-            throw new DuplicateKeyException(Message.DUPLICATE_USERNAME);
-        }
-
-        Role groupRole;
-        if (mainUser) {
-            if (request.getMaxGroup() == null) request.setMaxGroup(1);
-            groupRole = roleService.createGroupRole(request.getMaxGroup());
-        } else {
-            groupRole = roleService.findByName(JwtTokenUtil.getGroupRole(GROUP_PREFIX));
-            if (groupRole.getMaxUsers() == groupRole.getTotalUsers()) {
-                throw new AccessDeniedException(Message.MAX_USERS_ERROR);
-            } else {
-                groupRole.setTotalUsers(groupRole.getTotalUsers() + 1);
-            }
-        }
-
-        Role userRole = roleService.findByName("ROLE_USER");
-
-        User user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .username(request.getUsername())
-                .password(encoder.encode(request.getPassword()))
-                .roles(Set.of(userRole, groupRole))
-                .isEnabled(true)
-                .build();
-
-        return userService.create(user);
-        //FIXME: duplicate key value violates unique constraint (until we pass the ids created in import.sql)
     }
 
     @Override

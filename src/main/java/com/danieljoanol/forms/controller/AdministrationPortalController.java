@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +23,7 @@ import com.danieljoanol.forms.assembler.UserAssembler;
 import com.danieljoanol.forms.constants.Url;
 import com.danieljoanol.forms.controller.request.RegisterRequest;
 import com.danieljoanol.forms.dto.UserDTO;
-import com.danieljoanol.forms.service.AuthenticationService;
+import com.danieljoanol.forms.exception.UsersLimitException;
 import com.danieljoanol.forms.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,7 +43,6 @@ public class AdministrationPortalController {
     
     private final UserService userService;
     private final UserAssembler userAssembler;
-    private final AuthenticationService authService;
 
     @Operation(summary = "Get All Users", description = "Method to get all users")
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO[].class)))
@@ -72,7 +70,7 @@ public class AdministrationPortalController {
     @ApiResponse(responseCode = "500", description = "System error")
     @PostMapping("/newUser")
     public ResponseEntity<UserDTO> registerNewUser(@RequestBody @Valid RegisterRequest request) throws AccessDeniedException, Exception {
-        UserDTO response = userAssembler.convertToDTO(authService.register(request, true));
+        UserDTO response = userAssembler.convertToDTO(userService.create(request, true));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -81,9 +79,9 @@ public class AdministrationPortalController {
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
     @PutMapping("/enable/{id}")
-    public ResponseEntity<UserDTO> enable(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> enable(@PathVariable Long id) throws UsersLimitException {
         UserDTO response = userAssembler.convertToDTO(userService.enable(id));
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Update payment date", description = "Method to update the payment date")
@@ -93,7 +91,7 @@ public class AdministrationPortalController {
     @PutMapping("/payment/{id}")
     public ResponseEntity<UserDTO> payment(@PathVariable Long id, @RequestParam(required = true) LocalDate date) {
         UserDTO response = userAssembler.convertToDTO(userService.updateLastPayment(id, date));
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Update comments", description = "Method to update comments")
@@ -103,7 +101,7 @@ public class AdministrationPortalController {
     @PutMapping("/comments/{id}")
     public ResponseEntity<UserDTO> comments(@PathVariable Long id, @RequestBody String comments) {
         UserDTO response = userAssembler.convertToDTO(userService.updateComments(id, comments));
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.ok(response);
     }
 
 }

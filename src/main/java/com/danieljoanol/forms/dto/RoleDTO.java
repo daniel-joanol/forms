@@ -17,20 +17,24 @@ public class RoleDTO extends GenericDTO<Role> {
 
     private long id;
     private String name;
+    private Integer maxUsers;
+    private Integer totalUsers;
 
     public RoleDTO(Role entity) {
         if (entity != null) {
             this.id = entity.getId();
             this.name = entity.getName();
+            this.maxUsers = entity.getTotalUsers();
         }
     }
 
     @Override
     public Role toEntity() {
-        Role entity = new Role();
-        entity.setId(this.id);
-        entity.setName(this.name);
-        return entity;
+        return Role.builder()
+                .name(name)
+                .maxUsers(maxUsers)
+                .totalUsers(totalUsers)
+                .build();
     }
 
 }

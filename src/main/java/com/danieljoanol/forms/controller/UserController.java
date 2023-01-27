@@ -27,7 +27,6 @@ import com.danieljoanol.forms.controller.response.PublicUserResponse;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.exception.CodeException;
 import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
-import com.danieljoanol.forms.service.AuthenticationService;
 import com.danieljoanol.forms.service.UserService;
 import com.sparkpost.exception.SparkPostException;
 
@@ -45,7 +44,6 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final UserService userService;
-    private final AuthenticationService authService;
 
     @Operation(summary = "Create", description = "Method to create a new user. Gets the group from the token")
     @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = PublicUserResponse.class)))
@@ -54,7 +52,7 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/")
     public ResponseEntity<PublicUserResponse> create(@RequestBody @Valid RegisterRequest request) throws AccessDeniedException, Exception {
-        PublicUserResponse response = new PublicUserResponse(authService.register(request, false));
+        PublicUserResponse response = new PublicUserResponse(userService.create(request, false));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -147,8 +145,7 @@ public class UserController {
         
         isUserOwnerOrAdmin(id);
 
-        //TODO: remove from role and decrease the totalUsers 
-        userService.delete(id);
+        userService.disable(id);
         return ResponseEntity.noContent().build();
     }
 
