@@ -63,7 +63,12 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<PublicUserResponse> get(@PathVariable Long id) {
         
-        isUserOwnerOrAdmin(id);
+        User user = JwtTokenUtil.getUserFromContext(userService);
+        if (user.getId() == id && user.isEnabled()) {
+            return ResponseEntity.ok(new PublicUserResponse(user));
+        }
+        
+        isUserAdmin(user);
 
         PublicUserResponse response = new PublicUserResponse(userService.getIfEnabled(id));
         return ResponseEntity.ok(response);
@@ -165,6 +170,12 @@ public class UserController {
         }
 
         return user;
+    }
+
+    private void isUserAdmin(User user) {
+        if (!JwtTokenUtil.isAdmin(user)) {
+            throw new AccessDeniedException(Message.NOT_AUTHORIZED);
+        }
     }
 
     private void isUserOwnerOrAdmin(Long id) {
