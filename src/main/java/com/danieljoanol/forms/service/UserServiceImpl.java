@@ -66,6 +66,56 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     }
 
     @Override
+    public void delete(Long id) {
+
+        User user = get(id);
+        Role groupRole = null;
+        for (Role role : user.getRoles()) {
+            if (role.getName().startsWith(GROUP_PREFIX)) {
+                groupRole = role;
+                if (user.isEnabled()) {
+                    groupRole.setTotalUsers(groupRole.getTotalUsers() - 1);
+                    groupRole = roleService.update(groupRole);
+                }
+                break;
+            }
+        }
+
+        // Makes a double validation
+        List<User> groupUsers = getUsersByRole(List.of(groupRole));
+        if (groupUsers.size() == 1 && groupRole.getTotalUsers() == 0) {
+
+            List<Shop> shops = user.getShops();
+            if (!shops.isEmpty()) {
+
+                List<Client> clients = shops.get(0).getClients();
+                Set<Long> formIds = clients.stream()
+                        .flatMap(client -> client.getForms().stream())
+                        .map(Form::getId)
+                        .collect(Collectors.toSet());
+                clients.stream().forEach(c -> c.setForms(null));
+                formService.deleteAllByIds(formIds);
+
+                Set<Long> clientIds = clients.stream().map(Client::getId).collect(Collectors.toSet());
+                shops.stream().forEach(s -> s.setClients(null));
+                clientService.deleteAllByIds(clientIds);
+
+                Set<Long> shopIds = shops.stream().map(Shop::getId).collect(Collectors.toSet());
+                user.setShops(null);
+                user = update(user);
+                shopService.deleteAllByIds(shopIds);
+            }
+
+            userRepository.delete(user);
+            roleService.delete(groupRole);
+
+        } else {
+            userRepository.delete(user);
+        }
+
+    }
+
+    @Override
     public User create(RegisterRequest request, boolean firstUser) throws Exception {
 
         List<Shop> shops = new ArrayList<>();
@@ -115,47 +165,6 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         return userRepository.save(user);
         // FIXME: duplicate key value violates unique constraint (until we pass the ids
         // created in import.sql)
-    }
-
-    @Override
-    public Boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
-    }
-
-    @Override
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(Message.USERNAME_NOT_FOUND));
-    }
-
-    @Override
-    public User updateNames(NamesUpdateRequest request) {
-
-        User entity = get(request.getId());
-        entity.setFirstName(request.getFirstName());
-        entity.setLastName(request.getLastName());
-        return update(entity);
-    }
-
-    @Override
-    public User updateComments(Long id, String comments) {
-
-        User entity = get(id);
-        entity.setComments(comments);
-        return update(entity);
-    }
-
-    @Override
-    public User updateLastPayment(Long id, LocalDate date) {
-
-        User entity = get(id);
-        entity.setLastPayment(date);
-        return update(entity);
-    }
-
-    @Override
-    public List<User> getUsersByRole(List<Role> roles) {
-        return userRepository.findByRolesIn(roles);
     }
 
     @Override
@@ -253,53 +262,46 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     }
 
     @Override
-    public void delete(Long id) {
+    public User updateNames(NamesUpdateRequest request) {
 
-        User user = get(id);
-        Role groupRole = null;
-        for (Role role : user.getRoles()) {
-            if (role.getName().startsWith(GROUP_PREFIX)) {
-                groupRole = role;
-                if (user.isEnabled()) {
-                    groupRole.setTotalUsers(groupRole.getTotalUsers() - 1);
-                    groupRole = roleService.update(groupRole);
-                }
-                break;
-            }
-        }
+        User entity = get(request.getId());
+        entity.setFirstName(request.getFirstName());
+        entity.setLastName(request.getLastName());
+        return update(entity);
+    }
 
-        // Makes a double validation
-        List<User> groupUsers = userRepository.findByRolesIn(List.of(groupRole));
-        if (groupUsers.size() == 1 && groupRole.getTotalUsers() == 0) {
+    
 
-            List<Shop> shops = user.getShops();
-            if (!shops.isEmpty()) {
+    @Override
+    public User updateLastPayment(Long id, LocalDate date) {
 
-                List<Client> clients = shops.get(0).getClients();
-                Set<Long> formIds = clients.stream()
-                        .flatMap(client -> client.getForms().stream())
-                        .map(Form::getId)
-                        .collect(Collectors.toSet());
-                clients.stream().forEach(c -> c.setForms(null));
-                formService.deleteAllByIds(formIds);
+        User entity = get(id);
+        entity.setLastPayment(date);
+        return update(entity);
+    }
 
-                Set<Long> clientIds = clients.stream().map(Client::getId).collect(Collectors.toSet());
-                shops.stream().forEach(s -> s.setClients(null));
-                clientService.deleteAllByIds(clientIds);
+    @Override
+    public User updateComments(Long id, String comments) {
 
-                Set<Long> shopIds = shops.stream().map(Shop::getId).collect(Collectors.toSet());
-                user.setShops(null);
-                user = update(user);
-                shopService.deleteAllByIds(shopIds);
-            }
+        User entity = get(id);
+        entity.setComments(comments);
+        return update(entity);
+    }
 
-            userRepository.delete(user);
-            roleService.delete(groupRole);
+    @Override
+    public Boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
 
-        } else {
-            userRepository.delete(user);
-        }
+    @Override
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(Message.USERNAME_NOT_FOUND));
+    }
 
+    @Override
+    public List<User> getUsersByRole(List<Role> roles) {
+        return userRepository.findByRolesIn(roles);
     }
 
     private void validateCode(CodeConfirmationRequest request, Integer code, LocalDateTime date) throws CodeException {

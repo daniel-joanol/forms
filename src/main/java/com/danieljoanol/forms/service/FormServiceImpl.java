@@ -9,7 +9,6 @@ import com.danieljoanol.forms.entity.Client;
 import com.danieljoanol.forms.entity.Form;
 import com.danieljoanol.forms.entity.Shop;
 import com.danieljoanol.forms.entity.User;
-import com.danieljoanol.forms.exception.NoParentException;
 import com.danieljoanol.forms.repository.FormRepository;
 import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
 
@@ -28,11 +27,11 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
     }
 
     @Override
-    public Form create(Form form, Long shopId, Long clientId) throws NoParentException {
+    public Form create(Form form, Long shopId, Long clientId) {
         User user = null; //JwtTokenUtil.getUserFromContext(userService);
         Client actualClient = clientService.get(clientId);
         
-        List<Shop> shops = user.getShops();
+        /*List<Shop> shops = user.getShops();
         if (shops == null) {
             throw new NoParentException(Message.noParentEx("shop", "user"));
         }
@@ -52,7 +51,7 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
         
         if (clients == null || actualShop == null) {
             throw new NoParentException(Message.doesNotContain("client", "shop"));
-        }
+        }*/
 
         form.setEnabled(true);
         form = formRepository.save(form);

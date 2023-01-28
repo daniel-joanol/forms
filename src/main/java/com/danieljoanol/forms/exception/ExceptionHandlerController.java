@@ -25,8 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ExceptionHandlerController {
 
     @ExceptionHandler(value = { EntityNotFoundException.class, UsernameNotFoundException.class,
-            DuplicateKeyException.class, Exception.class, CodeException.class, NoParentException.class,
-            LimitExceededException.class })
+            DuplicateKeyException.class, Exception.class, CodeException.class, LimitExceededException.class })
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleUsernameNotFound(HttpServletRequest request, Exception ex) {

@@ -1,50 +1,46 @@
 package com.danieljoanol.forms.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.entity.Shop;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.repository.ShopRepository;
+import com.danieljoanol.forms.repository.UserRepository;
 import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
 
 @Service
 public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopService {
     
     private final ShopRepository shopRepository;
-    //private final UserService userService;
+    private final UserRepository userRepository;
 
     @Value("${forms.app.group}")
-    private String groupPrefix;
+    private String GROUP_PREFIX;
 
-    public ShopServiceImpl(ShopRepository shopRepository/*, UserService userService*/) {
+    public ShopServiceImpl(ShopRepository shopRepository, UserRepository userRepository) {
         super(shopRepository);
         this.shopRepository = shopRepository;
-        //this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public Shop create(Shop shop) {
+    public Shop create(Shop shop, String username) {
         
-        /*User user = JwtTokenUtil.getUserFromContext(userService);
-        Role groupRole = null;
-        for (Role role : user.getRoles()) {
-            if (role.getName().startsWith(groupPrefix)) {
-                groupRole = role;
-                break;
-            }
-        }*/
+        String groupName = JwtTokenUtil.getGroupRole(GROUP_PREFIX);
+        List<User> users = userRepository.findByRoles_NameIn(List.of(groupName));
 
         shop.setEnabled(true);
+        shop.setClients(users.get(0).getShops().get(0).getClients());
         shop = shopRepository.save(shop);
 
-        /*List<User> usersFromGroup = userService.getUsersByRole(List.of(groupRole));
-        for (User currentUser : usersFromGroup) {
-            currentUser.getShops().add(shop);
-            currentUser = userService.update(user);
-        }*/
+        for (User user : users) {
+            user.getShops().add(shop);
+        }
         
+        userRepository.saveAll(users);
         return shop;
     }
 

@@ -103,8 +103,12 @@ public class JwtTokenUtil {
         return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
     }
 
+    public static String getUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    }
+
     public static User getUserFromContext(UserService userService) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        String username = getUsername();
         return userService.findByUsername(username);
     }
 

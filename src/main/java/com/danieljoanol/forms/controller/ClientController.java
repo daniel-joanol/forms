@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +15,7 @@ import com.danieljoanol.forms.assembler.ClientAssembler;
 import com.danieljoanol.forms.constants.Url;
 import com.danieljoanol.forms.dto.ClientDTO;
 import com.danieljoanol.forms.entity.Client;
-import com.danieljoanol.forms.exception.NoParentException;
+import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
 import com.danieljoanol.forms.service.ClientService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -40,11 +39,11 @@ public class ClientController {
     @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDTO.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
-    @PostMapping("/{shopId}")
-    public ResponseEntity<ClientDTO> create(@RequestBody @Valid ClientDTO request, @PathVariable Long shopId)
-            throws NoParentException {
+    @PostMapping("/")
+    public ResponseEntity<ClientDTO> create(@RequestBody @Valid ClientDTO request) {
+        String username = JwtTokenUtil.getUsername();
         Client entity = clientAssembler.convertFromDTO(request);
-        ClientDTO response = clientAssembler.convertToDTO(clientService.create(entity, shopId));
+        ClientDTO response = clientAssembler.convertToDTO(clientService.create(entity, username));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

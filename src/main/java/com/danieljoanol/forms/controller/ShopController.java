@@ -15,7 +15,9 @@ import com.danieljoanol.forms.assembler.ShopAssembler;
 import com.danieljoanol.forms.constants.Url;
 import com.danieljoanol.forms.dto.ShopDTO;
 import com.danieljoanol.forms.entity.Shop;
+import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
 import com.danieljoanol.forms.service.ShopService;
+import com.danieljoanol.forms.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,8 +42,9 @@ public class ShopController {
     @ApiResponse(responseCode = "500", description = "System error")
     @PostMapping("/")
     public ResponseEntity<ShopDTO> create(@RequestBody @Valid ShopDTO request) {
+        String username = JwtTokenUtil.getUsername();
         Shop entity = shopAssembler.convertFromDTO(request);
-        ShopDTO response = shopAssembler.convertToDTO(shopService.create(entity));
+        ShopDTO response = shopAssembler.convertToDTO(shopService.create(entity, username));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

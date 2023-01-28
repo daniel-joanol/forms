@@ -16,7 +16,6 @@ import com.danieljoanol.forms.assembler.FormAssembler;
 import com.danieljoanol.forms.constants.Url;
 import com.danieljoanol.forms.dto.FormDTO;
 import com.danieljoanol.forms.entity.Form;
-import com.danieljoanol.forms.exception.NoParentException;
 import com.danieljoanol.forms.service.FormService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,7 +40,7 @@ public class FormController {
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
     @PostMapping("/{shopId}/{clientId}")
-    public ResponseEntity<FormDTO> create(@RequestBody @Valid FormDTO request, @PathVariable Long shopId, @PathVariable Long clientId) throws NoParentException {
+    public ResponseEntity<FormDTO> create(@RequestBody @Valid FormDTO request, @PathVariable Long shopId, @PathVariable Long clientId) {
         Form entity = formAssembler.convertFromDTO(request);
         FormDTO response = formAssembler.convertToDTO(formService.create(entity, shopId, clientId));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

@@ -26,12 +26,4 @@ public class Message {
         return "El usuario " + username + " está bloqueado. Consulte el administrador";
     }
 
-    public static String noParentEx(String child, String father) {
-        return "The " + father + " has no " + child + " associated. Create a " + child + " first";
-    }
-
-    public static String doesNotContain(String child, String father) {
-        return "The " + father + " does not have access to " + child + ". Create a " + child + " first";
-    }
-
 }
