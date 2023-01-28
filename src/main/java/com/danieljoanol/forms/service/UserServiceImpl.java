@@ -82,7 +82,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         }
 
         // Makes a double validation
-        List<User> groupUsers = getUsersByRole(List.of(groupRole));
+        List<User> groupUsers = userRepository.findByRolesIn(List.of(groupRole));
         if (groupUsers.size() == 1 && groupRole.getTotalUsers() == 0) {
 
             List<Shop> shops = user.getShops();
@@ -121,7 +121,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         List<Shop> shops = new ArrayList<>();
         Role groupRole = null;
 
-        if (existsByUsername(request.getUsername())) {
+        if (userRepository.existsByUsername(request.getUsername())) {
             throw new DuplicateKeyException(Message.DUPLICATE_USERNAME);
         }
 
@@ -165,8 +165,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
                 .build();
 
         return userRepository.save(user);
-        // FIXME: duplicate key value violates unique constraint (until we pass the ids
-        // created in import.sql)
+        
     }
 
     @Override
@@ -272,8 +271,6 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         return update(entity);
     }
 
-    
-
     @Override
     public User updateLastPayment(Long id, LocalDate date) {
 
@@ -291,19 +288,9 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     }
 
     @Override
-    public Boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
-    }
-
-    @Override
     public User findByUsername(String username) {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(Message.USERNAME_NOT_FOUND));
-    }
-
-    @Override
-    public List<User> getUsersByRole(List<Role> roles) {
-        return userRepository.findByRolesIn(roles);
     }
 
     private void validateCode(CodeConfirmationRequest request, Integer code, LocalDateTime date) throws CodeException {

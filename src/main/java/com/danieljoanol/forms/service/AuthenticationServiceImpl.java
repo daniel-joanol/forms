@@ -1,24 +1,17 @@
 package com.danieljoanol.forms.service;
 
-import java.util.Set;
-
 import javax.naming.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.controller.request.AuthenticationRequest;
-import com.danieljoanol.forms.controller.request.RegisterRequest;
 import com.danieljoanol.forms.controller.response.AuthenticationResponse;
-import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
 

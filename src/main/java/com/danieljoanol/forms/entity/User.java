@@ -17,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -35,7 +36,8 @@ import lombok.Setter;
 public class User implements GenericEntity<User> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_id_seq")
+    @SequenceGenerator(name = "user_id_seq", sequenceName = "user_seq", initialValue = 2, allocationSize = 1)
     private Long id;
 
     private String firstName;
