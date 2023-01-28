@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.entity.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -57,11 +56,6 @@ public class UserDTO extends GenericDTO<User> {
     @Override
     public User toEntity() {
 
-        Set<Role> roleEntities = null;
-        if (roles != null) {
-            roleEntities = this.roles.stream().map(RoleDTO::toEntity).collect(Collectors.toSet());
-        }
-
         return User.builder()
                 .id(id)
                 .firstName(firstName)
@@ -75,7 +69,7 @@ public class UserDTO extends GenericDTO<User> {
                 .usernameCode(usernameCode)
                 .passwordTimeLimit(passwordTimeLimit)
                 .usernameTimeLimit(usernameTimeLimit)
-                .roles(roleEntities)
+                .roles(roles.stream().map(RoleDTO::toEntity).collect(Collectors.toSet()))
                 .build();
     }
 

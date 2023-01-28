@@ -2,6 +2,7 @@ package com.danieljoanol.forms.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -67,24 +68,35 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     @Override
     public User create(RegisterRequest request, boolean firstUser) throws Exception {
 
-        // TODO: when a user is created and it's not the first, copy the list of shops
-        // from the other ones
+        List<Shop> shops = new ArrayList<>();
+        Role groupRole = null;
 
         if (existsByUsername(request.getUsername())) {
             throw new DuplicateKeyException(Message.DUPLICATE_USERNAME);
         }
 
-        Role groupRole;
         if (firstUser) {
-            if (request.getMaxGroup() == null)
+            
+            if (request.getMaxGroup() == null) {
                 request.setMaxGroup(1);
+            }
             groupRole = roleService.createGroupRole(request.getMaxGroup());
+
         } else {
-            groupRole = roleService.findByName(JwtTokenUtil.getGroupRole(GROUP_PREFIX));
+
+            User mainUser = JwtTokenUtil.getUserFromContext(this);
+            for (Role role : mainUser.getRoles()) {
+                if (role.getName().startsWith(GROUP_PREFIX)) {
+                    groupRole = role;
+                    break;
+                }
+            }
+
             if (groupRole.getMaxUsers() == groupRole.getTotalUsers()) {
                 throw new UsersLimitException(Message.MAX_USERS_ERROR);
             } else {
                 groupRole.setTotalUsers(groupRole.getTotalUsers() + 1);
+                shops = new ArrayList<>(mainUser.getShops());
             }
         }
 
@@ -96,6 +108,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
                 .username(request.getUsername())
                 .password(encoder.encode(request.getPassword()))
                 .roles(Set.of(userRole, groupRole))
+                .shops(shops)
                 .isEnabled(true)
                 .build();
 
@@ -261,7 +274,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
             List<Shop> shops = user.getShops();
             if (!shops.isEmpty()) {
-                
+
                 List<Client> clients = shops.get(0).getClients();
                 Set<Long> formIds = clients.stream()
                         .flatMap(client -> client.getForms().stream())
