@@ -16,7 +16,7 @@ import com.sparkpost.exception.SparkPostException;
 
 public interface UserService extends GenericService<User> {
     
-    public User create(RegisterRequest request, boolean mainUser) throws Exception;
+    public User create(RegisterRequest request, boolean firstUser) throws Exception;
 
     public User findByUsername(String username);
 

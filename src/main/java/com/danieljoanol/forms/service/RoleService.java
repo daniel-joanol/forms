@@ -19,4 +19,6 @@ public interface RoleService {
 
     public Role updateMaxUsers(Long id, Integer maxUsers) throws UsersLimitException;
 
+    public void delete(Role role);
+
 }

@@ -93,4 +93,9 @@ public class RoleServiceImpl implements RoleService {
         return roleRepository.save(role);
     }
 
+    @Override
+    public void delete(Role role) {
+        roleRepository.delete(role);
+    }
+
 }

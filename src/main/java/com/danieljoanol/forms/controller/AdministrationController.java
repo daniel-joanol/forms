@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,7 +43,7 @@ import lombok.RequiredArgsConstructor;
 @SecurityRequirement(name = "Bearer Authentication")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequiredArgsConstructor
-public class AdministrationPortalController {
+public class AdministrationController {
 
     private final UserService userService;
     private final UserAssembler userAssembler;
@@ -69,7 +70,7 @@ public class AdministrationPortalController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Register", description = "Method to register a new user")
+    @Operation(summary = "Create User", description = "Method to register a new user")
     @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
@@ -108,6 +109,16 @@ public class AdministrationPortalController {
     public ResponseEntity<UserDTO> updateComments(@PathVariable Long id, @RequestBody String comments) {
         UserDTO response = userAssembler.convertToDTO(userService.updateComments(id, comments));
         return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "Delete user", description = "Method to delete a user and every entity he owns (if it's the last user from a group_role")
+    @ApiResponse(responseCode = "204", description = "No content")
+    @ApiResponse(responseCode = "400", description = "Bad request")
+    @ApiResponse(responseCode = "500", description = "System error")
+    @DeleteMapping("/user/delete/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        userService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Get All Roles", description = "Method to get all roles")

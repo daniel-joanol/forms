@@ -146,7 +146,7 @@ public class UserController {
     @ApiResponse(responseCode = "500", description = "System error")
     @PreAuthorize("hasRole('ROLE_USER')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<?> disable(@PathVariable Long id) {
         
         isUserOwnerOrAdmin(id);
 

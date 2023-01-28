@@ -42,9 +42,4 @@ public abstract class GenericServiceImpl<T extends GenericEntity<T>> {
         return repository.save(update);
     }
 
-    public void delete(Long id) {
-        T entity = get(id);
-        repository.delete(entity);
-    }
-
 }

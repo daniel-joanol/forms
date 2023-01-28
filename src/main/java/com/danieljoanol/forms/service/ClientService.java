@@ -10,5 +10,7 @@ public interface ClientService extends GenericService<Client> {
     public Client updateIfEnabled(Client client);
     
     public Client enable(Long id);
+ 
+    public void deleteAllByIds(Iterable<? extends Long> ids);
     
 }

@@ -1,6 +1,6 @@
 package com.danieljoanol.forms.service;
 
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -17,20 +17,20 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
     
     private final ClientRepository clientRepository;
     private final ShopService shopService;
-    private final UserService userService;
+    //private final UserService userService;
 
-    public ClientServiceImpl(ClientRepository clientRepository, ShopService shopService, UserService userService) {
+    public ClientServiceImpl(ClientRepository clientRepository, ShopService shopService/*, UserService userService*/) {
         super(clientRepository);
         this.clientRepository = clientRepository;
         this.shopService = shopService;
-        this.userService = userService;
+        //this.userService = userService;
     }
 
     @Override
     public Client create(Client client, Long shopId) throws NoParentException {
-        User user = JwtTokenUtil.getUserFromContext(userService);
+        User user = null; //JwtTokenUtil.getUserFromContext(userService);
         Shop actualShop = shopService.get(shopId);
-        Set<Shop> shops = user.getShops();
+        List<Shop> shops = user.getShops();
         
         if (shops == null || !shops.contains(actualShop)) {
             throw new NoParentException(Message.noParentEx("shop", "user"));
@@ -59,6 +59,17 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
     public Client enable(Long id) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void delete(Long id) {
+        Client client = get(id);
+        clientRepository.delete(client);
+    }
+
+    @Override
+    public void deleteAllByIds(Iterable<? extends Long> ids) {
+        clientRepository.deleteAllById(ids);
     }
 
 }

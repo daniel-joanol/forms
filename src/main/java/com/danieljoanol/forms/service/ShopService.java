@@ -10,4 +10,6 @@ public interface ShopService extends GenericService<Shop> {
 
     public Shop enable(Long id);
     
+    public void deleteAllByIds(Iterable<? extends Long> ids);
+
 }

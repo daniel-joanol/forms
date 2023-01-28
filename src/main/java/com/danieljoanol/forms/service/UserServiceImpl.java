@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
@@ -20,7 +21,10 @@ import com.danieljoanol.forms.controller.request.user.NamesUpdateRequest;
 import com.danieljoanol.forms.controller.request.user.PasswordUpdateRequest;
 import com.danieljoanol.forms.controller.request.user.UsernameUpdateRequest;
 import com.danieljoanol.forms.email.SparkPostService;
+import com.danieljoanol.forms.entity.Client;
+import com.danieljoanol.forms.entity.Form;
 import com.danieljoanol.forms.entity.Role;
+import com.danieljoanol.forms.entity.Shop;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.exception.CodeException;
 import com.danieljoanol.forms.exception.UsersLimitException;
@@ -37,6 +41,10 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     private final PasswordEncoder encoder;
     private final RoleService roleService;
 
+    private final ShopService shopService;
+    private final ClientService clientService;
+    private final FormService formService;
+
     @Value("${forms.app.code.limit}")
     private Integer timeLimit;
 
@@ -44,22 +52,30 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     private String GROUP_PREFIX;
 
     public UserServiceImpl(UserRepository userRepository, SparkPostService sparkPostService,
-            PasswordEncoder encoder, RoleService roleService) {
+            PasswordEncoder encoder, RoleService roleService, ShopService shopService,
+            ClientService clientService, FormService formService) {
         super(userRepository);
         this.userRepository = userRepository;
         this.sparkPostService = sparkPostService;
         this.encoder = encoder;
         this.roleService = roleService;
+        this.shopService = shopService;
+        this.clientService = clientService;
+        this.formService = formService;
     }
 
     @Override
-    public User create(RegisterRequest request, boolean mainUser) throws Exception {
+    public User create(RegisterRequest request, boolean firstUser) throws Exception {
+
+        // TODO: when a user is created and it's not the first, copy the list of shops
+        // from the other ones
+
         if (existsByUsername(request.getUsername())) {
             throw new DuplicateKeyException(Message.DUPLICATE_USERNAME);
         }
 
         Role groupRole;
-        if (mainUser) {
+        if (firstUser) {
             if (request.getMaxGroup() == null)
                 request.setMaxGroup(1);
             groupRole = roleService.createGroupRole(request.getMaxGroup());
@@ -84,7 +100,8 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
                 .build();
 
         return userRepository.save(user);
-        // FIXME: duplicate key value violates unique constraint (until we pass the ids created in import.sql)
+        // FIXME: duplicate key value violates unique constraint (until we pass the ids
+        // created in import.sql)
     }
 
     @Override
@@ -100,6 +117,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public User updateNames(NamesUpdateRequest request) {
+
         User entity = get(request.getId());
         entity.setFirstName(request.getFirstName());
         entity.setLastName(request.getLastName());
@@ -108,6 +126,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public User updateComments(Long id, String comments) {
+
         User entity = get(id);
         entity.setComments(comments);
         return update(entity);
@@ -115,6 +134,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public User updateLastPayment(Long id, LocalDate date) {
+
         User entity = get(id);
         entity.setLastPayment(date);
         return update(entity);
@@ -127,9 +147,11 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public User enable(Long id) throws UsersLimitException {
+
         User user = get(id);
 
-        if (user.isEnabled()) return user;
+        if (user.isEnabled())
+            return user;
 
         for (Role role : user.getRoles()) {
             if (role.getName().startsWith(GROUP_PREFIX)) {
@@ -150,9 +172,11 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public void disable(Long id) {
+
         User user = get(id);
 
-        if (!user.isEnabled()) return;
+        if (!user.isEnabled())
+            return;
 
         for (Role role : user.getRoles()) {
             if (role.getName().startsWith(GROUP_PREFIX)) {
@@ -169,6 +193,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public String generatePasswordCode(PasswordUpdateRequest request) throws SparkPostException {
+
         User user = findByUsername(request.getUsername());
         user.setNewPassword(encoder.encode(request.getNewPassword()));
         user.setPasswordCode(CodeGeneration.newCode());
@@ -180,6 +205,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public String generateUsernameCode(UsernameUpdateRequest request) throws SparkPostException {
+
         User user = findByUsername(request.getActualUsername());
         user.setNewUsername(request.getNewUsername());
         user.setUsernameCode(CodeGeneration.newCode());
@@ -203,7 +229,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
     @Override
     public User confirmNewUsername(CodeConfirmationRequest request) throws CodeException {
-        
+
         User user = findByUsername(request.getUsername());
         validateCode(request, user.getUsernameCode(), user.getUsernameTimeLimit());
 
@@ -211,6 +237,56 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         user = update(user);
 
         return user;
+    }
+
+    @Override
+    public void delete(Long id) {
+
+        User user = get(id);
+        Role groupRole = null;
+        for (Role role : user.getRoles()) {
+            if (role.getName().startsWith(GROUP_PREFIX)) {
+                groupRole = role;
+                if (user.isEnabled()) {
+                    groupRole.setTotalUsers(groupRole.getTotalUsers() - 1);
+                    groupRole = roleService.update(groupRole);
+                }
+                break;
+            }
+        }
+
+        // Makes a double validation
+        List<User> groupUsers = userRepository.findByRolesIn(List.of(groupRole));
+        if (groupUsers.size() == 1 && groupRole.getTotalUsers() == 0) {
+
+            List<Shop> shops = user.getShops();
+            if (!shops.isEmpty()) {
+                
+                List<Client> clients = shops.get(0).getClients();
+                Set<Long> formIds = clients.stream()
+                        .flatMap(client -> client.getForms().stream())
+                        .map(Form::getId)
+                        .collect(Collectors.toSet());
+                clients.stream().forEach(c -> c.setForms(null));
+                formService.deleteAllByIds(formIds);
+
+                Set<Long> clientIds = clients.stream().map(Client::getId).collect(Collectors.toSet());
+                shops.stream().forEach(s -> s.setClients(null));
+                clientService.deleteAllByIds(clientIds);
+
+                Set<Long> shopIds = shops.stream().map(Shop::getId).collect(Collectors.toSet());
+                user.setShops(null);
+                user = update(user);
+                shopService.deleteAllByIds(shopIds);
+            }
+
+            userRepository.delete(user);
+            roleService.delete(groupRole);
+
+        } else {
+            userRepository.delete(user);
+        }
+
     }
 
     private void validateCode(CodeConfirmationRequest request, Integer code, LocalDateTime date) throws CodeException {
@@ -225,6 +301,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     }
 
     private String sendEmail(String username, String firstName, Integer code) throws SparkPostException {
+
         Boolean isEmailSent = sparkPostService.sendMesage(
                 username,
                 Email.CODE_TITLE,
@@ -236,6 +313,5 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
             return Message.SPARK_POST_ERROR;
         }
     }
-
 
 }

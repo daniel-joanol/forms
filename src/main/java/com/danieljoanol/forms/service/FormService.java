@@ -11,4 +11,6 @@ public interface FormService extends GenericService<Form> {
     
     public Form enable(Long id);
 
+    public void deleteAllByIds(Iterable<? extends Long> ids);
+
 }
