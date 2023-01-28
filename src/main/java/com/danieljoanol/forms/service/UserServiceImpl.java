@@ -134,7 +134,9 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
         } else {
 
-            User mainUser = JwtTokenUtil.getUserFromContext(this);
+            String username = JwtTokenUtil.getUsername();
+            User mainUser = userRepository.findByUsername(username).
+                    orElseThrow(() -> new UsernameNotFoundException(Message.USERNAME_NOT_FOUND));
             for (Role role : mainUser.getRoles()) {
                 if (role.getName().startsWith(GROUP_PREFIX)) {
                     groupRole = role;

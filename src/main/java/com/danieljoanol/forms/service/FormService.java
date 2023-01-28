@@ -4,7 +4,7 @@ import com.danieljoanol.forms.entity.Form;
 
 public interface FormService extends GenericService<Form> {
     
-    public Form create(Form form, Long shopId, Long clientId);
+    public Form create(Form form, Long clientId, String username);
     
     public Form updateIfEnabled(Form form);
     

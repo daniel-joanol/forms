@@ -1,62 +1,56 @@
 package com.danieljoanol.forms.service;
 
-import java.util.List;
+import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.entity.Client;
 import com.danieljoanol.forms.entity.Form;
-import com.danieljoanol.forms.entity.Shop;
 import com.danieljoanol.forms.entity.User;
+import com.danieljoanol.forms.repository.ClientRepository;
 import com.danieljoanol.forms.repository.FormRepository;
-import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
+import com.danieljoanol.forms.repository.UserRepository;
 
 @Service
 public class FormServiceImpl extends GenericServiceImpl<Form> implements FormService {
 
     private final FormRepository formRepository;
-    //private final UserService userService;
-    private final ClientService clientService;
+    private final ClientRepository clientRepository;
+    private final UserRepository userRepository;
 
-    public FormServiceImpl(FormRepository formRepository/* , UserService userService*/, ClientService clientService) {
+    public FormServiceImpl(FormRepository formRepository, ClientRepository clientRepository,
+            UserRepository userRepository) {
         super(formRepository);
         this.formRepository = formRepository;
-        this.clientService = clientService;
-        //this.userService = userService;
+        this.clientRepository = clientRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public Form create(Form form, Long shopId, Long clientId) {
-        User user = null; //JwtTokenUtil.getUserFromContext(userService);
-        Client actualClient = clientService.get(clientId);
+    public Form create(Form form, Long clientId, String username) {
         
-        /*List<Shop> shops = user.getShops();
-        if (shops == null) {
-            throw new NoParentException(Message.noParentEx("shop", "user"));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(Message.USERNAME_NOT_FOUND));
+
+        Optional<Client> client = user.getShops().stream()
+                .flatMap(shop -> shop.getClients().stream())
+                .filter(c -> c.getId() == clientId)
+                .findAny();
+
+        if (client.isEmpty()) {
+            throw new EntityNotFoundException(Message.ENTITY_NOT_FOUND);
         }
 
-        Shop actualShop = null;
-        List<Client> clients = null;
-        for (Shop shop : shops) {
-            if (shop.getId() == shopId) {
-                for (Client client : shop.getClients()) {
-                    if (client.getId() == clientId) {
-                        actualShop = shop;
-                        clients = shop.getClients();
-                    }
-                }
-            }
-        }
-        
-        if (clients == null || actualShop == null) {
-            throw new NoParentException(Message.doesNotContain("client", "shop"));
-        }*/
-
+        form.setId(null);
         form.setEnabled(true);
+        client.get().getForms().add(form);
         form = formRepository.save(form);
-        actualClient.getForms().add(form);
-        actualClient = clientService.update(actualClient);
+        clientRepository.save(client.get());
+
         return form;
     }
 
@@ -69,7 +63,7 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
     @Override
     public void disable(Long id) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -87,7 +81,7 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
     @Override
     public void deleteAllByIds(Iterable<? extends Long> ids) {
         formRepository.deleteAllById(ids);
-        
+
     }
 
 }
