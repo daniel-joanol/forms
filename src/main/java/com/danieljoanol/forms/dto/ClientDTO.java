@@ -62,16 +62,16 @@ public class ClientDTO extends GenericDTO<Client> {
 
     @Override
     public Client toEntity() {
-        Client entity = new Client();
-        entity.setId(this.id);
-        entity.setAddress(this.address);
-        entity.setPostalCode(this.postalCode);
-        entity.setCity(this.city);
-        entity.setProvince(this.province);
-        entity.setPhone1(this.phone1);
-        entity.setPhone2(this.phone2);
-        entity.setDocument(this.document);
-        entity.setEmail(this.email);
-        return entity;
+        return Client.builder()
+                .id(id)
+                .address(address)
+                .postalCode(postalCode)
+                .city(city)
+                .province(province)
+                .phone1(phone1)
+                .phone2(phone2)
+                .document(document)
+                .email(email)
+                .build();
     }
 }
