@@ -39,7 +39,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping(Url.USER)
-@SecurityRequirement(name = "Bearer Authentication")
+@SecurityRequirement(name = "{bearer.name}")
 @RequiredArgsConstructor
 public class UserController {
 

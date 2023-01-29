@@ -40,7 +40,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping(Url.PORTAL)
-@SecurityRequirement(name = "Bearer Authentication")
+@SecurityRequirement(name = "{bearer.name}")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequiredArgsConstructor
 public class AdministrationController {

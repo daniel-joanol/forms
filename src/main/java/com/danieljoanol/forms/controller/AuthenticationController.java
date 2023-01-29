@@ -49,7 +49,7 @@ public class AuthenticationController {
     @Operation(summary = "Log Out", description = "Method to disconnect a user")
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AuthenticationResponse.class)))
     @ApiResponse(responseCode = "500", description = "System error")
-    @SecurityRequirement(name = "Bearer Authentication")
+    @SecurityRequirement(name = "{bearer.name}")
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestHeader(value="Authorization") String token) {
         String response = authenticationService.logout(token);

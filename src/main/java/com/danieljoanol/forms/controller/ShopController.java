@@ -17,7 +17,6 @@ import com.danieljoanol.forms.dto.ShopDTO;
 import com.danieljoanol.forms.entity.Shop;
 import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
 import com.danieljoanol.forms.service.ShopService;
-import com.danieljoanol.forms.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,7 +28,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @RestController
 @RequestMapping(Url.SHOP)
 @RequiredArgsConstructor
-@SecurityRequirement(name = "Bearer Authentication")
+@SecurityRequirement(name = "{bearer.name}")
 @PreAuthorize("hasRole('ROLE_USER')")
 public class ShopController {
 
