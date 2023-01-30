@@ -25,13 +25,10 @@ public class Role {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY , generator = "role_id_seq")
-    @SequenceGenerator(name = "role_id_seq", sequenceName = "role_seq", initialValue = 4, allocationSize = 1)
+    @SequenceGenerator(name = "role_id_seq", sequenceName = "role_seq", initialValue = 3, allocationSize = 1)
     private Long id;
 
     @Column(unique = true)
     private String name;
-
-    private Integer maxUsers;
-    private Integer totalUsers;
 
 }

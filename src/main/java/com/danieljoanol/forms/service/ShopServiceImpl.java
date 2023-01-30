@@ -2,45 +2,35 @@ package com.danieljoanol.forms.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.danieljoanol.forms.entity.Group;
 import com.danieljoanol.forms.entity.Shop;
-import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.repository.ShopRepository;
-import com.danieljoanol.forms.repository.UserRepository;
-import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
 
 @Service
 public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopService {
     
     private final ShopRepository shopRepository;
-    private final UserRepository userRepository;
+    private final GroupService groupService;
 
-    @Value("${forms.app.group}")
-    private String GROUP_PREFIX;
-
-    public ShopServiceImpl(ShopRepository shopRepository, UserRepository userRepository) {
+    public ShopServiceImpl(ShopRepository shopRepository, GroupService groupService) {
         super(shopRepository);
         this.shopRepository = shopRepository;
-        this.userRepository = userRepository;
+        this.groupService = groupService;
     }
 
     @Override
     public Shop create(Shop shop, String username) {
-        
-        String groupName = JwtTokenUtil.getGroupRole(GROUP_PREFIX);
-        List<User> users = userRepository.findByRoles_NameIn(List.of(groupName));
 
+        Group group = groupService.getByUsernameIn(List.of(username));
+        
         shop.setEnabled(true);
-        shop.setClients(users.get(0).getShops().get(0).getClients());
         shop = shopRepository.save(shop);
-
-        for (User user : users) {
-            user.getShops().add(shop);
-        }
         
-        userRepository.saveAll(users);
+        group.getShops().add(shop);
+        group = groupService.update(group);
+        
         return shop;
     }
 

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +21,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.danieljoanol.forms.assembler.RoleAssembler;
+import com.danieljoanol.forms.assembler.GroupAssembler;
 import com.danieljoanol.forms.assembler.UserAssembler;
 import com.danieljoanol.forms.constants.Url;
 import com.danieljoanol.forms.controller.request.RegisterRequest;
-import com.danieljoanol.forms.dto.RoleDTO;
+import com.danieljoanol.forms.dto.GroupDTO;
 import com.danieljoanol.forms.dto.UserDTO;
 import com.danieljoanol.forms.exception.UsersLimitException;
-import com.danieljoanol.forms.service.RoleService;
+import com.danieljoanol.forms.service.GroupService;
 import com.danieljoanol.forms.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,15 +41,15 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping(Url.PORTAL)
-@SecurityRequirement(name = "{bearer.name}")
+@SecurityRequirement(name = "Bearer Authentication")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
 @RequiredArgsConstructor
 public class AdministrationController {
 
     private final UserService userService;
     private final UserAssembler userAssembler;
-    private final RoleService roleService;
-    private final RoleAssembler roleAssembler;
+    private final GroupService groupService;
+    private final GroupAssembler groupAssembler;
 
     @Operation(summary = "Get All Users", description = "Method to get all users")
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO[].class)))
@@ -96,7 +97,8 @@ public class AdministrationController {
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
     @PutMapping("/user/payment/{id}")
-    public ResponseEntity<UserDTO> updatePayment(@PathVariable Long id, @RequestParam(required = true) LocalDate date) {
+    public ResponseEntity<UserDTO> updatePayment(@PathVariable Long id, 
+            @RequestParam(required = true) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         UserDTO response = userAssembler.convertToDTO(userService.updateLastPayment(id, date));
         return ResponseEntity.ok(response);
     }
@@ -121,35 +123,39 @@ public class AdministrationController {
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Get All Roles", description = "Method to get all roles")
-    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = RoleDTO[].class)))
+    @Operation(summary = "Get All Groups", description = "Method to get all groups")
+    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GroupDTO[].class)))
     @ApiResponse(responseCode = "500", description = "System error")
-    @GetMapping("/role/")
-    public ResponseEntity<Page<RoleDTO>> getRoles(
+    @GetMapping("/group/")
+    public ResponseEntity<Page<GroupDTO>> getGroups(
             @RequestParam(required = true) Integer pageNumber,
             @RequestParam(required = true) Integer pageSize) {
-        Page<RoleDTO> response = roleAssembler.convertToDTO(roleService.getAll(pageNumber, pageSize));
+        Page<GroupDTO> response = groupAssembler.convertToDTO(groupService.getAll(pageNumber, pageSize));
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Get Role", description = "Method to get role")
-    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = RoleDTO.class)))
+    @Operation(summary = "Get Group", description = "Method to get group")
+    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GroupDTO.class)))
     @ApiResponse(responseCode = "500", description = "System error")
-    @GetMapping("/role/{id}")
-    public ResponseEntity<RoleDTO> getRoleById(@PathVariable Long id) {
-        RoleDTO response = roleAssembler.convertToDTO(roleService.get(id));
+    @GetMapping("/group/{id}")
+    public ResponseEntity<GroupDTO> getGroupById(@PathVariable Long id) {
+        GroupDTO response = groupAssembler.convertToDTO(groupService.get(id));
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Update user", description = "Method to update a role")
-    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = RoleDTO.class)))
+    @Operation(summary = "Update group", description = "Method to update a group")
+    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GroupDTO.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
-    @PutMapping("/role/maxUsers/{id}")
-    public ResponseEntity<RoleDTO> updateRole(@PathVariable Long id, @RequestParam(required = true) Integer maxUsers)
+    @PutMapping("/group/maxUsers/{id}")
+    public ResponseEntity<GroupDTO> updateRole(@PathVariable Long id, @RequestParam(required = true) Integer maxUsers)
             throws UsersLimitException {
-        RoleDTO response = roleAssembler.convertToDTO(roleService.updateMaxUsers(id, maxUsers));
+                GroupDTO response = groupAssembler.convertToDTO(groupService.updateMaxUsers(id, maxUsers));
         return ResponseEntity.ok(response);
     }
+
+    //TODO: disable user
+    //TODO: disable users by group
+    //TODO: delete users by group
 
 }

@@ -2,7 +2,6 @@ package com.danieljoanol.forms.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +23,7 @@ import com.danieljoanol.forms.controller.request.user.UsernameUpdateRequest;
 import com.danieljoanol.forms.email.SparkPostService;
 import com.danieljoanol.forms.entity.Client;
 import com.danieljoanol.forms.entity.Form;
+import com.danieljoanol.forms.entity.Group;
 import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.entity.Shop;
 import com.danieljoanol.forms.entity.User;
@@ -45,16 +45,14 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     private final ShopService shopService;
     private final ClientService clientService;
     private final FormService formService;
+    private final GroupService groupService;
 
     @Value("${forms.app.code.limit}")
     private Integer timeLimit;
 
-    @Value("${forms.app.group}")
-    private String GROUP_PREFIX;
-
     public UserServiceImpl(UserRepository userRepository, SparkPostService sparkPostService,
             PasswordEncoder encoder, RoleService roleService, ShopService shopService,
-            ClientService clientService, FormService formService) {
+            ClientService clientService, FormService formService, GroupService groupService) {
         super(userRepository);
         this.userRepository = userRepository;
         this.sparkPostService = sparkPostService;
@@ -63,53 +61,45 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         this.shopService = shopService;
         this.clientService = clientService;
         this.formService = formService;
+        this.groupService = groupService;
     }
 
     @Override
     public void delete(Long id) {
 
         User user = get(id);
-        Role groupRole = null;
-        for (Role role : user.getRoles()) {
-            if (role.getName().startsWith(GROUP_PREFIX)) {
-                groupRole = role;
-                if (user.isEnabled()) {
-                    groupRole.setTotalUsers(groupRole.getTotalUsers() - 1);
-                    groupRole = roleService.update(groupRole);
-                }
-                break;
-            }
+        Group group = groupService.getByUsernameIn(List.of(user.getUsername()));
+        if (user.isEnabled()) {
+            group.setTotalUsers(group.getTotalUsers() - 1);
+            group = groupService.update(group);
         }
 
         // Makes a double validation
-        List<User> groupUsers = userRepository.findByRolesIn(List.of(groupRole));
-        if (groupUsers.size() == 1 && groupRole.getTotalUsers() == 0) {
+        if (group.getUsers().size() == 1 && group.getTotalUsers() == 0) {
 
-            List<Shop> shops = user.getShops();
-            if (!shops.isEmpty()) {
+            List<Client> clients = group.getClients();
+            Set<Long> formIds = clients.stream()
+                    .flatMap(client -> client.getForms().stream())
+                    .map(Form::getId)
+                    .collect(Collectors.toSet());
+            clients.stream().forEach(c -> c.setForms(null));
+            formService.deleteAllByIds(formIds);
 
-                List<Client> clients = shops.get(0).getClients();
-                Set<Long> formIds = clients.stream()
-                        .flatMap(client -> client.getForms().stream())
-                        .map(Form::getId)
-                        .collect(Collectors.toSet());
-                clients.stream().forEach(c -> c.setForms(null));
-                formService.deleteAllByIds(formIds);
+            Set<Long> clientIds = clients.stream().map(Client::getId).collect(Collectors.toSet());
+            group.setClients(null);
+            clientService.deleteAllByIds(clientIds);
 
-                Set<Long> clientIds = clients.stream().map(Client::getId).collect(Collectors.toSet());
-                shops.stream().forEach(s -> s.setClients(null));
-                clientService.deleteAllByIds(clientIds);
+            List<Shop> shops = group.getShops();
+            Set<Long> shopIds = shops.stream().map(Shop::getId).collect(Collectors.toSet());
+            group.setShops(null);
+            shopService.deleteAllByIds(shopIds);
 
-                Set<Long> shopIds = shops.stream().map(Shop::getId).collect(Collectors.toSet());
-                user.setShops(null);
-                user = update(user);
-                shopService.deleteAllByIds(shopIds);
-            }
-
+            group.setUsers(null);
             userRepository.delete(user);
-            roleService.delete(groupRole);
+            groupService.delete(group);
 
         } else {
+            group.getUsers().remove(user);
             userRepository.delete(user);
         }
 
@@ -118,37 +108,28 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     @Override
     public User create(RegisterRequest request, boolean firstUser) throws Exception {
 
-        List<Shop> shops = new ArrayList<>();
-        Role groupRole = null;
+        Group group = null;
 
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new DuplicateKeyException(Message.DUPLICATE_USERNAME);
         }
 
         if (firstUser) {
-            
+
             if (request.getMaxGroup() == null) {
                 request.setMaxGroup(1);
             }
-            groupRole = roleService.createGroupRole(request.getMaxGroup());
+            group = groupService.create(request.getMaxGroup());
 
         } else {
 
             String username = JwtTokenUtil.getUsername();
-            User mainUser = userRepository.findByUsername(username).
-                    orElseThrow(() -> new UsernameNotFoundException(Message.USERNAME_NOT_FOUND));
-            for (Role role : mainUser.getRoles()) {
-                if (role.getName().startsWith(GROUP_PREFIX)) {
-                    groupRole = role;
-                    break;
-                }
-            }
+            group = groupService.getByUsernameIn(List.of(username));
 
-            if (groupRole.getMaxUsers() == groupRole.getTotalUsers()) {
+            if (group.getMaxUsers() == group.getTotalUsers()) {
                 throw new UsersLimitException(Message.MAX_USERS_ERROR);
             } else {
-                groupRole.setTotalUsers(groupRole.getTotalUsers() + 1);
-                shops = new ArrayList<>(mainUser.getShops());
+                group.setTotalUsers(group.getTotalUsers() + 1);
             }
         }
 
@@ -159,33 +140,32 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
                 .lastName(request.getLastName())
                 .username(request.getUsername())
                 .password(encoder.encode(request.getPassword()))
-                .roles(Set.of(userRole, groupRole))
-                .shops(shops)
+                .roles(Set.of(userRole))
                 .isEnabled(true)
                 .build();
 
-        return userRepository.save(user);
-        
+        user = userRepository.save(user);
+
+        group.getUsers().add(user);
+        group = groupService.update(group);
+
+        return user;
+
     }
 
     @Override
     public User enable(Long id) throws UsersLimitException {
 
         User user = get(id);
-
         if (user.isEnabled())
             return user;
 
-        for (Role role : user.getRoles()) {
-            if (role.getName().startsWith(GROUP_PREFIX)) {
-                if (role.getTotalUsers() < role.getMaxUsers()) {
-                    role.setTotalUsers(role.getTotalUsers() + 1);
-                    role = roleService.update(role);
-                    break;
-                } else {
-                    throw new UsersLimitException(Message.MAX_USERS_ERROR);
-                }
-            }
+        Group group = groupService.getByUsernameIn(List.of(user.getUsername()));
+        if (group.getTotalUsers() < group.getMaxUsers()) {
+            group.setTotalUsers(group.getTotalUsers() +1);
+            group = groupService.update(group);
+        } else {
+            throw new UsersLimitException(Message.MAX_USERS_ERROR);
         }
 
         user.setEnabled(true);
@@ -197,17 +177,12 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     public void disable(Long id) {
 
         User user = get(id);
-
         if (!user.isEnabled())
             return;
 
-        for (Role role : user.getRoles()) {
-            if (role.getName().startsWith(GROUP_PREFIX)) {
-                role.setTotalUsers(role.getTotalUsers() - 1);
-                role = roleService.update(role);
-                break;
-            }
-        }
+        Group group = groupService.getByUsernameIn(List.of(user.getUsername()));
+        group.setTotalUsers(group.getTotalUsers() -1);
+        group = groupService.update(group);
 
         user.setEnabled(false);
         user.setDisabledDate(new Date());

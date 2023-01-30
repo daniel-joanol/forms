@@ -30,6 +30,5 @@ public class RegisterRequest {
 
     @Min(value = 1)
     private Integer maxGroup;
-    private Integer totalUsers;
 
 }

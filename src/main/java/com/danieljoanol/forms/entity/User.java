@@ -2,10 +2,8 @@ package com.danieljoanol.forms.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -50,11 +48,7 @@ public class User implements GenericEntity<User> {
     private LocalDate lastPayment;
     private String comments;
 
-    @ManyToMany(fetch=FetchType.EAGER)
-    @JoinTable(name = "user_shops", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "shop_id"))
-    private List<Shop> shops = new ArrayList<>();
-
-    @ManyToMany(fetch=FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
