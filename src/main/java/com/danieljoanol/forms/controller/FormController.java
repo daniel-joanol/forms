@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,36 +16,35 @@ import com.danieljoanol.forms.assembler.FormAssembler;
 import com.danieljoanol.forms.constants.Url;
 import com.danieljoanol.forms.dto.FormDTO;
 import com.danieljoanol.forms.entity.Form;
-import com.danieljoanol.forms.exception.NoParentException;
-import com.danieljoanol.forms.repository.FormRepository;
+import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
 import com.danieljoanol.forms.service.FormService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import lombok.RequiredArgsConstructor;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @RestController
 @RequestMapping(Url.FORM)
-public class FormController extends GenericController<Form, FormDTO> {
+@RequiredArgsConstructor
+@SecurityRequirement(name = "Bearer Authentication")
+@PreAuthorize("hasRole('ROLE_USER')")
+public class FormController {
     
     private final FormService formService;
     private final FormAssembler formAssembler;
-
-    public FormController(FormRepository formRepository, FormAssembler formAssembler, FormService formService) {
-        super(formRepository, formAssembler);
-        this.formAssembler = formAssembler;
-        this.formService = formService;
-    }
 
     @Operation(summary = "Create", description = "Method to create a new form")
     @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FormDTO.class)))
     @ApiResponse(responseCode = "400", description = "Bad request")
     @ApiResponse(responseCode = "500", description = "System error")
-    @PostMapping("/{shopId}/{clientId}")
-    public ResponseEntity<FormDTO> create(@RequestBody @Valid FormDTO request, @PathVariable Long shopId, @PathVariable Long clientId) throws NoParentException {
+    @PostMapping("/{clientId}/")
+    public ResponseEntity<FormDTO> create(@RequestBody @Valid FormDTO request, @PathVariable Long clientId) {
+        String username = JwtTokenUtil.getUsername();
         Form entity = formAssembler.convertFromDTO(request);
-        FormDTO response = formAssembler.convertToDTO(formService.create(entity, shopId, clientId));
+        FormDTO response = formAssembler.convertToDTO(formService.create(entity, clientId, username));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

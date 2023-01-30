@@ -1,7 +1,10 @@
 package com.danieljoanol.forms.controller.response;
 
 import java.time.LocalDate;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.entity.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -21,6 +24,7 @@ public class PublicUserResponse {
     private String firstName;
     private String lastName;
     private String username;
+    private Set<String> roles;
     private LocalDate lastPayment;
 
     public PublicUserResponse(User entity) {
@@ -29,6 +33,7 @@ public class PublicUserResponse {
             this.username = entity.getUsername();
             this.firstName = entity.getFirstName();
             this.lastName = entity.getLastName();
+            this.roles = entity.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
             this.lastPayment = entity.getLastPayment();
         }
     }

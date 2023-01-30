@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.service.UserService;
 
@@ -41,9 +42,6 @@ public class JwtTokenUtil {
 
     @Value("${forms.app.authorities.key}")
     public String AUTHORITIES_KEY;
-
-    @Value("${forms.app.group}")
-    public String GROUP_ROLE;
 
     public String generateJwtToken(Authentication authentication) {
 
@@ -105,8 +103,12 @@ public class JwtTokenUtil {
         return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
     }
 
+    public static String getUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    }
+
     public static User getUserFromContext(UserService userService) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+        String username = getUsername();
         return userService.findByUsername(username);
     }
 
@@ -115,12 +117,19 @@ public class JwtTokenUtil {
                 .map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
     }
 
-    public String getGroupRole() {
+    public static boolean isAdmin() {
         Set<String> roles = getRoles();
         for (String role : roles) {
-            if (role.startsWith(GROUP_ROLE)) return role;
+            if (role.equals("ROLE_ADMIN")) return true;
         }
-        return null;
+        return false;
+    }
+
+    public static boolean isAdmin(User user) {
+        for (Role role : user.getRoles()) {
+            if (role.getName().equals("ROLE_ADMIN")) return true;
+        }
+        return false;
     }
 
 }

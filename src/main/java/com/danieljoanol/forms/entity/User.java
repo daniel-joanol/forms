@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -33,7 +34,8 @@ import lombok.Setter;
 public class User implements GenericEntity<User> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_id_seq")
+    @SequenceGenerator(name = "user_id_seq", sequenceName = "user_seq", initialValue = 2, allocationSize = 1)
     private Long id;
 
     private String firstName;
@@ -46,11 +48,7 @@ public class User implements GenericEntity<User> {
     private LocalDate lastPayment;
     private String comments;
 
-    @ManyToMany(fetch=FetchType.EAGER)
-    @JoinTable(name = "user_shops", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "shop_id"))
-    private Set<Shop> shops = new HashSet<>();
-
-    @ManyToMany(fetch=FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 

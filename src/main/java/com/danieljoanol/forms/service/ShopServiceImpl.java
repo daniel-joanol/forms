@@ -2,52 +2,65 @@ package com.danieljoanol.forms.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.danieljoanol.forms.entity.Role;
+import com.danieljoanol.forms.entity.Group;
 import com.danieljoanol.forms.entity.Shop;
-import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.repository.ShopRepository;
-import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
 
 @Service
 public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopService {
     
     private final ShopRepository shopRepository;
-    private final UserService userService;
+    private final GroupService groupService;
 
-    @Value("${forms.app.group}")
-    private String groupPrefix;
-
-    public ShopServiceImpl(ShopRepository shopRepository, UserService userService) {
+    public ShopServiceImpl(ShopRepository shopRepository, GroupService groupService) {
         super(shopRepository);
         this.shopRepository = shopRepository;
-        this.userService = userService;
+        this.groupService = groupService;
     }
 
     @Override
-    public Shop create(Shop shop) {
-        
-        User user = JwtTokenUtil.getUserFromContext(userService);
-        Role groupRole = null;
-        for (Role role : user.getRoles()) {
-            if (role.getName().startsWith(groupPrefix)) {
-                groupRole = role;
-                break;
-            }
-        }
+    public Shop create(Shop shop, String username) {
 
+        Group group = groupService.getByUsernameIn(List.of(username));
+        
         shop.setEnabled(true);
         shop = shopRepository.save(shop);
-
-        List<User> usersFromGroup = userService.getUsersByRole(List.of(groupRole));
-        for (User currentUser : usersFromGroup) {
-            currentUser.getShops().add(shop);
-            currentUser = userService.update(user);
-        }
+        
+        group.getShops().add(shop);
+        group = groupService.update(group);
         
         return shop;
+    }
+
+    @Override
+    public Shop updateIfEnabled(Shop shop) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void disable(Long id) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public Shop enable(Long id) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void delete(Long id) {
+        Shop shop = get(id);
+        shopRepository.delete(shop);
+    }
+
+    @Override
+    public void deleteAllByIds(Iterable<? extends Long> ids) {
+        shopRepository.deleteAllById(ids);
     }
 
 }

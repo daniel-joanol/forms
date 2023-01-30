@@ -74,22 +74,22 @@ public class FormDTO extends GenericDTO<Form> {
 
     @Override
     public Form toEntity() {
-        Form entity = new Form();
-        entity.setId(this.id);
-        entity.setPlate(this.plate);
-        entity.setFuel(this.fuel);
-        entity.setKilometers(this.kilometers);
-        entity.setModel(this.model);
-        entity.setBrand(this.brand);
-        entity.setFrame(this.frame);
-        entity.setChassis(this.chassis);
-        entity.setAgent(this.agent);
-        entity.setDate(this.date);
-        entity.setOpenOrder(this.openOrder);
-        entity.setComments(this.comments);
-        entity.setPdfUrl(this.pdfUrl);
-        entity.setVisibleDamages(this.visibleDamages);
-        return entity;
+        return Form.builder()
+                .id(id)
+                .plate(plate)
+                .fuel(fuel)
+                .kilometers(kilometers)
+                .model(model)
+                .brand(brand)
+                .frame(frame)
+                .chassis(chassis)
+                .agent(agent)
+                .date(date)
+                .openOrder(openOrder)
+                .comments(comments)
+                .pdfUrl(pdfUrl)
+                .visibleDamages(visibleDamages)
+                .build();
     }
 
 }

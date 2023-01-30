@@ -15,7 +15,7 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoleDTO extends GenericDTO<Role> {
 
-    private long id;
+    private Long id;
     private String name;
 
     public RoleDTO(Role entity) {
@@ -27,10 +27,9 @@ public class RoleDTO extends GenericDTO<Role> {
 
     @Override
     public Role toEntity() {
-        Role entity = new Role();
-        entity.setId(this.id);
-        entity.setName(this.name);
-        return entity;
+        return Role.builder()
+                .name(name)
+                .build();
     }
 
 }

@@ -24,13 +24,16 @@ public class BlacklistCleaning {
     private final TokenBlacklistService blacklistService;
 
     @Scheduled(cron = "0 0 2 15 * ?", zone = "Europe/Madrid")
-    public void main() {
+    public void startProcess() {
 
         log.info("Removing old tokens from blacklist");
         Long total = blacklistService.deleteByDate(
                 LocalDateTime.now().minusMinutes(
                     (expirationMs / 1000 / 60) - 1));
         log.info("Total tokens removed: {}", total);
+        
     }
+
+    //TODO: create method to delete entries that have been disabled for a long time to clean the bd
 
 }
