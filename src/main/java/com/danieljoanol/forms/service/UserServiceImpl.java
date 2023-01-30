@@ -99,6 +99,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
             groupService.delete(group);
 
         } else {
+            group.getUsers().remove(user);
             userRepository.delete(user);
         }
 
