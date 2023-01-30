@@ -2,10 +2,14 @@ package com.danieljoanol.forms.service;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.stereotype.Service;
 
+import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.entity.Client;
 import com.danieljoanol.forms.entity.Group;
+import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.repository.ClientRepository;
 
 @Service
@@ -27,12 +31,26 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
         Group group = groupService.getByUsernameIn(List.of(username));
 
         client.setEnabled(true);
+        client.setGroup(group);
         client = clientRepository.save(client);
 
-        group.getClients().add(client);
-        group = groupService.update(group);
-
         return client;
+    }
+
+    @Override
+    public List<Client> findAllByUsers(List<User> users) {
+        return clientRepository.findByGroup_UsersIn(users);
+    }
+
+    @Override
+    public Client findByIdAndUsernames(Long id, List<String> usernames) {
+        return clientRepository.findByIdAndGroup_Users_UsernameIn(id, usernames)
+                .orElseThrow(() -> new EntityNotFoundException(Message.NOT_AUTHORIZED));
+    }
+
+    @Override
+    public List<Client> findAllByUsernames(List<String> usernames) {
+        return clientRepository.findByGroup_Users_UsernameIn(usernames);
     }
 
     @Override

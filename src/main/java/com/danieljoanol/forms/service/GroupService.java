@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 
 import com.danieljoanol.forms.entity.Group;
+import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.exception.UsersLimitException;
 
 public interface GroupService {
@@ -13,6 +14,8 @@ public interface GroupService {
     public Page<Group> getAll(Integer pageNumber, Integer pageSize);
 
     public Group get(Long id);
+
+    public Group getByUserIn(List<User> users) throws AccessDeniedException;
 
     public Group getByUsernameIn(List<String> username) throws AccessDeniedException;
 

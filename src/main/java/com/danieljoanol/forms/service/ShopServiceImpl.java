@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.danieljoanol.forms.entity.Group;
 import com.danieljoanol.forms.entity.Shop;
+import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.repository.ShopRepository;
 
 @Service
@@ -26,12 +27,20 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
         Group group = groupService.getByUsernameIn(List.of(username));
         
         shop.setEnabled(true);
+        shop.setGroup(group);
         shop = shopRepository.save(shop);
         
-        group.getShops().add(shop);
-        group = groupService.update(group);
-        
         return shop;
+    }
+
+    @Override
+    public List<Shop> findAllByUsers(List<User> users) {
+        return shopRepository.findByGroup_UsersIn(users);
+    }
+
+    @Override
+    public List<Shop> findAllByUsernames(Long id, List<String> usernames) {
+        return shopRepository.findByGroup_Users_UsernameIn(usernames);
     }
 
     @Override

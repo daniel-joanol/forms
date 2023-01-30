@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -30,6 +31,7 @@ public class Client implements GenericEntity<Client> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
     private String address;
     private Integer postalCode;
     private String city;
@@ -41,6 +43,9 @@ public class Client implements GenericEntity<Client> {
 
     @OneToMany
     private List<Form> forms = new ArrayList<>();
+
+    @ManyToOne
+    private Group group;
 
     private boolean isEnabled;
     private Date disabledDate;
