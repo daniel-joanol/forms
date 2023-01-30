@@ -1,15 +1,11 @@
 package com.danieljoanol.forms.service;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.entity.Client;
 import com.danieljoanol.forms.entity.Form;
-import com.danieljoanol.forms.entity.Group;
 import com.danieljoanol.forms.repository.FormRepository;
 
 @Service
@@ -17,33 +13,23 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
 
     private final FormRepository formRepository;
     private final ClientService clientService;
-    private final GroupService groupService;
 
-    public FormServiceImpl(FormRepository formRepository, ClientService clientService, 
-            GroupService groupService) {
+    public FormServiceImpl(FormRepository formRepository, ClientService clientService) {
         super(formRepository);
         this.formRepository = formRepository;
         this.clientService = clientService;
-        this.groupService = groupService;
     }
 
     @Override
     public Form create(Form form, Long clientId, String username) {
 
-        Group group = groupService.getByUsernameIn(List.of(username));
-        Optional<Client> client = group.getClients().stream()
-                .filter(c -> c.getId() == clientId)
-                .findAny();
-
-        if (client.isEmpty()) {
-            throw new AccessDeniedException(Message.NOT_AUTHORIZED);
-        }
+        Client client = clientService.findByIdAndUsernames(clientId, List.of(username));
 
         form.setId(null);
         form.setEnabled(true);
-        client.get().getForms().add(form);
+        client.getForms().add(form);
         form = formRepository.save(form);
-        clientService.update(client.get());
+        clientService.update(client);
 
         return form;
     }

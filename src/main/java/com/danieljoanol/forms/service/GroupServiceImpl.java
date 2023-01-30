@@ -14,9 +14,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.danieljoanol.forms.constants.Message;
-import com.danieljoanol.forms.entity.Client;
 import com.danieljoanol.forms.entity.Group;
-import com.danieljoanol.forms.entity.Shop;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.exception.UsersLimitException;
 import com.danieljoanol.forms.repository.GroupRepository;
@@ -50,9 +48,7 @@ public class GroupServiceImpl implements GroupService {
                         .name(newName)
                         .maxUsers(max)
                         .totalUsers(1)
-                        .clients(new ArrayList<Client>())
                         .users(new ArrayList<User>())
-                        .shops(new ArrayList<Shop>())
                         .build();
                 group = groupRepository.save(group);
             } catch (DataIntegrityViolationException ex) {
@@ -91,6 +87,12 @@ public class GroupServiceImpl implements GroupService {
     public Group get(Long id) {
         return groupRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(Message.ID_NOT_FOUND));
+    }
+
+    @Override
+    public Group getByUserIn(List<User> users) throws AccessDeniedException {
+        return groupRepository.findByUsersIn(users)
+                .orElseThrow(() -> new AccessDeniedException(Message.NOT_AUTHORIZED));
     }
 
     @Override

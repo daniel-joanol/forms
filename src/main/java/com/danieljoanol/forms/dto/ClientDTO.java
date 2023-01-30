@@ -22,6 +22,9 @@ public class ClientDTO extends GenericDTO<Client> {
     @NotNull(message = "id {err.null}")
     private Long id;
 
+    @NotBlank(message = "name {err.blank}")
+    private String name;
+
     @NotBlank(message = "address {err.blank}")
     private String address;
 
@@ -49,6 +52,7 @@ public class ClientDTO extends GenericDTO<Client> {
     public ClientDTO(Client entity) {
         if (entity != null) {
             this.id = entity.getId();
+            this.name = entity.getName();
             this.address = entity.getAddress();
             this.postalCode = entity.getPostalCode();
             this.city = entity.getCity();
@@ -64,6 +68,7 @@ public class ClientDTO extends GenericDTO<Client> {
     public Client toEntity() {
         return Client.builder()
                 .id(id)
+                .name(name)
                 .address(address)
                 .postalCode(postalCode)
                 .city(city)

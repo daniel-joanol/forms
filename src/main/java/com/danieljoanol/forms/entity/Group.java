@@ -42,12 +42,4 @@ public class Group {
     @JoinTable(name = "group_users", joinColumns = @JoinColumn(name = "group_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> users = new ArrayList<>();
 
-    @OneToMany(fetch=FetchType.LAZY)
-    @JoinTable(name = "group_shops", joinColumns = @JoinColumn(name = "group_id"), inverseJoinColumns = @JoinColumn(name = "shop_id"))
-    private List<Shop> shops = new ArrayList<>();
-
-    @OneToMany(fetch=FetchType.LAZY)
-    @JoinTable(name = "group_clients", joinColumns = @JoinColumn(name = "group_id"), inverseJoinColumns = @JoinColumn(name = "client_id"))
-    private List<Client> clients = new ArrayList<>();
-
 }
