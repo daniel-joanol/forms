@@ -68,16 +68,16 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     public void delete(Long id) {
 
         User user = get(id);
-        Group group = groupService.getByUsernameIn(List.of(user.getUsername()));
+        List<User> users = List.of(user);
+        Group group = groupService.getByUserIn(users);
         if (user.isEnabled()) {
             group.setTotalUsers(group.getTotalUsers() - 1);
-            group = groupService.update(group);
         }
 
         // Makes a double validation
         if (group.getUsers().size() == 1 && group.getTotalUsers() == 0) {
 
-            List<Client> clients = group.getClients();
+            List<Client> clients = clientService.findAllByUsers(users);
             Set<Long> formIds = clients.stream()
                     .flatMap(client -> client.getForms().stream())
                     .map(Form::getId)
@@ -86,12 +86,10 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
             formService.deleteAllByIds(formIds);
 
             Set<Long> clientIds = clients.stream().map(Client::getId).collect(Collectors.toSet());
-            group.setClients(null);
             clientService.deleteAllByIds(clientIds);
 
-            List<Shop> shops = group.getShops();
+            List<Shop> shops = shopService.findAllByUsers(users);
             Set<Long> shopIds = shops.stream().map(Shop::getId).collect(Collectors.toSet());
-            group.setShops(null);
             shopService.deleteAllByIds(shopIds);
 
             group.setUsers(null);
@@ -100,6 +98,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
 
         } else {
             group.getUsers().remove(user);
+            group = groupService.update(group);
             userRepository.delete(user);
         }
 
