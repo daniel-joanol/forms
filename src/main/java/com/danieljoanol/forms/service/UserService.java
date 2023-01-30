@@ -18,6 +18,8 @@ public interface UserService extends GenericService<User> {
 
     public User findByUsername(String username);
 
+    public User getIfEnabled(Long id);
+
     public User updateNames(NamesUpdateRequest request);
 
     public User updateLastPayment(Long id, LocalDate date);

@@ -15,7 +15,7 @@ public interface GroupService {
 
     public Group get(Long id);
 
-    public Group getByUserIn(List<User> users) throws AccessDeniedException;
+    public Group getByUserIn(User user) throws AccessDeniedException;
 
     public Group getByUsernameIn(List<String> username) throws AccessDeniedException;
 

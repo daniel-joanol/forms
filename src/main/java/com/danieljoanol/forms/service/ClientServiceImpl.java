@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.danieljoanol.forms.constants.Message;
@@ -21,7 +24,6 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
     public ClientServiceImpl(ClientRepository clientRepository, GroupService groupService) {
         super(clientRepository);
         this.clientRepository = clientRepository;
-
         this.groupService = groupService;
     }
 
@@ -38,8 +40,9 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
     }
 
     @Override
-    public List<Client> findAllByUsers(List<User> users) {
-        return clientRepository.findByGroup_UsersIn(users);
+    public Page<Client> findAllEnabledByUsername(Integer pageNumber, Integer pageSize, String username) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return clientRepository.findByGroup_Users_UsernameInAndIsEnabledTrue(pageable, List.of(username));
     }
 
     @Override
@@ -49,8 +52,19 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
     }
 
     @Override
-    public List<Client> findAllByUsernames(List<String> usernames) {
-        return clientRepository.findByGroup_Users_UsernameIn(usernames);
+    public List<Client> findAllByUser(User user) {
+        return clientRepository.findByGroup_UsersIn(List.of(user));
+    }
+
+    @Override
+    public List<Client> findAllByUsername(String username) {
+        return clientRepository.findByGroup_Users_UsernameIn(List.of(username));
+    }
+
+    @Override
+    public Client getIfEnabled(Long id, String username) {
+        return clientRepository.findByIdAndIsEnabledTrueAndGroup_Users_UsernameIn(id, List.of(username))
+                .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
     }
 
     @Override

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -68,8 +70,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     public void delete(Long id) {
 
         User user = get(id);
-        List<User> users = List.of(user);
-        Group group = groupService.getByUserIn(users);
+        Group group = groupService.getByUserIn(user);
         if (user.isEnabled()) {
             group.setTotalUsers(group.getTotalUsers() - 1);
         }
@@ -77,7 +78,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         // Makes a double validation
         if (group.getUsers().size() == 1 && group.getTotalUsers() == 0) {
 
-            List<Client> clients = clientService.findAllByUsers(users);
+            List<Client> clients = clientService.findAllByUser(user);
             Set<Long> formIds = clients.stream()
                     .flatMap(client -> client.getForms().stream())
                     .map(Form::getId)
@@ -88,7 +89,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
             Set<Long> clientIds = clients.stream().map(Client::getId).collect(Collectors.toSet());
             clientService.deleteAllByIds(clientIds);
 
-            List<Shop> shops = shopService.findAllByUsers(users);
+            List<Shop> shops = shopService.findAllByUser(user);
             Set<Long> shopIds = shops.stream().map(Shop::getId).collect(Collectors.toSet());
             shopService.deleteAllByIds(shopIds);
 
@@ -259,6 +260,12 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         User entity = get(id);
         entity.setComments(comments);
         return update(entity);
+    }
+
+    @Override
+    public User getIfEnabled(Long id) {
+        return userRepository.findByIdAndIsEnabledTrue(id)
+                .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
     }
 
     @Override

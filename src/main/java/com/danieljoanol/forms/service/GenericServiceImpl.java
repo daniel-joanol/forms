@@ -23,18 +23,8 @@ public abstract class GenericServiceImpl<T extends GenericEntity<T>> {
         return repository.findAll(pageable);
     }
 
-    public Page<T> getAllEnabled(Integer pageNumber, Integer pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return repository.findByIsEnabled(pageable, true);
-    }
-
     public T get(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(Message.ID_NOT_FOUND));
-    }
-
-    public T getIfEnabled(Long id) {
-        return repository.findByIdAndIsEnabled(id, true)
                 .orElseThrow(() -> new EntityNotFoundException(Message.ID_NOT_FOUND));
     }
 

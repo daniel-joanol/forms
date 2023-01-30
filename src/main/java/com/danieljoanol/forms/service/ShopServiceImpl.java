@@ -2,8 +2,14 @@ package com.danieljoanol.forms.service;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.entity.Group;
 import com.danieljoanol.forms.entity.Shop;
 import com.danieljoanol.forms.entity.User;
@@ -34,13 +40,25 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
     }
 
     @Override
-    public List<Shop> findAllByUsers(List<User> users) {
-        return shopRepository.findByGroup_UsersIn(users);
+    public Page<Shop> findAllEnabledByUsername(Integer pageNumber, Integer pageSize, String username) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return shopRepository.findByGroup_Users_UsernameInAndIsEnabledTrue(pageable, List.of(username));
     }
 
     @Override
-    public List<Shop> findAllByUsernames(Long id, List<String> usernames) {
-        return shopRepository.findByGroup_Users_UsernameIn(usernames);
+    public List<Shop> findAllByUser(User user) {
+        return shopRepository.findByGroup_UsersIn(List.of(user));
+    }
+
+    @Override
+    public List<Shop> findAllByUsername(Long id, String username) {
+        return shopRepository.findByGroup_Users_UsernameIn(List.of(username));
+    }
+
+    @Override
+    public Shop getIfEnabled(Long id, String username) {
+        return shopRepository.findByIdAndIsEnabledTrueAndGroup_Users_UsernameIn(id, List.of(username))
+                .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
     }
 
     @Override

@@ -90,8 +90,8 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Group getByUserIn(List<User> users) throws AccessDeniedException {
-        return groupRepository.findByUsersIn(users)
+    public Group getByUserIn(User user) throws AccessDeniedException {
+        return groupRepository.findByUsersIn(List.of(user))
                 .orElseThrow(() -> new AccessDeniedException(Message.NOT_AUTHORIZED));
     }
 

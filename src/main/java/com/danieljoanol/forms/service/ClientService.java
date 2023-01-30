@@ -2,6 +2,8 @@ package com.danieljoanol.forms.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
 import com.danieljoanol.forms.entity.Client;
 import com.danieljoanol.forms.entity.User;
 
@@ -17,8 +19,11 @@ public interface ClientService extends GenericService<Client> {
 
     public Client findByIdAndUsernames(Long id, List<String> usernames);
 
-    public List<Client> findAllByUsernames(List<String> usernames);
+    public Page<Client> findAllEnabledByUsername(Integer pageNumber, Integer pageSize, String username);
 
-    public List<Client> findAllByUsers(List<User> users);
+    public List<Client> findAllByUsername(String username);
+
+    public List<Client> findAllByUser(User user);
     
+    public Client getIfEnabled(Long id, String username);
 }

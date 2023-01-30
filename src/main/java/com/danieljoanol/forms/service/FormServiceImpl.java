@@ -2,8 +2,14 @@ package com.danieljoanol.forms.service;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.entity.Client;
 import com.danieljoanol.forms.entity.Form;
 import com.danieljoanol.forms.repository.FormRepository;
@@ -27,11 +33,24 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
 
         form.setId(null);
         form.setEnabled(true);
+        form.setGroup(client.getGroup());
         client.getForms().add(form);
         form = formRepository.save(form);
         clientService.update(client);
 
         return form;
+    }
+
+    @Override
+    public Page<Form> findAllEnabledByUsername(Integer pageNumber, Integer pageSize, String username) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        return formRepository.findByGroup_Users_UsernameInAndIsEnabledTrue(pageable, List.of(username));
+    }
+
+    @Override
+    public Form getIfEnabled(Long id, String username) {
+        return formRepository.findByIdAndIsEnabledTrueAndGroup_Users_UsernameIn(id, List.of(username))
+                .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
     }
 
     @Override

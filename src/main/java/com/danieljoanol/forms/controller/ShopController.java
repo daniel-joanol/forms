@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,12 +43,25 @@ public class ShopController {
     @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ShopDTO[].class)))
     @ApiResponse(responseCode = "500", description = "System error")
     @GetMapping("/")
-    public ResponseEntity<Page<ShopDTO>> getUsers(
+    public ResponseEntity<Page<ShopDTO>> getAll(
             @RequestParam(required = true) Integer pageNumber,
             @RequestParam(required = true) Integer pageSize) {
-        Page<ShopDTO> response = shopAssembler.convertToDTO(shopService.getAll(pageNumber, pageSize));
+        String username = JwtTokenUtil.getUsername();
+        Page<ShopDTO> response = shopAssembler.convertToDTO(shopService.findAllEnabledByUsername(pageNumber, pageSize, username));
         return ResponseEntity.ok(response);
     }
+
+    @Operation(summary = "Get Shop", description = "Method to get an active shop from the group by id")
+    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ShopDTO[].class)))
+    @ApiResponse(responseCode = "500", description = "System error")
+    @GetMapping("/{id}")
+    public ResponseEntity<ShopDTO> get(
+            @PathVariable Long id) {
+        String username = JwtTokenUtil.getUsername();
+        ShopDTO response = shopAssembler.convertToDTO(shopService.getIfEnabled(id, username));
+        return ResponseEntity.ok(response);
+    }
+
 
     @Operation(summary = "Create", description = "Method to create a new shop")
     @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ShopDTO.class)))
