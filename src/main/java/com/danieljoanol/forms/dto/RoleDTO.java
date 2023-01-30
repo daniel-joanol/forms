@@ -15,17 +15,13 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoleDTO extends GenericDTO<Role> {
 
-    private long id;
+    private Long id;
     private String name;
-    private Integer maxUsers;
-    private Integer totalUsers;
 
     public RoleDTO(Role entity) {
         if (entity != null) {
             this.id = entity.getId();
             this.name = entity.getName();
-            this.maxUsers = entity.getMaxUsers();
-            this.totalUsers = entity.getTotalUsers();
         }
     }
 
@@ -33,8 +29,6 @@ public class RoleDTO extends GenericDTO<Role> {
     public Role toEntity() {
         return Role.builder()
                 .name(name)
-                .maxUsers(maxUsers)
-                .totalUsers(totalUsers)
                 .build();
     }
 

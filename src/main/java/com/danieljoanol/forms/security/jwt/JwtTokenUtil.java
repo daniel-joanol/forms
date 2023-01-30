@@ -117,14 +117,6 @@ public class JwtTokenUtil {
                 .map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
     }
 
-    public static String getGroupRole(String group_prefix) {
-        Set<String> roles = getRoles();
-        for (String role : roles) {
-            if (role.startsWith(group_prefix)) return role;
-        }
-        return null;
-    }
-
     public static boolean isAdmin() {
         Set<String> roles = getRoles();
         for (String role : roles) {

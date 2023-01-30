@@ -28,7 +28,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @RestController
 @RequestMapping(Url.CLIENT)
 @RequiredArgsConstructor
-@SecurityRequirement(name = "{bearer.name}")
+@SecurityRequirement(name = "Bearer Authentication")
 @PreAuthorize("hasRole('ROLE_USER')")
 public class ClientController {
 
