@@ -2,7 +2,6 @@ package com.danieljoanol.forms.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,7 +27,7 @@ public class UserDTO extends GenericDTO<User> {
     private boolean isEnabled;
     private LocalDate lastPayment;
     private Set<RoleDTO> roles;
-    private Date disabledDate;
+    private LocalDate disabledDate;
     private String comments;
     private Integer passwordCode;
     private Integer usernameCode;

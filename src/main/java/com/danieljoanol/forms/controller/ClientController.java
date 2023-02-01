@@ -36,43 +36,50 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @PreAuthorize("hasRole('ROLE_USER')")
 public class ClientController {
 
-    private final ClientService clientService;
-    private final ClientAssembler clientAssembler;
+  private final ClientService clientService;
+  private final ClientAssembler clientAssembler;
 
-    @Operation(summary = "Get All Clients", description = "Method to get all active clients from the group")
-    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDTO[].class)))
-    @ApiResponse(responseCode = "500", description = "System error")
-    @GetMapping("/")
-    public ResponseEntity<Page<ClientDTO>> getAll(
-            @RequestParam(required = true) Integer pageNumber,
-            @RequestParam(required = true) Integer pageSize) {
-        String username = JwtTokenUtil.getUsername();
-        Page<ClientDTO> response = clientAssembler.convertToDTO(clientService.findAllEnabledByUsername(pageNumber, pageSize, username));
-        return ResponseEntity.ok(response);
-    }
+  @Operation(summary = "Get All Clients", description = "Method to get all active clients from the group")
+  @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDTO[].class)))
+  @ApiResponse(responseCode = "500", description = "System error")
+  @GetMapping("/")
+  public ResponseEntity<Page<ClientDTO>> getAll(
+      @RequestParam(required = true) Integer pageNumber,
+      @RequestParam(required = true) Integer pageSize,
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) String city,
+      @RequestParam(required = false) String province,
+      @RequestParam(required = false) String email,
+      @RequestParam(required = false) String phone,
+      @RequestParam(required = false) String document) {
+    String username = JwtTokenUtil.getUsername();
+    Page<ClientDTO> response = clientAssembler.convertToDTO(clientService.findAllEnabledByUsernameAndFilters(pageNumber,
+        pageSize, username, name, city, province, phone, email, document));
+    return ResponseEntity.ok(response);
+  }
 
-    @Operation(summary = "Get Client", description = "Method to get an active client from the group by id")
-    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDTO[].class)))
-    @ApiResponse(responseCode = "500", description = "System error")
-    @GetMapping("/{id}")
-    public ResponseEntity<ClientDTO> get(
-            @PathVariable Long id) {
-        String username = JwtTokenUtil.getUsername();
-        ClientDTO response = clientAssembler.convertToDTO(clientService.getIfEnabled(id, username));
-        return ResponseEntity.ok(response);
-    }
+  @Operation(summary = "Get Client", description = "Method to get an active client from the group by id")
+  @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDTO[].class)))
+  @ApiResponse(responseCode = "500", description = "System error")
+  @GetMapping("/{id}")
+  public ResponseEntity<ClientDTO> get(
+      @PathVariable Long id) {
+    String username = JwtTokenUtil.getUsername();
+    ClientDTO response = clientAssembler.convertToDTO(clientService.getIfEnabled(id, username));
+    return ResponseEntity.ok(response);
+  }
 
-    @Operation(summary = "Create", description = "Method to create a new client")
-    @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDTO.class)))
-    @ApiResponse(responseCode = "400", description = "Bad request")
-    @ApiResponse(responseCode = "500", description = "System error")
-    @PostMapping("/")
-    public ResponseEntity<ClientDTO> create(
-            @RequestBody @Valid ClientDTO request) {
-        String username = JwtTokenUtil.getUsername();
-        Client entity = clientAssembler.convertFromDTO(request);
-        ClientDTO response = clientAssembler.convertToDTO(clientService.create(entity, username));
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  @Operation(summary = "Create", description = "Method to create a new client")
+  @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDTO.class)))
+  @ApiResponse(responseCode = "400", description = "Bad request")
+  @ApiResponse(responseCode = "500", description = "System error")
+  @PostMapping("/")
+  public ResponseEntity<ClientDTO> create(
+      @RequestBody @Valid ClientDTO request) {
+    String username = JwtTokenUtil.getUsername();
+    Client entity = clientAssembler.convertFromDTO(request);
+    ClientDTO response = clientAssembler.convertToDTO(clientService.create(entity, username));
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 
 }

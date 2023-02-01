@@ -1,6 +1,6 @@
 package com.danieljoanol.forms.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public interface GenericEntity<T> {
     
@@ -10,6 +10,6 @@ public interface GenericEntity<T> {
     boolean isEnabled();
     void setEnabled(boolean enabled);
     
-    Date getDisabledDate();
-    void setDisabledDate(Date date);
+    LocalDate getDisabledDate();
+    void setDisabledDate(LocalDate date);
 }

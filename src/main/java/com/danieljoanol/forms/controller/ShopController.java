@@ -36,42 +36,48 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @PreAuthorize("hasRole('ROLE_USER')")
 public class ShopController {
 
-    private final ShopService shopService;
-    private final ShopAssembler shopAssembler;
+  private final ShopService shopService;
+  private final ShopAssembler shopAssembler;
 
-    @Operation(summary = "Get All Shops", description = "Method to get all active shops from the group")
-    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ShopDTO[].class)))
-    @ApiResponse(responseCode = "500", description = "System error")
-    @GetMapping("/")
-    public ResponseEntity<Page<ShopDTO>> getAll(
-            @RequestParam(required = true) Integer pageNumber,
-            @RequestParam(required = true) Integer pageSize) {
-        String username = JwtTokenUtil.getUsername();
-        Page<ShopDTO> response = shopAssembler.convertToDTO(shopService.findAllEnabledByUsername(pageNumber, pageSize, username));
-        return ResponseEntity.ok(response);
-    }
+  @Operation(summary = "Get All Shops", description = "Method to get all active shops from the group")
+  @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ShopDTO[].class)))
+  @ApiResponse(responseCode = "500", description = "System error")
+  @GetMapping("/")
+  public ResponseEntity<Page<ShopDTO>> getAll(
+      @RequestParam(required = true) Integer pageNumber,
+      @RequestParam(required = true) Integer pageSize,
+      @RequestParam(required = false) String shopName,
+      @RequestParam(required = false) String ownerName,
+      @RequestParam(required = false) String city,
+      @RequestParam(required = false) String province,
+      @RequestParam(required = false) String phone,
+      @RequestParam(required = false) String document) {
+    String username = JwtTokenUtil.getUsername();
+    Page<ShopDTO> response = shopAssembler.convertToDTO(shopService.findAllEnabledByUsernameAndFilters(pageNumber,
+        pageSize, username, shopName, ownerName, city, province, phone, document));
+    return ResponseEntity.ok(response);
+  }
 
-    @Operation(summary = "Get Shop", description = "Method to get an active shop from the group by id")
-    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ShopDTO[].class)))
-    @ApiResponse(responseCode = "500", description = "System error")
-    @GetMapping("/{id}")
-    public ResponseEntity<ShopDTO> get(
-            @PathVariable Long id) {
-        String username = JwtTokenUtil.getUsername();
-        ShopDTO response = shopAssembler.convertToDTO(shopService.getIfEnabled(id, username));
-        return ResponseEntity.ok(response);
-    }
+  @Operation(summary = "Get Shop", description = "Method to get an active shop from the group by id")
+  @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ShopDTO[].class)))
+  @ApiResponse(responseCode = "500", description = "System error")
+  @GetMapping("/{id}")
+  public ResponseEntity<ShopDTO> get(
+      @PathVariable Long id) {
+    String username = JwtTokenUtil.getUsername();
+    ShopDTO response = shopAssembler.convertToDTO(shopService.getIfEnabled(id, username));
+    return ResponseEntity.ok(response);
+  }
 
-
-    @Operation(summary = "Create", description = "Method to create a new shop")
-    @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ShopDTO.class)))
-    @ApiResponse(responseCode = "400", description = "Bad request")
-    @ApiResponse(responseCode = "500", description = "System error")
-    @PostMapping("/")
-    public ResponseEntity<ShopDTO> create(@RequestBody @Valid ShopDTO request) {
-        String username = JwtTokenUtil.getUsername();
-        Shop entity = shopAssembler.convertFromDTO(request);
-        ShopDTO response = shopAssembler.convertToDTO(shopService.create(entity, username));
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+  @Operation(summary = "Create", description = "Method to create a new shop")
+  @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ShopDTO.class)))
+  @ApiResponse(responseCode = "400", description = "Bad request")
+  @ApiResponse(responseCode = "500", description = "System error")
+  @PostMapping("/")
+  public ResponseEntity<ShopDTO> create(@RequestBody @Valid ShopDTO request) {
+    String username = JwtTokenUtil.getUsername();
+    Shop entity = shopAssembler.convertFromDTO(request);
+    ShopDTO response = shopAssembler.convertToDTO(shopService.create(entity, username));
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 }

@@ -1,8 +1,11 @@
 package com.danieljoanol.forms.controller;
 
+import java.time.LocalDateTime;
+
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,43 +38,53 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @SecurityRequirement(name = "Bearer Authentication")
 @PreAuthorize("hasRole('ROLE_USER')")
 public class FormController {
-    
-    private final FormService formService;
-    private final FormAssembler formAssembler;
 
-    @Operation(summary = "Get All Forms", description = "Method to get all active forms from the group")
-    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FormDTO[].class)))
-    @ApiResponse(responseCode = "500", description = "System error")
-    @GetMapping("/")
-    public ResponseEntity<Page<FormDTO>> getAll(
-            @RequestParam(required = true) Integer pageNumber,
-            @RequestParam(required = true) Integer pageSize) {
-        String username = JwtTokenUtil.getUsername();
-        Page<FormDTO> response = formAssembler.convertToDTO(formService.findAllEnabledByUsername(pageNumber, pageSize, username));
-        return ResponseEntity.ok(response);
-    }
+  private final FormService formService;
+  private final FormAssembler formAssembler;
 
-    @Operation(summary = "Get Form", description = "Method to get an active form from the group by id")
-    @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FormDTO[].class)))
-    @ApiResponse(responseCode = "500", description = "System error")
-    @GetMapping("/{id}")
-    public ResponseEntity<FormDTO> get(
-            @PathVariable Long id) {
-        String username = JwtTokenUtil.getUsername();
-        FormDTO response = formAssembler.convertToDTO(formService.getIfEnabled(id, username));
-        return ResponseEntity.ok(response);
-    }
+  @Operation(summary = "Get All Forms", description = "Method to get all active forms from the group")
+  @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FormDTO[].class)))
+  @ApiResponse(responseCode = "500", description = "System error")
+  @GetMapping("/")
+  public ResponseEntity<Page<FormDTO>> getAll(
+      @RequestParam(required = true) Integer pageNumber,
+      @RequestParam(required = true) Integer pageSize,
+      @RequestParam(required = false) String plate,
+      @RequestParam(required = false) String model,
+      @RequestParam(required = false) String brand,
+      @RequestParam(required = false) String frame,
+      @RequestParam(required = false) String agent,
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime minDate,
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime maxDateTime,
+      @RequestParam(required = false) Boolean openOrder) {
 
-    @Operation(summary = "Create", description = "Method to create a new form")
-    @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FormDTO.class)))
-    @ApiResponse(responseCode = "400", description = "Bad request")
-    @ApiResponse(responseCode = "500", description = "System error")
-    @PostMapping("/{clientId}/")
-    public ResponseEntity<FormDTO> create(@RequestBody @Valid FormDTO request, @PathVariable Long clientId) {
-        String username = JwtTokenUtil.getUsername();
-        Form entity = formAssembler.convertFromDTO(request);
-        FormDTO response = formAssembler.convertToDTO(formService.create(entity, clientId, username));
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+    String username = JwtTokenUtil.getUsername();
+    Page<FormDTO> response = formAssembler.convertToDTO(formService.findAllEnabledByUsernameAndFilters(
+        pageNumber, pageSize, username, plate, model, brand, frame, agent, minDate, maxDateTime, openOrder));
+    return ResponseEntity.ok(response);
+  }
+
+  @Operation(summary = "Get Form", description = "Method to get an active form from the group by id")
+  @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FormDTO[].class)))
+  @ApiResponse(responseCode = "500", description = "System error")
+  @GetMapping("/{id}")
+  public ResponseEntity<FormDTO> get(
+      @PathVariable Long id) {
+    String username = JwtTokenUtil.getUsername();
+    FormDTO response = formAssembler.convertToDTO(formService.getIfEnabled(id, username));
+    return ResponseEntity.ok(response);
+  }
+
+  @Operation(summary = "Create", description = "Method to create a new form")
+  @ApiResponse(responseCode = "201", description = "Created", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FormDTO.class)))
+  @ApiResponse(responseCode = "400", description = "Bad request")
+  @ApiResponse(responseCode = "500", description = "System error")
+  @PostMapping("/{clientId}/")
+  public ResponseEntity<FormDTO> create(@RequestBody @Valid FormDTO request, @PathVariable Long clientId) {
+    String username = JwtTokenUtil.getUsername();
+    Form entity = formAssembler.convertFromDTO(request);
+    FormDTO response = formAssembler.convertToDTO(formService.create(entity, clientId, username));
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
 
 }

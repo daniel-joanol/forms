@@ -53,7 +53,7 @@ public class User implements GenericEntity<User> {
     private Set<Role> roles = new HashSet<>();
 
     private boolean isEnabled;
-    private Date disabledDate;
+    private LocalDate disabledDate;
 
     private Integer passwordCode;
     private Integer usernameCode;

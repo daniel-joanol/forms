@@ -1,5 +1,6 @@
 package com.danieljoanol.forms.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -12,75 +13,99 @@ import org.springframework.stereotype.Service;
 import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.entity.Client;
 import com.danieljoanol.forms.entity.Form;
+import com.danieljoanol.forms.entity.Group;
 import com.danieljoanol.forms.repository.FormRepository;
+import com.danieljoanol.forms.repository.criteria.FormCriteria;
+import com.danieljoanol.forms.repository.specification.FormSpecification;
 
 @Service
 public class FormServiceImpl extends GenericServiceImpl<Form> implements FormService {
 
-    private final FormRepository formRepository;
-    private final ClientService clientService;
+  private final FormRepository formRepository;
+  private final ClientService clientService;
+  private final GroupService groupService;
 
-    public FormServiceImpl(FormRepository formRepository, ClientService clientService) {
-        super(formRepository);
-        this.formRepository = formRepository;
-        this.clientService = clientService;
-    }
+  public FormServiceImpl(
+      FormRepository formRepository, ClientService clientService, GroupService groupService) {
+    super(formRepository);
+    this.formRepository = formRepository;
+    this.clientService = clientService;
+    this.groupService = groupService;
+  }
 
-    @Override
-    public Form create(Form form, Long clientId, String username) {
+  @Override
+  public Form create(Form form, Long clientId, String username) {
 
-        Client client = clientService.findByIdAndUsernames(clientId, List.of(username));
+    Client client = clientService.findByIdAndUsernames(clientId, List.of(username));
 
-        form.setId(null);
-        form.setEnabled(true);
-        form.setGroup(client.getGroup());
-        client.getForms().add(form);
-        form = formRepository.save(form);
-        clientService.update(client);
+    form.setId(null);
+    form.setEnabled(true);
+    form.setGroup(client.getGroup());
+    client.getForms().add(form);
+    form = formRepository.save(form);
+    clientService.update(client);
 
-        return form;
-    }
+    return form;
+  }
 
-    @Override
-    public Page<Form> findAllEnabledByUsername(Integer pageNumber, Integer pageSize, String username) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return formRepository.findByGroup_Users_UsernameInAndIsEnabledTrue(pageable, List.of(username));
-    }
+  @Override
+  public Page<Form> findAllEnabledByUsernameAndFilters(Integer pageNumber, Integer pageSize, String username,
+      String plate, String model, String brand, String frame, String agent, LocalDateTime minDate,
+      LocalDateTime maxDate, Boolean openOrder) {
 
-    @Override
-    public Form getIfEnabled(Long id, String username) {
-        return formRepository.findByIdAndIsEnabledTrueAndGroup_Users_UsernameIn(id, List.of(username))
-                .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
-    }
+    Group group = groupService.getByUsername(username);
+    Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-    @Override
-    public Form updateIfEnabled(Form form) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    FormCriteria criteria = FormCriteria.builder()
+        .plate(plate)
+        .model(model)
+        .brand(brand)
+        .frame(frame)
+        .agent(agent)
+        .minDate(minDate)
+        .maxDate(maxDate)
+        .openOrder(openOrder)
+        .group(group)
+        .isEnabled(true)
+        .build();
 
-    @Override
-    public void disable(Long id) {
-        // TODO Auto-generated method stub
+    return formRepository.findAll(FormSpecification.search(criteria), pageable);
+  }
 
-    }
+  @Override
+  public Form getIfEnabled(Long id, String username) {
+    return formRepository.findByIdAndIsEnabledTrueAndGroup_Users_UsernameIn(id, List.of(username))
+        .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
+  }
 
-    @Override
-    public Form enable(Long id) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+  @Override
+  public Form updateIfEnabled(Form form) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
-    @Override
-    public void delete(Long id) {
-        Form form = get(id);
-        formRepository.delete(form);
-    }
+  @Override
+  public void disable(Long id) {
+    // TODO Auto-generated method stub
 
-    @Override
-    public void deleteAllByIds(Iterable<? extends Long> ids) {
-        formRepository.deleteAllById(ids);
+  }
 
-    }
+  @Override
+  public Form enable(Long id) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void delete(Long id) {
+    Form form = get(id);
+    formRepository.delete(form);
+  }
+
+  @Override
+  public void deleteAllByIds(Iterable<? extends Long> ids) {
+    formRepository.deleteAllById(ids);
+
+  }
 
 }

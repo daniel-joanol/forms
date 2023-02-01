@@ -1,7 +1,7 @@
 package com.danieljoanol.forms.entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +41,7 @@ public class Form implements GenericEntity<Form> {
     private String chassis;
     private String agent;
     private LocalDateTime date;
+    // TODO: implement closeOrder, reopen
     private Boolean openOrder = true;
     private String comments;
     private String pdfUrl;
@@ -49,7 +50,7 @@ public class Form implements GenericEntity<Form> {
     private Set<String> visibleDamages = new HashSet<>();
 
     private boolean isEnabled;
-    private Date disabledDate;
+    private LocalDate disabledDate;
 
     @ManyToOne
     private Group group;

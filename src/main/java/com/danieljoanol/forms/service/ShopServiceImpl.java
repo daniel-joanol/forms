@@ -14,80 +14,97 @@ import com.danieljoanol.forms.entity.Group;
 import com.danieljoanol.forms.entity.Shop;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.repository.ShopRepository;
+import com.danieljoanol.forms.repository.criteria.ShopCriteria;
+import com.danieljoanol.forms.repository.specification.ShopSpecification;
 
 @Service
 public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopService {
-    
-    private final ShopRepository shopRepository;
-    private final GroupService groupService;
 
-    public ShopServiceImpl(ShopRepository shopRepository, GroupService groupService) {
-        super(shopRepository);
-        this.shopRepository = shopRepository;
-        this.groupService = groupService;
-    }
+  private final ShopRepository shopRepository;
+  private final GroupService groupService;
 
-    @Override
-    public Shop create(Shop shop, String username) {
+  public ShopServiceImpl(ShopRepository shopRepository, GroupService groupService) {
+    super(shopRepository);
+    this.shopRepository = shopRepository;
+    this.groupService = groupService;
+  }
 
-        Group group = groupService.getByUsernameIn(List.of(username));
-        
-        shop.setEnabled(true);
-        shop.setGroup(group);
-        shop = shopRepository.save(shop);
-        
-        return shop;
-    }
+  @Override
+  public Page<Shop> findAllEnabledByUsernameAndFilters(Integer pageNumber, Integer pageSize, String username,
+      String shopName, String ownerName, String city, String province, String phone, String document) {
 
-    @Override
-    public Page<Shop> findAllEnabledByUsername(Integer pageNumber, Integer pageSize, String username) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return shopRepository.findByGroup_Users_UsernameInAndIsEnabledTrue(pageable, List.of(username));
-    }
+    Group group = groupService.getByUsername(username);
+    Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-    @Override
-    public List<Shop> findAllByUser(User user) {
-        return shopRepository.findByGroup_UsersIn(List.of(user));
-    }
+    ShopCriteria criteria = ShopCriteria.builder()
+          .shopName(shopName)
+          .ownerName(ownerName)
+          .city(city)
+          .province(province)
+          .phone(phone)
+          .document(document)
+          .group(group)
+          .isEnabled(true)
+          .build();
 
-    @Override
-    public List<Shop> findAllByUsername(Long id, String username) {
-        return shopRepository.findByGroup_Users_UsernameIn(List.of(username));
-    }
+    return shopRepository.findAll(ShopSpecification.search(criteria), pageable);
+  }
 
-    @Override
-    public Shop getIfEnabled(Long id, String username) {
-        return shopRepository.findByIdAndIsEnabledTrueAndGroup_Users_UsernameIn(id, List.of(username))
-                .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
-    }
+  @Override
+  public Shop create(Shop shop, String username) {
 
-    @Override
-    public Shop updateIfEnabled(Shop shop) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    Group group = groupService.getByUsername(username);
 
-    @Override
-    public void disable(Long id) {
-        // TODO Auto-generated method stub
-        
-    }
+    shop.setEnabled(true);
+    shop.setGroup(group);
+    shop = shopRepository.save(shop);
 
-    @Override
-    public Shop enable(Long id) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    return shop;
+  }
 
-    @Override
-    public void delete(Long id) {
-        Shop shop = get(id);
-        shopRepository.delete(shop);
-    }
+  @Override
+  public List<Shop> findAllByUser(User user) {
+    return shopRepository.findByGroup_UsersIn(List.of(user));
+  }
 
-    @Override
-    public void deleteAllByIds(Iterable<? extends Long> ids) {
-        shopRepository.deleteAllById(ids);
-    }
+  @Override
+  public List<Shop> findAllByUsername(Long id, String username) {
+    return shopRepository.findByGroup_Users_UsernameIn(List.of(username));
+  }
+
+  @Override
+  public Shop getIfEnabled(Long id, String username) {
+    return shopRepository.findByIdAndIsEnabledTrueAndGroup_Users_UsernameIn(id, List.of(username))
+        .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
+  }
+
+  @Override
+  public Shop updateIfEnabled(Shop shop) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void disable(Long id) {
+    // TODO Auto-generated method stub
+
+  }
+
+  @Override
+  public Shop enable(Long id) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void delete(Long id) {
+    Shop shop = get(id);
+    shopRepository.delete(shop);
+  }
+
+  @Override
+  public void deleteAllByIds(Iterable<? extends Long> ids) {
+    shopRepository.deleteAllById(ids);
+  }
 
 }
