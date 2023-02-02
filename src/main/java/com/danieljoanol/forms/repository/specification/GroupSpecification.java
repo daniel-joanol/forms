@@ -43,7 +43,8 @@ public class GroupSpecification {
         }
 
         if (criteria.getUsername() != null) {
-          Join<Group, User> join = root.join("_user", JoinType.INNER);
+
+          Join<Group, User> join = root.join("users", JoinType.INNER);
           predicates.add(cBuilder.equal(join.get("username"), criteria.getUsername()));
         }
 

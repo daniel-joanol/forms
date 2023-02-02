@@ -33,6 +33,7 @@ public class UserDTO extends GenericDTO<User> {
     private Integer usernameCode;
     private LocalDateTime passwordTimeLimit;
     private LocalDateTime usernameTimeLimit;
+    private String groupName;
 
     public UserDTO(User entity) {
         if (entity != null) {
@@ -49,6 +50,7 @@ public class UserDTO extends GenericDTO<User> {
             this.usernameCode = entity.getUsernameCode();
             this.passwordTimeLimit = entity.getPasswordTimeLimit();
             this.usernameTimeLimit = entity.getUsernameTimeLimit();
+            this.groupName = entity.getGroup().getName();
         }
     }
 

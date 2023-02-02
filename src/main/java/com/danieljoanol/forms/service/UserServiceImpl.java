@@ -147,6 +147,7 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
         .username(request.getUsername())
         .password(encoder.encode(request.getPassword()))
         .roles(Set.of(userRole))
+        .group(group)
         .isEnabled(true)
         .build();
 

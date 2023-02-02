@@ -1,7 +1,6 @@
 package com.danieljoanol.forms.controller;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.validation.Valid;
 
@@ -64,10 +63,10 @@ public class AdministrationController {
       @RequestParam(required = false) String username,
       @RequestParam(required = false) String groupName,
       @RequestParam(required = false) Boolean isEnabled,
-      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate minLastPayment,
-      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate maxLastPayment,
-      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate minDisabledDate,
-      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate maxDisabledDate) {
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate minLastPayment,
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate maxLastPayment,
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate minDisabledDate,
+      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate maxDisabledDate) {
 
     Page<UserDTO> response = userAssembler.convertToDTO(userService.getAll(
         pageNumber, pageSize, firstName, lastName, username, minLastPayment, maxLastPayment, isEnabled, minDisabledDate,

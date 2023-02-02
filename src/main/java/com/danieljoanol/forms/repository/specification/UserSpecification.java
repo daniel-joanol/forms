@@ -52,22 +52,22 @@ public class UserSpecification {
 
         if (criteria.getIsEnabled() != null) {
           predicates.add(cBuilder.equal(root.get("isEnabled"), criteria.getIsEnabled()));
-        }
 
-        if (criteria.getIsEnabled() == false) {
-          
-          if (criteria.getMaxDisabledDate() != null) {
-            predicates.add(cBuilder.lessThanOrEqualTo(root.get("disabledDate"), criteria.getMaxDisabledDate()));
+          if (criteria.getIsEnabled() == false) {
+            if (criteria.getMaxDisabledDate() != null) {
+              predicates.add(cBuilder.lessThanOrEqualTo(root.get("disabledDate"), criteria.getMaxDisabledDate()));
+            }
+
+            if (criteria.getMinDisabledDate() != null) {
+              predicates.add(cBuilder.greaterThanOrEqualTo(root.get("disabledDate"), criteria.getMinDisabledDate()));
+            }
           }
-  
-          if (criteria.getMinDisabledDate() != null) {
-            predicates.add(cBuilder.greaterThanOrEqualTo(root.get("disabledDate"), criteria.getMinDisabledDate()));
-          }
+
         }
 
         if (criteria.getGroupName() != null) {
-          Join<User, Group> join = root.join("group", JoinType.INNER);
-          predicates.add(cBuilder.equal(join.get("name"), criteria.getGroupName()));
+          Join<User, Group> groupJoin = root.join("group", JoinType.INNER);
+          predicates.add(cBuilder.equal(groupJoin.get("name"), criteria.getGroupName()));
         }
 
         return cBuilder.and(predicates.toArray(Predicate[]::new));

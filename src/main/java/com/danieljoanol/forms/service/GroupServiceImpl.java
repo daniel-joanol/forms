@@ -81,7 +81,7 @@ public class GroupServiceImpl implements GroupService {
     
     Pageable pageable = PageRequest.of(pageNumber, pageSize);
     GroupCriteria criteria = GroupCriteria.builder()
-          .name(username)
+          .name(name)
           .maxUsers(maxUsers)
           .totalUsers(totalUsers)
           .username(username)
