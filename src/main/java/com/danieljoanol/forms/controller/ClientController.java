@@ -7,9 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -80,6 +82,30 @@ public class ClientController {
     Client entity = clientAssembler.convertFromDTO(request);
     ClientDTO response = clientAssembler.convertToDTO(clientService.create(entity, username));
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
+  }
+
+  @Operation(summary = "Update", description = "Method to update a new client")
+  @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ClientDTO.class)))
+  @ApiResponse(responseCode = "400", description = "Bad request")
+  @ApiResponse(responseCode = "500", description = "System error")
+  @PutMapping("/")
+  public ResponseEntity<ClientDTO> update(
+      @RequestBody @Valid ClientDTO request) {
+    String username = JwtTokenUtil.getUsername();
+    Client entity = clientAssembler.convertFromDTO(request);
+    ClientDTO response = clientAssembler.convertToDTO(clientService.updateIfEnabled(entity, username));
+    return ResponseEntity.ok(response);
+  }
+
+  @Operation(summary = "Disable", description = "Method to disable a client")
+  @ApiResponse(responseCode = "204", description = "No content")
+  @ApiResponse(responseCode = "400", description = "Bad request")
+  @ApiResponse(responseCode = "500", description = "System error")
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> disable(@PathVariable Long id) {
+    String username = JwtTokenUtil.getUsername();
+    clientService.disable(id, username);
+    return ResponseEntity.noContent().build();
   }
 
 }

@@ -23,4 +23,6 @@ public abstract class GenericServiceImpl<T extends GenericEntity<T>> {
         return repository.save(update);
     }
 
+    
+
 }

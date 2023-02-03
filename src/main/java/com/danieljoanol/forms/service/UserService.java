@@ -9,12 +9,13 @@ import com.danieljoanol.forms.controller.request.user.CodeConfirmationRequest;
 import com.danieljoanol.forms.controller.request.user.NamesUpdateRequest;
 import com.danieljoanol.forms.controller.request.user.PasswordUpdateRequest;
 import com.danieljoanol.forms.controller.request.user.UsernameUpdateRequest;
+import com.danieljoanol.forms.entity.Group;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.exception.CodeException;
 import com.danieljoanol.forms.exception.UsersLimitException;
 import com.sparkpost.exception.SparkPostException;
 
-public interface UserService extends GenericService<User> {
+public interface UserService {
 
   public Page<User> getAll(Integer pageNumber, Integer pageSize, String firstName, String lastName, String username,
       LocalDate minLastPayment, LocalDate maxLastPayment, Boolean isEnabled, LocalDate minDisabledDate, LocalDate maxDisabledDate,
@@ -41,5 +42,19 @@ public interface UserService extends GenericService<User> {
   public User confirmNewUsername(CodeConfirmationRequest request) throws CodeException;
 
   public User enable(Long id) throws UsersLimitException;
+
+  public void delete(Long id);
+
+  public void delete(User user);
+
+  public User get(Long id);
+
+  public User update(User update);
+
+  public void disable(Long id);
+
+  public Group disableUserByGroup(Long groupId);
+
+  public void deleteUsersByGroup(Long groupId);
 
 }

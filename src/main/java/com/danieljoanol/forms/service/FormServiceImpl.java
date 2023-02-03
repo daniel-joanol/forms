@@ -1,5 +1,6 @@
 package com.danieljoanol.forms.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -79,21 +80,17 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
   }
 
   @Override
-  public Form updateIfEnabled(Form form) {
-    // TODO Auto-generated method stub
-    return null;
+  public Form updateIfEnabled(Form form, String username) {
+    getIfEnabled(form.getId(), username);
+    return formRepository.save(form);
   }
 
   @Override
-  public void disable(Long id) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public Form enable(Long id) {
-    // TODO Auto-generated method stub
-    return null;
+  public void disable(Long id, String username) {
+    Form form = getIfEnabled(id, username);
+    form.setEnabled(false);
+    form.setDisabledDate(LocalDate.now());
+    update(form);
   }
 
   @Override
@@ -105,7 +102,6 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
   @Override
   public void deleteAllByIds(Iterable<? extends Long> ids) {
     formRepository.deleteAllById(ids);
-
   }
 
 }

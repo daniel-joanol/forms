@@ -11,10 +11,6 @@ public interface ShopService extends GenericService<Shop> {
 
   public Shop create(Shop shop, String username);
 
-  public Shop updateIfEnabled(Shop shop);
-
-  public Shop enable(Long id);
-
   public void deleteAllByIds(Iterable<? extends Long> ids);
 
   public Page<Shop> findAllEnabledByUsernameAndFilters(Integer pageNumber, Integer pageSize, String username,
@@ -25,5 +21,7 @@ public interface ShopService extends GenericService<Shop> {
   public List<Shop> findAllByUser(User user);
 
   public Shop getIfEnabled(Long id, String username);
+
+  public Shop updateIfEnabled(Shop shop, String username);
 
 }

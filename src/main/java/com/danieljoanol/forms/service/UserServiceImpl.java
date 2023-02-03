@@ -40,8 +40,11 @@ import com.danieljoanol.forms.security.jwt.JwtTokenUtil;
 import com.danieljoanol.forms.util.CodeGeneration;
 import com.sparkpost.exception.SparkPostException;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
-public class UserServiceImpl extends GenericServiceImpl<User> implements UserService {
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final SparkPostService sparkPostService;
@@ -56,24 +59,15 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
   @Value("${forms.app.code.limit}")
   private Integer timeLimit;
 
-  public UserServiceImpl(UserRepository userRepository, SparkPostService sparkPostService,
-      PasswordEncoder encoder, RoleService roleService, ShopService shopService,
-      ClientService clientService, FormService formService, GroupService groupService) {
-    super(userRepository);
-    this.userRepository = userRepository;
-    this.sparkPostService = sparkPostService;
-    this.encoder = encoder;
-    this.roleService = roleService;
-    this.shopService = shopService;
-    this.clientService = clientService;
-    this.formService = formService;
-    this.groupService = groupService;
+  @Override
+  public void delete(Long id) {
+    User user = get(id);
+    delete(user);
   }
 
   @Override
-  public void delete(Long id) {
-
-    User user = get(id);
+  public void delete(User user) {
+    
     Group group = groupService.getByUser(user);
     if (user.isEnabled()) {
       group.setTotalUsers(group.getTotalUsers() - 1);
@@ -106,7 +100,6 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
       group = groupService.update(group);
       userRepository.delete(user);
     }
-
   }
 
   @Override
@@ -325,6 +318,35 @@ public class UserServiceImpl extends GenericServiceImpl<User> implements UserSer
     } else {
       return Message.SPARK_POST_ERROR;
     }
+  }
+
+  @Override
+  public User get(Long id) {
+    return userRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
+  }
+
+  @Override
+  public User update(User update) {
+    return userRepository.save(update);
+  }
+
+  @Override
+  public void deleteUsersByGroup(Long groupId) {
+    Group group = groupService.get(groupId);
+    group.getUsers().forEach(u -> delete(u));
+  }
+
+  @Override
+  public Group disableUserByGroup(Long groupId) {
+    Group group = groupService.get(groupId);
+    group.getUsers().forEach(u -> {
+        u.setEnabled(false);
+        u.setDisabledDate(LocalDate.now());
+        u = update(u);
+    });
+    
+    return group;
   }
 
 }

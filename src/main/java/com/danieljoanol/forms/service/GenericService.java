@@ -8,6 +8,6 @@ public interface GenericService<T> {
 
     public void delete(Long id);
 
-    public void disable(Long id);
+    public void disable(Long id, String username);
     
 }

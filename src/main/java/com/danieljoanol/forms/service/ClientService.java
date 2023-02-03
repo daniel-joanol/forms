@@ -11,10 +11,6 @@ public interface ClientService extends GenericService<Client> {
 
   public Client create(Client client, String username);
 
-  public Client updateIfEnabled(Client client);
-
-  public Client enable(Long id);
-
   public void deleteAllByIds(Iterable<? extends Long> ids);
 
   public Client findByIdAndUsernames(Long id, List<String> usernames);
@@ -27,4 +23,6 @@ public interface ClientService extends GenericService<Client> {
   public List<Client> findAllByUser(User user);
 
   public Client getIfEnabled(Long id, String username);
+
+  public Client updateIfEnabled(Client update, String username);
 }

@@ -1,5 +1,6 @@
 package com.danieljoanol.forms.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -79,21 +80,17 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
   }
 
   @Override
-  public Shop updateIfEnabled(Shop shop) {
-    // TODO Auto-generated method stub
-    return null;
+  public Shop updateIfEnabled(Shop shop, String username) {
+    getIfEnabled(shop.getId(), username);
+    return shopRepository.save(shop);
   }
 
   @Override
-  public void disable(Long id) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public Shop enable(Long id) {
-    // TODO Auto-generated method stub
-    return null;
+  public void disable(Long id, String username) {
+    Shop shop = getIfEnabled(id, username);
+    shop.setEnabled(false);
+    shop.setDisabledDate(LocalDate.now());
+    update(shop);
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.danieljoanol.forms.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -85,21 +86,17 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
   }
 
   @Override
-  public Client updateIfEnabled(Client client) {
-    // TODO Auto-generated method stub
-    return null;
+  public Client updateIfEnabled(Client client, String username) {
+    getIfEnabled(client.getId(), username);
+    return clientRepository.save(client);
   }
 
   @Override
-  public void disable(Long id) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public Client enable(Long id) {
-    // TODO Auto-generated method stub
-    return null;
+  public void disable(Long id, String username) {
+    Client client = getIfEnabled(id, username);
+    client.setEnabled(false);
+    client.setDisabledDate(LocalDate.now());
+    update(client);
   }
 
   @Override
