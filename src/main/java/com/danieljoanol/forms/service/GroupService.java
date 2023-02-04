@@ -1,5 +1,7 @@
 package com.danieljoanol.forms.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 
@@ -25,5 +27,7 @@ public interface GroupService {
   public Group update(Group group);
 
   public void delete(Group group);
+
+  public void deleteGroups(List<Group> groups);
 
 }

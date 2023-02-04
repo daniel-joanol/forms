@@ -104,6 +104,27 @@ public class AdministrationController {
     return ResponseEntity.ok(response);
   }
 
+  @Operation(summary = "Disable user", description = "Method to disable a user")
+  @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class)))
+  @ApiResponse(responseCode = "400", description = "Bad request")
+  @ApiResponse(responseCode = "500", description = "System error")
+  @PutMapping("/user/disable/{id}")
+  public ResponseEntity<UserDTO> disableUser(@PathVariable Long id) throws UsersLimitException {
+    UserDTO response = userAssembler.convertToDTO(userService.disable(id));
+    return ResponseEntity.ok(response);
+  }
+
+  @Operation(summary = "Disable by group", description = "Method to disable users by group")
+  @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class)))
+  @ApiResponse(responseCode = "400", description = "Bad request")
+  @ApiResponse(responseCode = "500", description = "System error")
+  @PutMapping("/user/disable/group/{groupId}")
+  public ResponseEntity<GroupDTO> disableBtGroup(
+      @PathVariable Long groupId) throws UsersLimitException {
+    GroupDTO response = groupAssembler.convertToDTO(userService.disableUserByGroup(groupId));
+    return ResponseEntity.ok(response);
+  }
+
   @Operation(summary = "Update payment date", description = "Method to update the payment date")
   @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = UserDTO.class)))
   @ApiResponse(responseCode = "400", description = "Bad request")
@@ -125,13 +146,24 @@ public class AdministrationController {
     return ResponseEntity.ok(response);
   }
 
-  @Operation(summary = "Delete user", description = "Method to delete a user and every entity he owns (if it's the last user from a group_role")
+  @Operation(summary = "Delete user", description = "Method to delete a user and every entity he owns (if it's the last user from a group)")
   @ApiResponse(responseCode = "204", description = "No content")
   @ApiResponse(responseCode = "400", description = "Bad request")
   @ApiResponse(responseCode = "500", description = "System error")
   @DeleteMapping("/user/delete/{id}")
   public ResponseEntity<?> deleteUser(@PathVariable Long id) {
     userService.delete(id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Operation(summary = "Delete by group", description = "Method to delete all users from a group and every entity they own")
+  @ApiResponse(responseCode = "204", description = "No content")
+  @ApiResponse(responseCode = "400", description = "Bad request")
+  @ApiResponse(responseCode = "500", description = "System error")
+  @DeleteMapping("/user/delete/{groupId}")
+  public ResponseEntity<?> deleteGroup(
+      @PathVariable Long groupId) {
+    userService.deleteUsersByGroup(groupId);
     return ResponseEntity.noContent().build();
   }
 
@@ -171,9 +203,5 @@ public class AdministrationController {
     GroupDTO response = groupAssembler.convertToDTO(groupService.updateMaxUsers(id, maxUsers));
     return ResponseEntity.ok(response);
   }
-
-  // TODO: disable user
-  // TODO: disable users by group
-  // TODO: delete users by group
 
 }

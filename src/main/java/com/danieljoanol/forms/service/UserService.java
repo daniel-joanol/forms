@@ -1,6 +1,7 @@
 package com.danieljoanol.forms.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 
@@ -51,10 +52,14 @@ public interface UserService {
 
   public User update(User update);
 
-  public void disable(Long id);
+  public User disable(Long id);
 
   public Group disableUserByGroup(Long groupId);
 
   public void deleteUsersByGroup(Long groupId);
 
+  public List<User> findDisabledUsers(LocalDate date);
+
+  public void deleteUsers(List<User> users);
+  
 }

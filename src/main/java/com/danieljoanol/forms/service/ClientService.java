@@ -1,5 +1,6 @@
 package com.danieljoanol.forms.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -25,4 +26,7 @@ public interface ClientService extends GenericService<Client> {
   public Client getIfEnabled(Long id, String username);
 
   public Client updateIfEnabled(Client update, String username);
+
+  public Long cleanDatabase(LocalDate date);
+  
 }

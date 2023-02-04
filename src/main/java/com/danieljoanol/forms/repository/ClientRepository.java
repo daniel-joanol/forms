@@ -1,5 +1,6 @@
 package com.danieljoanol.forms.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,5 +16,7 @@ public interface ClientRepository extends GenericRepository<Client> {
     List<Client> findByGroup_UsersIn(List<User> users);
 
     Optional<Client> findByIdAndIsEnabledTrueAndGroup_Users_UsernameIn(Long id, List<String> usernames);
+
+    Long deleteByIsEnabledFalseAndDisabledDateLessThan(LocalDate date);
 
 }

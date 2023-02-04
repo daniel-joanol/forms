@@ -41,7 +41,6 @@ public class Form implements GenericEntity<Form> {
     private String chassis;
     private String agent;
     private LocalDateTime date;
-    // TODO: implement closeOrder, reopen
     private Boolean openOrder = true;
     private String comments;
     private String pdfUrl;

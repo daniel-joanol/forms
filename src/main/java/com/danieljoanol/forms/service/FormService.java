@@ -1,5 +1,6 @@
 package com.danieljoanol.forms.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
@@ -18,6 +19,8 @@ public interface FormService extends GenericService<Form> {
 
   public Form getIfEnabled(Long id, String username);
 
-  public Form updateIfEnabled(Form shop, String username);
+  public Form closeOrOpenOrder(Long id, String username, Boolean state);
+
+  public Long cleanDatabase(LocalDate date);
 
 }

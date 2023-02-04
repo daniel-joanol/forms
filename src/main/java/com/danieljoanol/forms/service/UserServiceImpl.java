@@ -195,11 +195,11 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void disable(Long id) {
+  public User disable(Long id) {
 
     User user = get(id);
     if (!user.isEnabled())
-      return;
+      return user;
 
     Group group = groupService.getByUser(user);
     group.setTotalUsers(group.getTotalUsers() - 1);
@@ -207,7 +207,7 @@ public class UserServiceImpl implements UserService {
 
     user.setEnabled(false);
     user.setDisabledDate(LocalDate.now());
-    update(user);
+    return update(user);
   }
 
   @Override
@@ -347,6 +347,16 @@ public class UserServiceImpl implements UserService {
     });
     
     return group;
+  }
+
+  @Override
+  public List<User> findDisabledUsers(LocalDate date) {
+    return userRepository.findByIsEnabledFalseAndDisabledDateLessThan(date);
+  }
+
+  @Override
+  public void deleteUsers(List<User> users) {
+    userRepository.deleteAll(users);
   }
 
 }

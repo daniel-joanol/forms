@@ -104,4 +104,9 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
     shopRepository.deleteAllById(ids);
   }
 
+  @Override
+  public Long cleanDatabase(LocalDate date) {
+    return shopRepository.deleteByIsEnabledFalseAndDisabledDateLessThan(date);
+  }
+
 }

@@ -1,5 +1,6 @@
 package com.danieljoanol.forms.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -24,4 +25,6 @@ public interface ShopService extends GenericService<Shop> {
 
   public Shop updateIfEnabled(Shop shop, String username);
 
+  public Long cleanDatabase(LocalDate date);
+  
 }

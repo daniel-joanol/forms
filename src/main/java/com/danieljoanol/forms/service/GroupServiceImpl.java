@@ -118,4 +118,9 @@ public class GroupServiceImpl implements GroupService {
     groupRepository.delete(group);
   }
 
+  @Override
+  public void deleteGroups(List<Group> groups) {
+    groupRepository.deleteAll(groups);
+  }
+
 }

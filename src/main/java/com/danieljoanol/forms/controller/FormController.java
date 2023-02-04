@@ -89,15 +89,16 @@ public class FormController {
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
-  @Operation(summary = "Update", description = "Method to update a new form")
+  @Operation(summary = "Open/Close", description = "Method open or close an order (form)")
   @ApiResponse(responseCode = "200", description = "Success", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FormDTO.class)))
   @ApiResponse(responseCode = "400", description = "Bad request")
   @ApiResponse(responseCode = "500", description = "System error")
-  @PutMapping("/{clientId}/")
-  public ResponseEntity<FormDTO> update(@RequestBody @Valid FormDTO request) {
+  @PutMapping("/{id}/")
+  public ResponseEntity<FormDTO> openOrClose(
+      @PathVariable Long id,
+      @RequestParam(required = true) Boolean state) {
     String username = JwtTokenUtil.getUsername();
-    Form entity = formAssembler.convertFromDTO(request);
-    FormDTO response = formAssembler.convertToDTO(formService.updateIfEnabled(entity, username));
+    FormDTO response = formAssembler.convertToDTO(formService.closeOrOpenOrder(id, username, state));
     return ResponseEntity.ok(response);
   }
 

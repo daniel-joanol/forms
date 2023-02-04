@@ -34,6 +34,4 @@ public class BlacklistCleaning {
         
     }
 
-    //TODO: create method to delete entries that have been disabled for a long time to clean the bd
-
 }

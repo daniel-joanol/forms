@@ -110,4 +110,9 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
     clientRepository.deleteAllById(ids);
   }
 
+  @Override
+  public Long cleanDatabase(LocalDate date) {
+    return clientRepository.deleteByIsEnabledFalseAndDisabledDateLessThan(date);
+  }
+  
 }

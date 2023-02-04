@@ -80,12 +80,6 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
   }
 
   @Override
-  public Form updateIfEnabled(Form form, String username) {
-    getIfEnabled(form.getId(), username);
-    return formRepository.save(form);
-  }
-
-  @Override
   public void disable(Long id, String username) {
     Form form = getIfEnabled(id, username);
     form.setEnabled(false);
@@ -102,6 +96,18 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
   @Override
   public void deleteAllByIds(Iterable<? extends Long> ids) {
     formRepository.deleteAllById(ids);
+  }
+
+  @Override
+  public Form closeOrOpenOrder(Long id, String username, Boolean state) {
+    Form form = getIfEnabled(id, username);
+    form.setOpenOrder(state);
+    return formRepository.save(form);
+  }
+
+  @Override
+  public Long cleanDatabase(LocalDate date) {
+    return formRepository.deleteByIsEnabledFalseAndDisabledDateLessThan(date);
   }
 
 }
