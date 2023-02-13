@@ -20,7 +20,6 @@ public interface UserRepository extends GenericRepository<User> {
     List<User> findByRoles_NameIn(List<String> roles);
 
     List<User> findByIsEnabledFalseAndDisabledDateLessThan(LocalDate date);
-    
-
+  
 
 }

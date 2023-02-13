@@ -77,19 +77,16 @@ public class UserServiceImpl implements UserService {
     if (group.getUsers().size() == 1 && group.getTotalUsers() == 0) {
 
       List<Client> clients = clientService.findAllByUser(user);
-      Set<Long> formIds = clients.stream()
+      Set<Form> forms = clients.stream()
           .flatMap(client -> client.getForms().stream())
-          .map(Form::getId)
           .collect(Collectors.toSet());
       clients.stream().forEach(c -> c.setForms(null));
-      formService.deleteAllByIds(formIds);
+      formService.deleteAll(forms);
 
-      Set<Long> clientIds = clients.stream().map(Client::getId).collect(Collectors.toSet());
-      clientService.deleteAllByIds(clientIds);
+      clientService.deleteAll(clients);
 
       List<Shop> shops = shopService.findAllByUser(user);
-      Set<Long> shopIds = shops.stream().map(Shop::getId).collect(Collectors.toSet());
-      shopService.deleteAllByIds(shopIds);
+      shopService.deleteAll(shops);
 
       group.setUsers(null);
       userRepository.delete(user);

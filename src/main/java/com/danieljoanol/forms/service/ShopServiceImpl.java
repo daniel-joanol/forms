@@ -1,6 +1,5 @@
 package com.danieljoanol.forms.service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -31,7 +30,7 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
   }
 
   @Override
-  public Page<Shop> findAllEnabledByUsernameAndFilters(Integer pageNumber, Integer pageSize, String username,
+  public Page<Shop> findByUsernameAndFilters(Integer pageNumber, Integer pageSize, String username,
       String shopName, String ownerName, String city, String province, String phone, String document) {
 
     Group group = groupService.getByUsername(username);
@@ -56,7 +55,6 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
 
     Group group = groupService.getByUsername(username);
 
-    shop.setEnabled(true);
     shop.setGroup(group);
     shop = shopRepository.save(shop);
 
@@ -74,39 +72,32 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
   }
 
   @Override
-  public Shop getIfEnabled(Long id, String username) {
-    return shopRepository.findByIdAndIsEnabledTrueAndGroup_Users_UsernameIn(id, List.of(username))
+  public Shop get(Long id, String username) {
+    return shopRepository.findByIdAndGroup_Users_UsernameIn(id, List.of(username))
         .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
   }
 
   @Override
-  public Shop updateIfEnabled(Shop shop, String username) {
-    getIfEnabled(shop.getId(), username);
+  public Shop update(Shop shop, String username) {
+    get(shop.getId(), username);
     return shopRepository.save(shop);
   }
 
   @Override
-  public void disable(Long id, String username) {
-    Shop shop = getIfEnabled(id, username);
-    shop.setEnabled(false);
-    shop.setDisabledDate(LocalDate.now());
-    update(shop);
-  }
+  public void delete(Long id, String username) {
+    Shop shop = get(id, username);
+    Group group = shop.getGroup();
+    
+    if (group.getShops().size() == 1) {
+      group.setShops(null);
+    }
 
-  @Override
-  public void delete(Long id) {
-    Shop shop = get(id);
     shopRepository.delete(shop);
   }
 
   @Override
-  public void deleteAllByIds(Iterable<? extends Long> ids) {
-    shopRepository.deleteAllById(ids);
-  }
-
-  @Override
-  public Long cleanDatabase(LocalDate date) {
-    return shopRepository.deleteByIsEnabledFalseAndDisabledDateLessThan(date);
+  public void deleteAll(Iterable<? extends Shop> shops) {
+    shopRepository.deleteAll(shops);
   }
 
 }

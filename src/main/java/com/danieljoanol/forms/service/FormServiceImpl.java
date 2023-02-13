@@ -1,6 +1,5 @@
 package com.danieljoanol.forms.service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,7 +39,6 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
     Client client = clientService.findByIdAndUsernames(clientId, List.of(username));
 
     form.setId(null);
-    form.setEnabled(true);
     form.setGroup(client.getGroup());
     client.getForms().add(form);
     form = formRepository.save(form);
@@ -50,7 +48,7 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
   }
 
   @Override
-  public Page<Form> findAllEnabledByUsernameAndFilters(Integer pageNumber, Integer pageSize, String username,
+  public Page<Form> findByUsernameAndFilters(Integer pageNumber, Integer pageSize, String username,
       String plate, String model, String brand, String frame, String agent, LocalDateTime minDate,
       LocalDateTime maxDate, Boolean openOrder) {
 
@@ -74,40 +72,33 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
   }
 
   @Override
-  public Form getIfEnabled(Long id, String username) {
-    return formRepository.findByIdAndIsEnabledTrueAndGroup_Users_UsernameIn(id, List.of(username))
+  public Form get(Long id, String username) {
+    return formRepository.findByIdAndGroup_Users_UsernameIn(id, List.of(username))
         .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
   }
 
   @Override
-  public void disable(Long id, String username) {
-    Form form = getIfEnabled(id, username);
-    form.setEnabled(false);
-    form.setDisabledDate(LocalDate.now());
-    update(form);
-  }
-
-  @Override
-  public void delete(Long id) {
-    Form form = get(id);
+  public void delete(Long id, String username) {
+    Form form = get(id, username);
     formRepository.delete(form);
   }
 
   @Override
-  public void deleteAllByIds(Iterable<? extends Long> ids) {
-    formRepository.deleteAllById(ids);
+  public void deleteAll(Iterable<? extends Form> forms) {
+    formRepository.deleteAll(forms);
   }
 
   @Override
   public Form closeOrOpenOrder(Long id, String username, Boolean state) {
-    Form form = getIfEnabled(id, username);
+    Form form = get(id, username);
     form.setOpenOrder(state);
     return formRepository.save(form);
   }
 
   @Override
-  public Long cleanDatabase(LocalDate date) {
-    return formRepository.deleteByIsEnabledFalseAndDisabledDateLessThan(date);
+  public Form update(Form update, String username) {
+    Form form = get(update.getId(), username);
+    return formRepository.save(form);
   }
 
 }

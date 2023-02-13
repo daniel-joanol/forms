@@ -1,7 +1,5 @@
 package com.danieljoanol.forms.entity;
 
-import java.time.LocalDate;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -39,9 +37,6 @@ public class Shop implements GenericEntity<Shop> {
     private String fax;
     private String document;
     private String logo;
-
-    private boolean isEnabled;
-    private LocalDate disabledDate;
 
     @ManyToOne
     private Group group;

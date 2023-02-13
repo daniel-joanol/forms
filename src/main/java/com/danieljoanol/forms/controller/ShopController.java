@@ -55,7 +55,7 @@ public class ShopController {
       @RequestParam(required = false) String phone,
       @RequestParam(required = false) String document) {
     String username = JwtTokenUtil.getUsername();
-    Page<ShopDTO> response = shopAssembler.convertToDTO(shopService.findAllEnabledByUsernameAndFilters(pageNumber,
+    Page<ShopDTO> response = shopAssembler.convertToDTO(shopService.findByUsernameAndFilters(pageNumber,
         pageSize, username, shopName, ownerName, city, province, phone, document));
     return ResponseEntity.ok(response);
   }
@@ -67,7 +67,7 @@ public class ShopController {
   public ResponseEntity<ShopDTO> get(
       @PathVariable Long id) {
     String username = JwtTokenUtil.getUsername();
-    ShopDTO response = shopAssembler.convertToDTO(shopService.getIfEnabled(id, username));
+    ShopDTO response = shopAssembler.convertToDTO(shopService.get(id, username));
     return ResponseEntity.ok(response);
   }
 
@@ -91,18 +91,18 @@ public class ShopController {
   public ResponseEntity<ShopDTO> update(@RequestBody @Valid ShopDTO request) {
     String username = JwtTokenUtil.getUsername();
     Shop entity = shopAssembler.convertFromDTO(request);
-    ShopDTO response = shopAssembler.convertToDTO(shopService.updateIfEnabled(entity, username));
+    ShopDTO response = shopAssembler.convertToDTO(shopService.update(entity, username));
     return ResponseEntity.ok(response);
   }
 
-  @Operation(summary = "Disable", description = "Method to disable a shop")
+  @Operation(summary = "Delete", description = "Method to disable a shop")
   @ApiResponse(responseCode = "204", description = "No content")
   @ApiResponse(responseCode = "400", description = "Bad request")
   @ApiResponse(responseCode = "500", description = "System error")
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> disable(@PathVariable Long id) {
+  public ResponseEntity<?> delete(@PathVariable Long id) {
     String username = JwtTokenUtil.getUsername();
-    shopService.disable(id, username);
+    shopService.delete(id, username);
     return ResponseEntity.noContent().build();
   }
 }

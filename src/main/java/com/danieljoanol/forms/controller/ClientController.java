@@ -55,7 +55,7 @@ public class ClientController {
       @RequestParam(required = false) String phone,
       @RequestParam(required = false) String document) {
     String username = JwtTokenUtil.getUsername();
-    Page<ClientDTO> response = clientAssembler.convertToDTO(clientService.findAllEnabledByUsernameAndFilters(pageNumber,
+    Page<ClientDTO> response = clientAssembler.convertToDTO(clientService.findByUsernameAndFilters(pageNumber,
         pageSize, username, name, city, province, phone, email, document));
     return ResponseEntity.ok(response);
   }
@@ -67,7 +67,7 @@ public class ClientController {
   public ResponseEntity<ClientDTO> get(
       @PathVariable Long id) {
     String username = JwtTokenUtil.getUsername();
-    ClientDTO response = clientAssembler.convertToDTO(clientService.getIfEnabled(id, username));
+    ClientDTO response = clientAssembler.convertToDTO(clientService.get(id, username));
     return ResponseEntity.ok(response);
   }
 
@@ -93,18 +93,18 @@ public class ClientController {
       @RequestBody @Valid ClientDTO request) {
     String username = JwtTokenUtil.getUsername();
     Client entity = clientAssembler.convertFromDTO(request);
-    ClientDTO response = clientAssembler.convertToDTO(clientService.updateIfEnabled(entity, username));
+    ClientDTO response = clientAssembler.convertToDTO(clientService.update(entity, username));
     return ResponseEntity.ok(response);
   }
 
-  @Operation(summary = "Disable", description = "Method to disable a client")
+  @Operation(summary = "Delete", description = "Method to delete a client")
   @ApiResponse(responseCode = "204", description = "No content")
   @ApiResponse(responseCode = "400", description = "Bad request")
   @ApiResponse(responseCode = "500", description = "System error")
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> disable(@PathVariable Long id) {
+  public ResponseEntity<?> delete(@PathVariable Long id) {
     String username = JwtTokenUtil.getUsername();
-    clientService.disable(id, username);
+    clientService.delete(id, username);
     return ResponseEntity.noContent().build();
   }
 

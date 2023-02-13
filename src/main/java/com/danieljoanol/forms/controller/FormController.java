@@ -61,7 +61,7 @@ public class FormController {
       @RequestParam(required = false) Boolean openOrder) {
 
     String username = JwtTokenUtil.getUsername();
-    Page<FormDTO> response = formAssembler.convertToDTO(formService.findAllEnabledByUsernameAndFilters(
+    Page<FormDTO> response = formAssembler.convertToDTO(formService.findByUsernameAndFilters(
         pageNumber, pageSize, username, plate, model, brand, frame, agent, minDate, maxDateTime, openOrder));
     return ResponseEntity.ok(response);
   }
@@ -73,7 +73,7 @@ public class FormController {
   public ResponseEntity<FormDTO> get(
       @PathVariable Long id) {
     String username = JwtTokenUtil.getUsername();
-    FormDTO response = formAssembler.convertToDTO(formService.getIfEnabled(id, username));
+    FormDTO response = formAssembler.convertToDTO(formService.get(id, username));
     return ResponseEntity.ok(response);
   }
 
@@ -107,9 +107,9 @@ public class FormController {
   @ApiResponse(responseCode = "400", description = "Bad request")
   @ApiResponse(responseCode = "500", description = "System error")
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> disable(@PathVariable Long id) {
+  public ResponseEntity<?> delete(@PathVariable Long id) {
     String username = JwtTokenUtil.getUsername();
-    formService.disable(id, username);
+    formService.delete(id, username);
     return ResponseEntity.noContent().build();
   }
 

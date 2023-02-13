@@ -1,6 +1,5 @@
 package com.danieljoanol.forms.service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -35,7 +34,6 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
 
     Group group = groupService.getByUsername(username);
 
-    client.setEnabled(true);
     client.setGroup(group);
     client = clientRepository.save(client);
 
@@ -43,7 +41,7 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
   }
 
   @Override
-  public Page<Client> findAllEnabledByUsernameAndFilters(Integer pageNumber, Integer pageSize, String username,
+  public Page<Client> findByUsernameAndFilters(Integer pageNumber, Integer pageSize, String username,
       String name, String city, String province, String phone, String email, String document) {
 
     Group group = groupService.getByUsername(username);
@@ -80,39 +78,26 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
   }
 
   @Override
-  public Client getIfEnabled(Long id, String username) {
-    return clientRepository.findByIdAndIsEnabledTrueAndGroup_Users_UsernameIn(id, List.of(username))
+  public Client get(Long id, String username) {
+    return clientRepository.findByIdAndGroup_Users_UsernameIn(id, List.of(username))
         .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
   }
 
   @Override
-  public Client updateIfEnabled(Client client, String username) {
-    getIfEnabled(client.getId(), username);
+  public Client update(Client client, String username) {
+    get(client.getId(), username);
     return clientRepository.save(client);
   }
 
   @Override
-  public void disable(Long id, String username) {
-    Client client = getIfEnabled(id, username);
-    client.setEnabled(false);
-    client.setDisabledDate(LocalDate.now());
-    update(client);
+  public void deleteAll(Iterable<? extends Client> clients) {
+    clientRepository.deleteAll(clients);
   }
 
   @Override
-  public void delete(Long id) {
-    Client client = get(id);
+  public void delete(Long id, String username) {
+    Client client = get(id, username);
     clientRepository.delete(client);
-  }
-
-  @Override
-  public void deleteAllByIds(Iterable<? extends Long> ids) {
-    clientRepository.deleteAllById(ids);
-  }
-
-  @Override
-  public Long cleanDatabase(LocalDate date) {
-    return clientRepository.deleteByIsEnabledFalseAndDisabledDateLessThan(date);
   }
   
 }
