@@ -2,6 +2,7 @@ package com.danieljoanol.forms.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -67,14 +68,14 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void delete(User user) {
-    
+
     Group group = groupService.getByUser(user);
     if (user.isEnabled()) {
       group.setTotalUsers(group.getTotalUsers() - 1);
     }
 
     // Makes a double validation
-    if (group.getUsers().size() == 1 && group.getTotalUsers() == 0) {
+    if (group.getUsers().size() <= 1 && group.getTotalUsers() == 0) {
 
       List<Client> clients = clientService.findAllByUser(user);
       Set<Form> forms = clients.stream()
@@ -115,7 +116,7 @@ public class UserServiceImpl implements UserService {
       }
       group = groupService.create(
           request.getMaxGroup(),
-          request.getUsername().substring(5));
+          request.getUsername().substring(0, 5));
 
     } else {
 
@@ -152,21 +153,22 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Page<User> getAll(Integer pageNumber, Integer pageSize, String firstName, String lastName, String username,
-      LocalDate minLastPayment, LocalDate maxLastPayment, Boolean isEnabled, LocalDate minDisabledDate, LocalDate maxDisabledDate,
+      LocalDate minLastPayment, LocalDate maxLastPayment, Boolean isEnabled, LocalDate minDisabledDate,
+      LocalDate maxDisabledDate,
       String groupName) {
-  
+
     Pageable pageable = PageRequest.of(pageNumber, pageSize);
     UserCriteria criteria = UserCriteria.builder()
-          .firstName(firstName)
-          .lastName(lastName)
-          .username(username)
-          .minLastPayment(minLastPayment)
-          .maxLastPayment(maxLastPayment)
-          .isEnabled(isEnabled)
-          .minDisabledDate(minDisabledDate)
-          .maxDisabledDate(maxDisabledDate)
-          .groupName(groupName)
-          .build();
+        .firstName(firstName)
+        .lastName(lastName)
+        .username(username)
+        .minLastPayment(minLastPayment)
+        .maxLastPayment(maxLastPayment)
+        .isEnabled(isEnabled)
+        .minDisabledDate(minDisabledDate)
+        .maxDisabledDate(maxDisabledDate)
+        .groupName(groupName)
+        .build();
 
     return userRepository.findAll(UserSpecification.search(criteria), pageable);
   }
@@ -178,7 +180,7 @@ public class UserServiceImpl implements UserService {
     if (user.isEnabled())
       return user;
 
-    Group group = groupService.getByUser(user);
+    Group group = user.getGroup();
     if (group.getTotalUsers() < group.getMaxUsers()) {
       group.setTotalUsers(group.getTotalUsers() + 1);
       group = groupService.update(group);
@@ -200,6 +202,15 @@ public class UserServiceImpl implements UserService {
 
     Group group = groupService.getByUser(user);
     group.setTotalUsers(group.getTotalUsers() - 1);
+
+    List<User> tempUsers = new ArrayList<>();
+    for (User actualUser : group.getUsers()) {
+      if (actualUser.getId() != id) {
+        tempUsers.add(actualUser);
+      }
+    }
+
+    group.setUsers(tempUsers);
     group = groupService.update(group);
 
     user.setEnabled(false);
@@ -332,20 +343,26 @@ public class UserServiceImpl implements UserService {
   public void deleteUsersByGroup(Long groupId) {
     Group group = groupService.get(groupId);
     group.getUsers().forEach(u -> delete(u));
+    
+    //Removes deactivated users
+    List<User> users = findByGroup(group);
+    users.forEach(u -> delete(u));
   }
 
   @Override
   public Group disableUserByGroup(Long groupId) {
     Group group = groupService.get(groupId);
     group.getUsers().forEach(u -> {
-        u.setEnabled(false);
-        u.setDisabledDate(LocalDate.now());
-        u = update(u);
+      u.setEnabled(false);
+      u.setDisabledDate(LocalDate.now());
+      u = update(u);
     });
-    
+
     return group;
   }
 
+  //TODO: check if it's still used
+  //TODO: create a scheduled method to clean the db
   @Override
   public List<User> findDisabledUsers(LocalDate date) {
     return userRepository.findByIsEnabledFalseAndDisabledDateLessThan(date);
@@ -354,6 +371,11 @@ public class UserServiceImpl implements UserService {
   @Override
   public void deleteUsers(List<User> users) {
     userRepository.deleteAll(users);
+  }
+
+  @Override
+  public List<User> findByGroup(Group group) {
+    return userRepository.findByGroup(group);
   }
 
 }

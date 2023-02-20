@@ -102,7 +102,7 @@ public class FormController {
     return ResponseEntity.ok(response);
   }
 
-  @Operation(summary = "Disable", description = "Method to disable a Form")
+  @Operation(summary = "Delete", description = "Method to delete a Form")
   @ApiResponse(responseCode = "204", description = "No content")
   @ApiResponse(responseCode = "400", description = "Bad request")
   @ApiResponse(responseCode = "500", description = "System error")

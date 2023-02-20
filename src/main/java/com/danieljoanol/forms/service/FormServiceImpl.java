@@ -65,7 +65,6 @@ public class FormServiceImpl extends GenericServiceImpl<Form> implements FormSer
         .maxDate(maxDate)
         .openOrder(openOrder)
         .group(group)
-        .isEnabled(true)
         .build();
 
     return formRepository.findAll(FormSpecification.search(criteria), pageable);

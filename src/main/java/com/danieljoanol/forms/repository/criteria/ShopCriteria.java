@@ -18,6 +18,5 @@ public class ShopCriteria {
   private String phone;
   private String document;
   private Group group;
-  private Boolean isEnabled;
 
 }

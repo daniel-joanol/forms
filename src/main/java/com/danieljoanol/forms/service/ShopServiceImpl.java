@@ -44,7 +44,6 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
           .phone(phone)
           .document(document)
           .group(group)
-          .isEnabled(true)
           .build();
 
     return shopRepository.findAll(ShopSpecification.search(criteria), pageable);
@@ -86,12 +85,6 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
   @Override
   public void delete(Long id, String username) {
     Shop shop = get(id, username);
-    Group group = shop.getGroup();
-    
-    if (group.getShops().size() == 1) {
-      group.setShops(null);
-    }
-
     shopRepository.delete(shop);
   }
 

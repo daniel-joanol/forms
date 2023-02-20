@@ -18,6 +18,5 @@ public class ClientCriteria {
   private String email;
   private String document;
   private Group group;
-  private Boolean isEnabled;
 
 }

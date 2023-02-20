@@ -22,6 +22,5 @@ public class FormCriteria {
   private LocalDateTime minDate;
   private Boolean openOrder;
   private Group group;
-  private Boolean isEnabled;
 
 }

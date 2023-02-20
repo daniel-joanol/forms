@@ -61,5 +61,7 @@ public interface UserService {
   public List<User> findDisabledUsers(LocalDate date);
 
   public void deleteUsers(List<User> users);
+
+  public List<User> findByGroup(Group group);
   
 }
