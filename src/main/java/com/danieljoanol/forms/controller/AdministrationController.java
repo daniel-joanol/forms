@@ -160,7 +160,7 @@ public class AdministrationController {
   @ApiResponse(responseCode = "204", description = "No content")
   @ApiResponse(responseCode = "400", description = "Bad request")
   @ApiResponse(responseCode = "500", description = "System error")
-  @DeleteMapping("/user/delete/{groupId}")
+  @DeleteMapping("/group/delete/{groupId}")
   public ResponseEntity<?> deleteGroup(
       @PathVariable Long groupId) {
     userService.deleteUsersByGroup(groupId);

@@ -95,7 +95,7 @@ public class ShopController {
     return ResponseEntity.ok(response);
   }
 
-  @Operation(summary = "Delete", description = "Method to disable a shop")
+  @Operation(summary = "Delete", description = "Method to delete a shop")
   @ApiResponse(responseCode = "204", description = "No content")
   @ApiResponse(responseCode = "400", description = "Bad request")
   @ApiResponse(responseCode = "500", description = "System error")

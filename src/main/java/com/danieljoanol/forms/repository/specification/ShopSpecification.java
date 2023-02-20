@@ -57,10 +57,6 @@ public class ShopSpecification {
               cBuilder.equal(root.get("phone2"), criteria.getPhone())));
         }
 
-        if (criteria.getIsEnabled() != null) {
-          predicates.add(cBuilder.equal(root.get("isEnabled"), criteria.getIsEnabled()));
-        }
-
         return cBuilder.and(predicates.toArray(Predicate[]::new));
 
       }

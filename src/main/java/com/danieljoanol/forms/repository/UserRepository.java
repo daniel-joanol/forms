@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import com.danieljoanol.forms.entity.Group;
 import com.danieljoanol.forms.entity.Role;
 import com.danieljoanol.forms.entity.User;
 
@@ -21,5 +22,5 @@ public interface UserRepository extends GenericRepository<User> {
 
     List<User> findByIsEnabledFalseAndDisabledDateLessThan(LocalDate date);
   
-
+    List<User> findByGroup(Group group);
 }

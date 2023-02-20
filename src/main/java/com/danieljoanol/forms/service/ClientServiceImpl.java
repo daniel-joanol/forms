@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 
 import com.danieljoanol.forms.constants.Message;
 import com.danieljoanol.forms.entity.Client;
+import com.danieljoanol.forms.entity.Form;
 import com.danieljoanol.forms.entity.Group;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.repository.ClientRepository;
+import com.danieljoanol.forms.repository.FormRepository;
 import com.danieljoanol.forms.repository.criteria.ClientCriteria;
 import com.danieljoanol.forms.repository.specification.ClientSpecification;
 
@@ -22,11 +24,14 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
 
   private final ClientRepository clientRepository;
   private final GroupService groupService;
+  private final FormRepository formRepository;
 
-  public ClientServiceImpl(ClientRepository clientRepository, GroupService groupService) {
+  public ClientServiceImpl(ClientRepository clientRepository, GroupService groupService,
+    FormRepository formRepository) {
     super(clientRepository);
     this.clientRepository = clientRepository;
     this.groupService = groupService;
+    this.formRepository = formRepository;
   }
 
   @Override
@@ -55,7 +60,6 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
         .email(email)
         .document(document)
         .group(group)
-        .isEnabled(true)
         .build();
 
     return clientRepository.findAll(ClientSpecification.search(criteria), pageable);
@@ -97,7 +101,9 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
   @Override
   public void delete(Long id, String username) {
     Client client = get(id, username);
+    List<Form> forms = client.getForms();
     clientRepository.delete(client);
+    formRepository.deleteAll(forms);
   }
   
 }

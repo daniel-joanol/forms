@@ -53,10 +53,6 @@ public class FormSpecification {
               cBuilder.equal(root.get("chassis"), criteria.getFrame())));
         }
 
-        if (criteria.getIsEnabled() != null) {
-          predicates.add(cBuilder.equal(root.get("isEnabled"), criteria.getIsEnabled()));
-        }
-
         if (criteria.getOpenOrder() != null) {
           predicates.add(cBuilder.equal(root.get("openOrder"), criteria.getOpenOrder()));
         }
