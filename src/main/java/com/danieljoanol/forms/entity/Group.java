@@ -14,6 +14,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,8 +43,18 @@ public class Group {
     private Integer maxUsers;
     private Integer totalUsers;
 
-    @OneToMany(fetch=FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "group_users", joinColumns = @JoinColumn(name = "group_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> users = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
+    @JsonIgnore
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<Shop> shops = new ArrayList<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "group")
+    @JsonIgnore
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<Shop> clients = new ArrayList<>();
 
 }

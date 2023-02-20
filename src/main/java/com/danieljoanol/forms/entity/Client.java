@@ -1,16 +1,19 @@
 package com.danieljoanol.forms.entity;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,12 +45,11 @@ public class Client implements GenericEntity<Client> {
     private String document;
 
     @OneToMany
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn
     private List<Form> forms = new ArrayList<>();
 
     @ManyToOne
     private Group group;
-
-    private boolean isEnabled;
-    private Date disabledDate;
     
 }

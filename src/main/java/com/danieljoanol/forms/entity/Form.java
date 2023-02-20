@@ -1,7 +1,6 @@
 package com.danieljoanol.forms.entity;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -47,6 +47,7 @@ public class Form implements GenericEntity<Form> {
     @ElementCollection
     private Set<String> visibleDamages = new HashSet<>();
 
-    private boolean isEnabled;
-    private Date disabledDate;
+    @ManyToOne
+    private Group group;
+
 }

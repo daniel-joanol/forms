@@ -1,21 +1,17 @@
 package com.danieljoanol.forms.service;
 
-import org.springframework.data.domain.Page;
-
 public interface GenericService<T> {
     
-    public Page<T> getAll(Integer pageNumber, Integer pageSize);
-
-    public Page<T> getAllEnabled(Integer pageNumber, Integer pageSize);
-
     public T get(Long id);
 
-    public T getIfEnabled(Long id);
+    public T get(Long id, String username);
 
     public T update(T update);
 
+    public T update(T update, String username);
+
     public void delete(Long id);
 
-    public void disable(Long id);
+    public void delete(Long id, String username);
     
 }
