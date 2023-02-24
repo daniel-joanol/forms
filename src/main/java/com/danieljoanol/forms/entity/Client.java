@@ -44,7 +44,7 @@ public class Client implements GenericEntity<Client> {
     private String email;
     private String document;
 
-    @OneToMany(orphanRemoval = true)
+    @OneToMany
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "client_id")
     private List<Form> forms = new ArrayList<>();

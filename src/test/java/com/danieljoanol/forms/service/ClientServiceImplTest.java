@@ -10,10 +10,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -26,7 +24,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.danieljoanol.forms.constants.Message;
@@ -36,7 +33,6 @@ import com.danieljoanol.forms.entity.Group;
 import com.danieljoanol.forms.entity.User;
 import com.danieljoanol.forms.repository.ClientRepository;
 import com.danieljoanol.forms.repository.FormRepository;
-import com.danieljoanol.forms.repository.specification.ClientSpecification;
 
 @ExtendWith(MockitoExtension.class)
 public class ClientServiceImplTest {

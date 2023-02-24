@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public void delete(User user) {
 
-    Group group = groupService.getByUser(user);
+    Group group = groupService.getByUsername(user.getUsername());
     if (user.isEnabled()) {
       group.setTotalUsers(group.getTotalUsers() - 1);
     }
@@ -200,7 +200,7 @@ public class UserServiceImpl implements UserService {
     if (!user.isEnabled())
       return user;
 
-    Group group = groupService.getByUser(user);
+    Group group = groupService.getByUsername(user.getUsername());
     group.setTotalUsers(group.getTotalUsers() - 1);
 
     List<User> tempUsers = new ArrayList<>();
@@ -361,8 +361,6 @@ public class UserServiceImpl implements UserService {
     return group;
   }
 
-  //TODO: check if it's still used
-  //TODO: create a scheduled method to clean the db
   @Override
   public List<User> findDisabledUsers(LocalDate date) {
     return userRepository.findByIsEnabledFalseAndDisabledDateLessThan(date);
