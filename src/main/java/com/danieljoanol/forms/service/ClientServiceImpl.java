@@ -68,7 +68,7 @@ public class ClientServiceImpl extends GenericServiceImpl<Client> implements Cli
   @Override
   public Client findByIdAndUsernames(Long id, List<String> usernames) {
     return clientRepository.findByIdAndGroup_Users_UsernameIn(id, usernames)
-        .orElseThrow(() -> new EntityNotFoundException(Message.NOT_AUTHORIZED));
+        .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
   }
 
   @Override

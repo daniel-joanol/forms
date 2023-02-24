@@ -105,7 +105,7 @@ public class ClientServiceImplTest {
     final EntityNotFoundException thrown = assertThrows(
         EntityNotFoundException.class,
         () -> service.findByIdAndUsernames(LONG_VALUE, usernames));
-    assertEquals(Message.NOT_AUTHORIZED, thrown.getMessage());
+    assertEquals(Message.ENTITY_NOT_FOUND, thrown.getMessage());
   }
 
   @Test
