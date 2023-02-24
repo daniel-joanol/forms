@@ -55,9 +55,7 @@ public class ShopServiceImpl extends GenericServiceImpl<Shop> implements ShopSer
     Group group = groupService.getByUsername(username);
 
     shop.setGroup(group);
-    shop = shopRepository.save(shop);
-
-    return shop;
+    return shopRepository.save(shop);
   }
 
   @Override
