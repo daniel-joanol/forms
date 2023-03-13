@@ -48,7 +48,7 @@ public class GroupServiceImpl implements GroupService {
             .totalUsers(1)
             .users(new ArrayList<User>())
             .build();
-        group = groupRepository.save(group);
+        return groupRepository.save(group);
       } catch (DataIntegrityViolationException ex) {
         log.error(ex.getMessage(), ex);
         isUnique = false;
@@ -56,11 +56,8 @@ public class GroupServiceImpl implements GroupService {
       }
     } while (!isUnique && tries < 5);
 
-    if (group == null) {
-      throw new Exception(Message.GENERIC_ERROR);
-    }
-
-    return group;
+    throw new Exception(Message.GENERIC_ERROR);
+    
   }
 
   @Override
@@ -97,19 +94,14 @@ public class GroupServiceImpl implements GroupService {
   }
 
   @Override
-  public Group getByUser(User user) throws AccessDeniedException {
-    return groupRepository.findByUsersIn(List.of(user))
-        .orElseThrow(() -> new AccessDeniedException(Message.NOT_AUTHORIZED));
-  }
-
-  @Override
   public Group getByUsername(String username) throws AccessDeniedException {
     return groupRepository.findByUsers_UsernameIn(List.of(username))
-        .orElseThrow(() -> new AccessDeniedException(Message.NOT_AUTHORIZED));
+        .orElseThrow(() -> new EntityNotFoundException(Message.ENTITY_NOT_FOUND));
   }
 
   @Override
   public Group update(Group group) {
+    get(group.getId());
     return groupRepository.save(group);
   }
 

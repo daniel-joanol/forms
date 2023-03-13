@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public void delete(User user) {
 
-    Group group = groupService.getByUser(user);
+    Group group = groupService.getByUsername(user.getUsername());
     if (user.isEnabled()) {
       group.setTotalUsers(group.getTotalUsers() - 1);
     }
@@ -200,7 +200,7 @@ public class UserServiceImpl implements UserService {
     if (!user.isEnabled())
       return user;
 
-    Group group = groupService.getByUser(user);
+    Group group = groupService.getByUsername(user.getUsername());
     group.setTotalUsers(group.getTotalUsers() - 1);
 
     List<User> tempUsers = new ArrayList<>();
@@ -266,6 +266,31 @@ public class UserServiceImpl implements UserService {
     return user;
   }
 
+  private void validateCode(CodeConfirmationRequest request, Integer code, LocalDateTime date) throws CodeException {
+
+    if (code == null || code != request.getCode()) {
+      throw new CodeException(Message.INVALID_CODE);
+    }
+
+    if (LocalDateTime.now().isAfter(date)) {
+      throw new CodeException(Message.CODE_EXPIRED);
+    }
+  }
+
+  private String sendEmail(String username, String firstName, Integer code) throws SparkPostException {
+
+    Boolean isEmailSent = sparkPostService.sendMesage(
+        username,
+        Email.CODE_TITLE,
+        Email.codeMessage(firstName, code, timeLimit));
+
+    if (isEmailSent) {
+      return Message.CHECK_EMAIL;
+    } else {
+      return Message.SPARK_POST_ERROR;
+    }
+  }
+
   @Override
   public User updateNames(NamesUpdateRequest request) {
 
@@ -303,31 +328,6 @@ public class UserServiceImpl implements UserService {
         .orElseThrow(() -> new UsernameNotFoundException(Message.USERNAME_NOT_FOUND));
   }
 
-  private void validateCode(CodeConfirmationRequest request, Integer code, LocalDateTime date) throws CodeException {
-
-    if (code == null || code != request.getCode()) {
-      throw new CodeException(Message.INVALID_CODE);
-    }
-
-    if (LocalDateTime.now().isAfter(date)) {
-      throw new CodeException(Message.CODE_EXPIRED);
-    }
-  }
-
-  private String sendEmail(String username, String firstName, Integer code) throws SparkPostException {
-
-    Boolean isEmailSent = sparkPostService.sendMesage(
-        username,
-        Email.CODE_TITLE,
-        Email.codeMessage(firstName, code, timeLimit));
-
-    if (isEmailSent) {
-      return Message.CHECK_EMAIL;
-    } else {
-      return Message.SPARK_POST_ERROR;
-    }
-  }
-
   @Override
   public User get(Long id) {
     return userRepository.findById(id)
@@ -361,8 +361,6 @@ public class UserServiceImpl implements UserService {
     return group;
   }
 
-  //TODO: check if it's still used
-  //TODO: create a scheduled method to clean the db
   @Override
   public List<User> findDisabledUsers(LocalDate date) {
     return userRepository.findByIsEnabledFalseAndDisabledDateLessThan(date);
