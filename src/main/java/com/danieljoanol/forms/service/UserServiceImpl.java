@@ -266,6 +266,31 @@ public class UserServiceImpl implements UserService {
     return user;
   }
 
+  private void validateCode(CodeConfirmationRequest request, Integer code, LocalDateTime date) throws CodeException {
+
+    if (code == null || code != request.getCode()) {
+      throw new CodeException(Message.INVALID_CODE);
+    }
+
+    if (LocalDateTime.now().isAfter(date)) {
+      throw new CodeException(Message.CODE_EXPIRED);
+    }
+  }
+
+  private String sendEmail(String username, String firstName, Integer code) throws SparkPostException {
+
+    Boolean isEmailSent = sparkPostService.sendMesage(
+        username,
+        Email.CODE_TITLE,
+        Email.codeMessage(firstName, code, timeLimit));
+
+    if (isEmailSent) {
+      return Message.CHECK_EMAIL;
+    } else {
+      return Message.SPARK_POST_ERROR;
+    }
+  }
+
   @Override
   public User updateNames(NamesUpdateRequest request) {
 
@@ -301,31 +326,6 @@ public class UserServiceImpl implements UserService {
   public User findByUsername(String username) {
     return userRepository.findByUsername(username)
         .orElseThrow(() -> new UsernameNotFoundException(Message.USERNAME_NOT_FOUND));
-  }
-
-  private void validateCode(CodeConfirmationRequest request, Integer code, LocalDateTime date) throws CodeException {
-
-    if (code == null || code != request.getCode()) {
-      throw new CodeException(Message.INVALID_CODE);
-    }
-
-    if (LocalDateTime.now().isAfter(date)) {
-      throw new CodeException(Message.CODE_EXPIRED);
-    }
-  }
-
-  private String sendEmail(String username, String firstName, Integer code) throws SparkPostException {
-
-    Boolean isEmailSent = sparkPostService.sendMesage(
-        username,
-        Email.CODE_TITLE,
-        Email.codeMessage(firstName, code, timeLimit));
-
-    if (isEmailSent) {
-      return Message.CHECK_EMAIL;
-    } else {
-      return Message.SPARK_POST_ERROR;
-    }
   }
 
   @Override
