@@ -38,7 +38,7 @@ public class Group {
     private Integer maxUsers;
     private Integer totalUsers;
 
-    @OneToMany(fetch=FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "group_users", joinColumns = @JoinColumn(name = "group_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> users = new ArrayList<>();
 

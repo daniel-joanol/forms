@@ -141,7 +141,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Delete", description = "Method to delete user")
+    @Operation(summary = "Disable", description = "Method to disable a user")
     @ApiResponse(responseCode = "204", description = "No content")
     @ApiResponse(responseCode = "500", description = "System error")
     @PreAuthorize("hasRole('ROLE_USER')")
