@@ -132,6 +132,7 @@ public class UserServiceImplTest {
   void givenUser_whenDelete_thenVerify() {
 
     group.setTotalUsers(1);
+    user.setEnabled(true);
     client.setForms(List.of(form));
 
     when(groupService.getByUsername(anyString())).thenReturn(group);

@@ -38,7 +38,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = jwtTokenUtil.generateJwtToken(authentication);
 
-    return new AuthenticationResponse(user, jwt);
+    Integer usersAvailable = user.getGroup().getTotalUsers() - user.getGroup().getMaxUsers();
+
+    return new AuthenticationResponse(user, jwt, usersAvailable);
   }
 
   @Override
