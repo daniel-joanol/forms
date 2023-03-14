@@ -24,15 +24,17 @@ public class AuthenticationResponse {
     private String firstName;
     private String lastName;
     private Set<String> roles;
+    private Integer usersAvailable;
 
     private String token;
 
-    public AuthenticationResponse(User entity, String token) {
+    public AuthenticationResponse(User entity, String token, Integer usersAvailable) {
         this.id = entity.getId();
         this.username = entity.getUsername();
         this.firstName = entity.getFirstName();
         this.lastName = entity.getLastName();
         this.roles = entity.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
         this.token = token;
+        this.usersAvailable = usersAvailable;
     }
 }
